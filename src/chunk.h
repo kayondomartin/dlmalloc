@@ -44,6 +44,13 @@ struct any_chunk {
 #define INUSE_BITS              (PREV_INUSE_BIT | CURR_INUSE_BIT)
 #define FLAG_BITS               (PREV_INUSE_BIT | CURR_INUSE_BIT)
 
+/* tmte edit */
+#define TAG_MASK                ((size_t)-1>>4)
+#define TAG_BIT                 (~TAG_MASK)
+#define TAG_OFFSET              (TAG_MASK + 1)
+/* tmte edit end */
+
+
 /* Head value for fenceposts */
 #define FENCEPOST_HEAD          (INUSE_BITS | sizeof(size_t))
 
