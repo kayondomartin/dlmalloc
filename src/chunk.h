@@ -42,20 +42,22 @@ struct any_chunk {
 #define PREV_INUSE_BIT          ((size_t) 1)
 #define CURR_INUSE_BIT          ((size_t) 2)
 #define INUSE_BITS              (PREV_INUSE_BIT | CURR_INUSE_BIT)
-#define FLAG_BITS               (PREV_INUSE_BIT | CURR_INUSE_BIT)
+//#define FLAG_BITS               (PREV_INUSE_BIT | CURR_INUSE_BIT)
 
 /*tmte edit: tag bits and mask*/
 #define TAG_MASK                ((size_t)-1 >> 4)
 #define TAG_BITS                (~TAG_MASK)
 #define TAG_OFFSET              (TAG_MASK + 1U)
 #define BLACKLIST_BIT           ((size_t)4)
+#define FLAG_BITS               (PREV_INUSE_BIT | CURR_INUSE_BIT | BLACKLIST_BIT)
+#define SIZE_BITS               (TAG_MASK & ~FLAG_BITS)
 /* tmte edit end */
 
 /* Head value for fenceposts */
 #define FENCEPOST_HEAD          (INUSE_BITS | sizeof(size_t))
 
 static inline size_t chunk_size(void *chunk) {
-    return ((struct any_chunk *) chunk)->head & ~FLAG_BITS;
+    return ((struct any_chunk *) chunk)->head & SIZE_BITS;
 }
 
 static inline size_t get_foot(void *chunk, size_t size) {
@@ -303,7 +305,7 @@ static inline struct malloc_chunk *chunk_minus_offset(void *chunk, size_t size) 
 
 /* Ptr to next or previous physical malloc_chunk. */
 static inline struct malloc_chunk *next_chunk(void *chunk) {
-    return (struct malloc_chunk *) (((char *) chunk) + (((struct any_chunk *) chunk)->head & ~FLAG_BITS));
+    return (struct malloc_chunk *) (((char *) chunk) + (((struct any_chunk *) chunk)->head & SIZE_BITS));
 }
 
 static inline struct malloc_chunk *prev_chunk(void *chunk) {

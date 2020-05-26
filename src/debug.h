@@ -30,6 +30,7 @@ void check_malloc_state(struct malloc_state *);
 #define check_inuse_chunk(M, P)
 #define check_malloced_chunk(M, P, N)
 #define check_free_chunk(M, P)
+#define check_blacklisted_chunk(M, P)
 #define check_malloc_state(M)
 
 #endif

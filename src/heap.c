@@ -154,7 +154,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
         if(is_exhausted(p)){
             blacklist_chunk(state, p);
             check_blacklisted_chunk(state, p);
-            return;
+            goto postaction;
         }
         /* tmte edit end */
 
@@ -246,7 +246,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                 }
                 else {
                     /* tmte edit: tag computations */
-                    if(new_tag < p_tag){
+                    if(new_tag <= p_tag){
                         new_tag = p_tag + TAG_OFFSET;
                     }
                     /* tmte edit ends */

@@ -68,7 +68,7 @@ void check_inuse_chunk(struct malloc_state *state, struct malloc_chunk *chunk) {
 void check_malloced_chunk(struct malloc_state *state, void *mem, size_t size) {
     if (mem != 0) {
         struct malloc_chunk *p = mem_to_chunk(mem);
-        size_t sz = p->head & ~INUSE_BITS;
+        size_t sz = chunk_size(p);
         check_inuse_chunk(state, p);
         dl_assert((sz & CHUNK_ALIGN_MASK) == 0);
         dl_assert(sz >= MIN_CHUNK_SIZE);
