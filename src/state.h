@@ -146,6 +146,9 @@ struct malloc_state {
     MLOCK_T mutex; /* locate lock among fields that rarely change */
 #endif /* USE_LOCKS */
     struct malloc_segment segment;
+    /* tmte edit */
+    struct malloc_chunk* blacklist;
+    size_t blacklist_size;
 };
 
 static inline int is_initialized(struct malloc_state *state) {

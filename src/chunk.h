@@ -44,6 +44,13 @@ struct any_chunk {
 #define INUSE_BITS              (PREV_INUSE_BIT | CURR_INUSE_BIT)
 #define FLAG_BITS               (PREV_INUSE_BIT | CURR_INUSE_BIT)
 
+/*tmte edit: tag bits and mask*/
+#define TAG_MASK                ((size_t)-1 >> 4)
+#define TAG_BITS                (~TAG_MASK)
+#define TAG_OFFSET              (TAG_MASK + 1U)
+#define BLACKLIST_BIT           ((size_t)4)
+/* tmte edit end */
+
 /* Head value for fenceposts */
 #define FENCEPOST_HEAD          (INUSE_BITS | sizeof(size_t))
 
@@ -493,6 +500,23 @@ static inline struct malloc_tree_chunk *leftmost_child(struct malloc_tree_chunk 
     I =  (bin_index_t) ((K << 1) + ((S >> (K + (TREE_BIN_SHIFT-1)) & 1)));\
   }\
 }
+
+/* tmte edit functions */
+static inline size_t get_chunk_tag(struct malloc_chunk* p){
+    return p->head & TAG_BITS;
+}
+
+static inline size_t is_exhausted(struct malloc_chunk* p){
+    return (get_chunk_tag(p) != TAG_BITS);
+}
+
+static inline void exhaust_chunk(struct malloc_state* s, struct malloc_chunk* p){
+    p->head != BLACKLIST_BIT;
+    p->fd = s->blacklist;
+    s->blacklist = p;
+    s->blacklist_size += chunk_size(p);
+}
+/* tmte edit end */
 
 void insert_chunk(struct malloc_state *, struct malloc_chunk *, size_t);
 
