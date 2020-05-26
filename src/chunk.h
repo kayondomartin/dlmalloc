@@ -88,7 +88,7 @@ static inline void clear_prev_inuse(void *chunk) {
 
 /* Set size, prev_inuse bit, and foot */
 static inline void set_size_and_prev_inuse_of_free_chunk(void *chunk, size_t size) {
-    ((struct any_chunk *) chunk)->head = size | PREV_INUSE_BIT;
+    ((struct any_chunk *) chunk)->head = (((struct any_chunk*)chunk)->head & TAG_BITS) | size | PREV_INUSE_BIT;
     set_foot(chunk, size);
 }
 
@@ -344,14 +344,14 @@ static inline void set_inuse(struct malloc_state *state, void *chunk, size_t siz
 /* Set curr_inuse and prev_inuse of this chunk and prev_inuse of next chunk */
 static inline void set_inuse_and_prev_inuse(struct malloc_state *state, void *chunk, size_t size) {
     (void) state; // unused
-    ((struct any_chunk *) chunk)->head = size | PREV_INUSE_BIT | CURR_INUSE_BIT;
+    ((struct any_chunk *) chunk)->head = (((struct any_chunk*) chunk)->head & TAG_BITS) | size | PREV_INUSE_BIT | CURR_INUSE_BIT;
     ((struct malloc_chunk *) (((char *) chunk) + size))->head |= PREV_INUSE_BIT;
 }
 
 /* Set size, curr_inuse and prev_inuse bit of this chunk */
 static inline void set_size_and_prev_inuse_of_inuse_chunk(struct malloc_state *state, void *chunk, size_t size) {
     (void) state; // unused
-    ((struct any_chunk *) chunk)->head = size | PREV_INUSE_BIT | CURR_INUSE_BIT;
+    ((struct any_chunk *) chunk)->head = (((struct any_chunk*)chunk)->head & TAG_BITS) | size | PREV_INUSE_BIT | CURR_INUSE_BIT;
 }
 
 #else /* FOOTERS */
@@ -506,15 +506,16 @@ static inline size_t get_chunk_tag(struct malloc_chunk* p){
     return p->head & TAG_BITS;
 }
 
-static inline size_t is_exhausted(struct malloc_chunk* p){
-    return (get_chunk_tag(p) != TAG_BITS);
+static inline int is_exhausted(struct malloc_chunk* p){
+    return (get_chunk_tag(p) == TAG_BITS);
 }
 
-static inline void exhaust_chunk(struct malloc_state* s, struct malloc_chunk* p){
-    p->head != BLACKLIST_BIT;
-    p->fd = s->blacklist;
-    s->blacklist = p;
-    s->blacklist_size += chunk_size(p);
+static inline int is_usable(struct malloc_chunk* p){
+    return (p->head & BLACKLIST_BIT) == 0;
+}
+
+static inline void set_chunk_tag(struct malloc_chunk* p, size_t tag){
+    p->head &= TAG_MASK, p->head |= tag;
 }
 /* tmte edit end */
 

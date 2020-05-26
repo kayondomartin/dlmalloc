@@ -50,6 +50,11 @@ void check_mmapped_chunk(struct malloc_state *state, struct malloc_chunk *chunk)
 /* Check properties of inuse chunks */
 void check_inuse_chunk(struct malloc_state *state, struct malloc_chunk *chunk) {
     check_any_chunk(state, chunk);
+
+    /* tmte edit:  ensure chunk is not blacklisted */
+    dl_assert(is_usable(chunk))
+    /* tmte edit ends */
+
     dl_assert(is_inuse(chunk));
     dl_assert(next_prev_inuse((struct any_chunk *) chunk));
     /* If not prev_inuse and not mmapped, previous chunk has OK offset */
@@ -96,6 +101,18 @@ void check_free_chunk(struct malloc_state *state, struct malloc_chunk *chunk) {
         }
     }
 }
+
+/* tmte edit: check a black_listed chunk */
+void check_blacklisted_chunk(struct malloc_state* state, struct malloc_chunk* chunk){
+    size_t sz = chunk_size(chunk);
+    struct malloc_chunk *next = chunk_plus_offset(chunk, sz);
+    check_any_chunk(state, chunk);
+    dl_assert(is_inuse(chunk));
+    dl_assert(next_prev_inuse(chunk));
+    dl_assert (!is_mmapped(chunk));
+    dl_assert(!is_usable(chunk));
+}
+/* tmte edit ends */
 
 /* Check a tree and its subtrees.  */
 static void check_tree(struct malloc_state *state, struct malloc_tree_chunk *chunk) {

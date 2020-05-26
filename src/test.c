@@ -31,7 +31,7 @@ void test_dl() {
 #endif
 
     void *x = dl_malloc(8);
-    dl_printf("p1=0x%016lX\n", (uintptr_t) p1);
+    dl_printf("x=0x%016lX\n", (uintptr_t) x);
     dl_free(x);
 
     dl_free(p2);

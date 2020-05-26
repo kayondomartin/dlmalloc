@@ -179,6 +179,15 @@ static inline bin_map_t clear_small_map(struct malloc_state *state, bin_map_t in
     return state->small_map &= ~index_to_bit(index);
 }
 
+/* tmte edit operations */
+static inline void blacklist_chunk(struct malloc_state* s, struct malloc_chunk* p){
+    p->head |= BLACKLIST_BIT;
+    p->fd = s->blacklist;
+    s->blacklist = p;
+    s->blacklist_size += chunk_size(p);
+}
+/* tmte edit end */
+
 static inline int small_map_is_marked(struct malloc_state *state, bin_index_t index) {
     return state->small_map & index_to_bit(index);
 }

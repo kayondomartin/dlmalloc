@@ -17,6 +17,10 @@ void check_malloced_chunk(struct malloc_state *, void *, size_t);
 
 void check_free_chunk(struct malloc_state *, struct malloc_chunk *);
 
+/* tmte edit: check blacklisted chunk declaration */
+void check_blacklisted_chunk(struct malloc_state*, struct malloc_chunk*);
+/* tmte edit ends */
+
 void check_malloc_state(struct malloc_state *);
 
 #else
