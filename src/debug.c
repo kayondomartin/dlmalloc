@@ -22,7 +22,7 @@ static void check_any_chunk(struct malloc_state *state, struct malloc_chunk *chu
 /* Check properties of top chunk */
 void check_top_chunk(struct malloc_state *state, struct malloc_chunk *chunk) {
     struct malloc_segment *sp = segment_holding(state, (char *) chunk);
-    size_t sz = chunk->head & ~INUSE_BITS; /* third-lowest bit can be set! */
+    size_t sz = chunk_size(chunk); /* third-lowest bit can be set! */
     dl_assert(sp != 0);
     dl_assert((is_aligned(chunk_to_mem(chunk))) || (chunk->head == FENCEPOST_HEAD));
     dl_assert(ok_address(state, chunk));
