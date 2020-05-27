@@ -27,7 +27,7 @@ if (CMAKE_C_COMPILER_ID MATCHES "AppleClang|Clang|GNU")
 endif ()
 
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
-    list(APPEND dlalloc_defines DEBUG=1)
+    list(APPEND dlalloc_defines DEBUG)
 endif ()
 
 if (LOCKS MATCHES "ON")
