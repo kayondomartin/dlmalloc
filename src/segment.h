@@ -63,6 +63,9 @@ struct malloc_segment {
     size_t size;             /* allocated size */
     struct malloc_segment *next;   /* ptr to next segment */
     flag_t flags;           /* mmap and extern flag */
+
+    /* tmte edit: include tagging records */
+    size_t blacklisted_size;
 };
 
 static inline int is_mmapped_segment(struct malloc_segment *segment) {

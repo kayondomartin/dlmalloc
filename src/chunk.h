@@ -7,6 +7,7 @@
 
 #define CHUNK_ALIGN_MASK    (MALLOC_ALIGNMENT - ((size_t) 1))
 
+
 /* True if address a has acceptable alignment. */
 static inline int is_aligned(void *p) {
     return ((size_t) p & CHUNK_ALIGN_MASK) == 0;
@@ -503,7 +504,17 @@ static inline struct malloc_tree_chunk *leftmost_child(struct malloc_tree_chunk 
   }\
 }
 
-/* tmte edit functions */
+/* tmte edit: ops and functions */
+const int TAG_SHIFT = sizeof(size_t)*7; //ugly code
+
+static inline uint8_t tag_to_int(size_t tag){
+    return tag >> TAG_SHIFT;
+}
+
+static inline size_t int_to_tag(uint8_t int_tag){
+    return int_tag << TAG_SHIFT;
+}
+
 static inline size_t get_chunk_tag(struct malloc_chunk* p){
     return p->head & TAG_BITS;
 }

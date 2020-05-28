@@ -7,6 +7,7 @@
 #define SOFTBOUNDCETS_MMAP_FLAGS (MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE)
 #ifndef RISCV
 extern char* __mte_tag_mem;
+
 #endif
 
 #ifdef RISCV
@@ -32,7 +33,7 @@ static inline void mte_init(void){
   __mte_tag_mem = (char*) mmap(0, 0x0000100000000000 /* 8TB */, PROT_READ | PROT_WRITE, SOFTBOUNDCETS_MMAP_FLAGS, -1, 0);
 }
 
-static inline int mte_color_tag(char *base, long size, int tag_num) {
+static inline uint8_t mte_color_tag(char *base, long size, uint8_t tag_num) {
   long length  = (long)size / 2;//unit of size : byte, 4bit tag per 16 bit
 #ifdef RISCV
   char *cur = (unsigned)base & 0xFFFFFFF0;
@@ -51,7 +52,7 @@ static inline int mte_color_tag(char *base, long size, int tag_num) {
   return tag_num;
 }
 
-static inline long mte_load_tag(char* base, long size){
+static inline uint8_t mte_load_tag(char* base, long size){
 #ifdef RISCV
   int base_tag = load_tag(base);
 #else

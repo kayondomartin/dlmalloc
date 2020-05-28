@@ -147,8 +147,6 @@ struct malloc_state {
 #endif /* USE_LOCKS */
     struct malloc_segment segment;
     /* tmte edit */
-    struct malloc_chunk* blacklist;
-    size_t blacklist_size;
     size_t top_colored_size;
 };
 

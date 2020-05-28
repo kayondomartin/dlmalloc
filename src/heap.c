@@ -286,7 +286,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
 
                     set_free_with_prev_inuse(p, psize, next);
                     set_chunk_tag((struct any_chunk*)p, new_tag);//tmte edit: set chunk_tag
-                    mte_color_tag((char*)p-state->least_addr, psize, new_tag);
+                    mte_color_tag((char*)p-state->least_addr, psize, new_tag >> 8);
                 }
 
                 if (is_small(psize)) {
