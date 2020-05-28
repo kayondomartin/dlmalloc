@@ -13,6 +13,8 @@
 #include "lock.h"
 #include "os.h"
 
+extern char* __mte_tag_mem;
+
 dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
     /*
        Basic algorithm:
@@ -75,6 +77,11 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
                     else {
                         set_size_and_prev_inuse_of_inuse_chunk(state, p, nb);
                         struct malloc_chunk *r = chunk_plus_offset(p, nb);
+
+                        /* tmte edit: give r p's tag */
+                        set_chunk_tag(r, get_chunk_tag(p));
+                        /* tmte edit ends */
+
                         set_size_and_prev_inuse_of_free_chunk(r, rsize);
                         replace_dv(state, r, rsize);
                     }
@@ -105,6 +112,11 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
             if (rsize >= MIN_CHUNK_SIZE) { /* split dv */
                 struct malloc_chunk *r = state->dv = chunk_plus_offset(p, nb);
                 state->dv_size = rsize;
+
+                /* tmte edit: give r p's tag */
+                set_chunk_tag(r, get_chunk_tag(p));
+                /* tmte edit end */
+
                 set_size_and_prev_inuse_of_free_chunk(r, rsize);
                 set_size_and_prev_inuse_of_inuse_chunk(state, p, nb);
             }
@@ -122,8 +134,20 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
             size_t rsize = state->top_size -= nb;
             struct malloc_chunk *p = state->top;
             struct malloc_chunk *r = state->top = chunk_plus_offset(p, nb);
-            r->head = rsize | PREV_INUSE_BIT | get_chunk_tag((struct any_chunk*)r); //tmte edit: retain chunk tag
+            size_t tag = get_chunk_tag(p);
+            /*r->head = rsize | PREV_INUSE_BIT | get_chunk_tag((struct any_chunk*)r); //tmte edit: retain chunk tag */
             set_size_and_prev_inuse_of_inuse_chunk(state, p, nb);
+
+            /* tmte edit: tag ops */
+            if(nb > state->top_colored_size){
+                //color the whole chunk before release
+                mte_color_tag((char*)p-state->least_addr, nb, tag);
+                /*tmte edit: r doesn't need a tag, it's completely new, so tag=0000 */
+                r->head = rsize | PREV_INUSE_BIT; 
+            }else{
+                /*tmte edit: r needs to retain it's tag*/
+                r->head = rsize | PREV_INUSE_BIT | mte_load_tag(((char*)r-state->least_addr), (state->top_colored_size - nb)); 
+            }
             mem = chunk_to_mem(p);
             check_top_chunk(state, state->top);
             check_malloced_chunk(state, mem, nb);

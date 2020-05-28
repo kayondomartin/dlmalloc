@@ -9,11 +9,11 @@
 #define TAG_BIT ~TAG_MASK
 #define TAG_OFFSET TAG_MASK + 1U
 #ifndef RISCV
-char* __mte_tag_mem = NULL;
+extern char* __mte_tag_mem;
 #endif
 
 #ifdef RISCV
-inline int load_tag(void *addr) {
+static inline int load_tag(void *addr) {
   int rv = 32;
   asm volatile ("ltag %0, 0(%1)"
                 :"=r"(rv)
@@ -23,7 +23,7 @@ inline int load_tag(void *addr) {
 }
 
 
-inline void store_tag(void *addr, int tag) {
+static inline void store_tag(void *addr, int tag) {
   asm volatile ("stag %0, 0(%1)"
                 :
                 :"r"(tag), "r"(addr)
@@ -31,11 +31,11 @@ inline void store_tag(void *addr, int tag) {
 }
 #endif
 
-void mte_init(void){
+static inline void mte_init(void){
   __mte_tag_mem = (char*) mmap(0, 0x0000100000000000 /* 8TB */, PROT_READ | PROT_WRITE, SOFTBOUNDCETS_MMAP_FLAGS, -1, 0);
 }
 
-int mte_color_tag(char *base, long size, int tag_num) {
+static inline int mte_color_tag(char *base, long size, int tag_num) {
   long length  = (long)size / 2;//unit of size : byte, 4bit tag per 16 bit
 #ifdef RISCV
   char *cur = (unsigned)base & 0xFFFFFFF0;
@@ -54,7 +54,7 @@ int mte_color_tag(char *base, long size, int tag_num) {
   return tag_num;
 }
 
- long mte_load_tag(char* base, long size){
+static inline long mte_load_tag(char* base, long size){
 #ifdef RISCV
   int base_tag = load_tag(base);
 #else

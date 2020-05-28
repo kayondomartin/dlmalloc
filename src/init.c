@@ -6,6 +6,10 @@
 #include "init.h"
 #include "lock.h"
 
+/* tmte edit: tag memory */
+char* __mte_tag_mem = NULL;
+/* tmte edit end */
+
 struct malloc_params params;
 
 /* The global malloc_state used for all non-"dl_heap_t" calls */

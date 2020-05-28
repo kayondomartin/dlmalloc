@@ -149,6 +149,7 @@ struct malloc_state {
     /* tmte edit */
     struct malloc_chunk* blacklist;
     size_t blacklist_size;
+    size_t top_colored_size;
 };
 
 static inline int is_initialized(struct malloc_state *state) {

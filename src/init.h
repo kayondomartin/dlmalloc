@@ -2,6 +2,7 @@
 #define MALLOC_INIT_H
 
 #include "state.h"
+#include "tmte.h"
 
 /*
   malloc_params holds global properties, including those that can be
@@ -29,6 +30,7 @@ int change_param(int param_number, int value);
 static inline void ensure_initialization() {
     if (params.magic == 0) {
         init_params();
+        mte_init();
     }
 }
 
