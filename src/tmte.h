@@ -5,9 +5,6 @@
 #include <stddef.h>
 #include <sys/mman.h>
 #define SOFTBOUNDCETS_MMAP_FLAGS (MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE)
-#define TAG_MASK ((size_t)-1U>>4)
-#define TAG_BIT ~TAG_MASK
-#define TAG_OFFSET TAG_MASK + 1U
 #ifndef RISCV
 extern char* __mte_tag_mem;
 #endif

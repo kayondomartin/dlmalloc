@@ -212,8 +212,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                         else if ((next->head & INUSE_BITS) == INUSE_BITS) {
                             state->dv_size = psize;
                             set_free_with_prev_inuse(p, psize, next);
-                            set_chunk_tag((struct any_chunk*)p, new_tag); //tmte edit: give p new tag
-                            set_chunk_tag((struct any_chunk*)chunk_plus_offset(p, prev_size), new_tag); //tmte edit: give original p a new tag
+                            mte_color_tag((char*)p-state->least_addr, psize, new_tag); //tmte edit: color chunks p and prev with tag
                             goto postaction;
                         }
                     }
@@ -238,15 +237,16 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                         }else{
                             new_tag = next_tag;
                         }
-                    }   
-                    set_chunk_tag(next_chunk(p), new_tag);               
+                    }           
                     /* tmte edit ends */
 
 
                     if (next == state->top) {
                         size_t tsize = state->top_size += psize;
+                        size_t tcsize = state->top_colored_size += psize;
                         state->top = p;
                         p->head = tsize | PREV_INUSE_BIT | new_tag; //tmte edit: include new tag
+                        mte_color_tag((char*)p-state->least_addr, tcsize, new_tag); //tmte edit: color whole block from p to next with new tag
                         if (p == state->dv) {
                             state->dv = 0;
                             state->dv_size = 0;
@@ -261,6 +261,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                         state->dv = p;
                         set_size_and_prev_inuse_of_free_chunk(p, dsize);
                         set_chunk_tag(p, new_tag); //tmte edit: set new chunk_tag
+                        mte_color_tag((char*)p-state->least_addr, dsize, new_tag); //tmte edit: color whole block from p to next with new tag
                         goto postaction;
                     }
                     else {
@@ -269,6 +270,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                         unlink_chunk(state, next, nsize);
                         set_size_and_prev_inuse_of_free_chunk(p, psize);
                         set_chunk_tag((struct any_chunk*)p, new_tag);
+                        mte_color_tag((char*)p-state->least_addr, psize, new_tag);
                         if (p == state->dv) {
                             state->dv_size = psize;
                             goto postaction;
@@ -284,6 +286,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
 
                     set_free_with_prev_inuse(p, psize, next);
                     set_chunk_tag((struct any_chunk*)p, new_tag);//tmte edit: set chunk_tag
+                    mte_color_tag((char*)p-state->least_addr, psize, new_tag);
                 }
 
                 if (is_small(psize)) {
