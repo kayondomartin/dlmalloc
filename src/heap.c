@@ -136,20 +136,13 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
             struct malloc_chunk *p = state->top;
             struct malloc_chunk *r = state->top = chunk_plus_offset(p, nb);
             size_t tag = get_chunk_tag(p);
-            /*r->head = rsize | PREV_INUSE_BIT | get_chunk_tag((struct any_chunk*)r); //tmte edit: retain chunk tag */
+            r->head = rsize | PREV_INUSE_BIT | (nb < tcsize)? tag: 0; //tmte edit: retain chunk tag */
             set_size_and_prev_inuse_of_inuse_chunk(state, p, nb);
 
             /* tmte edit: tag ops */
-            if(nb > state->top_colored_size){
+            if(nb > tcsize){
                 //color the whole chunk before release
                 mte_color_tag((p+tcsize), (nb-tcsize), tag_to_int(tag));
-                /*tmte edit: r doesn't need a tag, it's completely new, so tag=0000 */
-                r->head = rsize | PREV_INUSE_BIT; 
-            }else if(nb < tcsize){
-                /*tmte edit: r needs to retain it's tag*/
-                r->head = rsize | PREV_INUSE_BIT | tag; 
-            }else{
-                r->head = rsize | PREV_INUSE_BIT;
             }
             /* tmte edit ends */
             mem = chunk_to_mem(p);
