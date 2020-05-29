@@ -181,9 +181,7 @@ static inline bin_map_t clear_small_map(struct malloc_state *state, bin_map_t in
 /* tmte edit operations */
 static inline void blacklist_chunk(struct malloc_state* s, struct malloc_chunk* p){
     p->head |= BLACKLIST_BIT;
-    p->fd = s->blacklist;
-    s->blacklist = p;
-    s->blacklist_size += chunk_size(p);
+    s-> top_colored_size += chunk_size(p);
 }
 /* tmte edit end */
 

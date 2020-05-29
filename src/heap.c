@@ -132,6 +132,7 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
         }
         else if (nb < state->top_size) { /* Split top */
             size_t rsize = state->top_size -= nb;
+            size_t tcsize = state->top_colored_size;
             struct malloc_chunk *p = state->top;
             struct malloc_chunk *r = state->top = chunk_plus_offset(p, nb);
             size_t tag = get_chunk_tag(p);
@@ -141,13 +142,16 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
             /* tmte edit: tag ops */
             if(nb > state->top_colored_size){
                 //color the whole chunk before release
-                mte_color_tag((char*)p-state->least_addr, nb, tag);
+                mte_color_tag((p+tcsize), (nb-tcsize), tag_to_int(tag));
                 /*tmte edit: r doesn't need a tag, it's completely new, so tag=0000 */
                 r->head = rsize | PREV_INUSE_BIT; 
-            }else{
+            }else if(nb < tcsize){
                 /*tmte edit: r needs to retain it's tag*/
-                r->head = rsize | PREV_INUSE_BIT | mte_load_tag(((char*)r-state->least_addr), (state->top_colored_size - nb)); 
+                r->head = rsize | PREV_INUSE_BIT | tag; 
+            }else{
+                r->head = rsize | PREV_INUSE_BIT;
             }
+            /* tmte edit ends */
             mem = chunk_to_mem(p);
             check_top_chunk(state, state->top);
             check_malloced_chunk(state, mem, nb);
@@ -183,8 +187,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
         /* tmte edit end */
 
         /* tmte edit: tag ops */
-        size_t p_tag = get_chunk_tag((struct any_chunk*)p);
-        size_t new_tag = 0;
+        size_t new_tag = get_chunk_tag((struct any_chunk*)p) + TAG_OFFSET;
         /* tmte edit ends */
 
         if (likely(ok_address(state, p) && ok_inuse(p))) {
@@ -201,9 +204,9 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                 }
                 else {
                     struct malloc_chunk *prev = chunk_minus_offset(p, prev_size);
-                    size_t prev_tag = get_chunk_tag((struct any_chunk*)prev); //tmte edit: get prev tag
-                    new_tag = prev_tag > p_tag? prev_tag: p_tag + TAG_OFFSET; //tmte edit: compute new tag 1
+                    new_tag = max(new_tag,get_chunk_tag((struct any_chunk*)prev)); //tmte edit: get prev tag
                     psize += prev_size;
+                    set_chunk_tag(p, new_tag);
                     p = prev;
                     if (likely(ok_address(state, prev))) { /* consolidate backward */
                         if (p != state->dv) {
@@ -212,7 +215,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                         else if ((next->head & INUSE_BITS) == INUSE_BITS) {
                             state->dv_size = psize;
                             set_free_with_prev_inuse(p, psize, next);
-                            mte_color_tag((char*)p-state->least_addr, psize, new_tag); //tmte edit: color chunks p and prev with tag
+                            mte_color_tag((char*)p, psize, tag_to_int(new_tag)); //tmte edit: color chunks p and prev with tag
                             goto postaction;
                         }
                     }
@@ -226,27 +229,23 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                 if (!curr_inuse(next)) {  /* consolidate forward */
 
                     /* tmte edit: tag computation 2*/
-                    size_t next_tag = get_chunk_tag((struct any_chunk*)next);
-                    if(p_tag < new_tag){
-                        if(next_tag > new_tag){
-                            new_tag = next_tag;
-                        }
-                    }else{
-                        if(next_tag <= p_tag){
-                            new_tag = p_tag + TAG_OFFSET;
+                    size_t next_tag = get_chunk_tag((struct any_chunk*)next);  
+                    if(next_tag > new_tag){
+                        new_tag = next_tag;
+                        if(!curr_inuse(p)){
+                            set_chunk_tag(next_chunk(p), new_tag);
                         }else{
-                            new_tag = next_tag;
+                            set_chunk_tag(p, new_tag);
                         }
-                    }           
+                    }
                     /* tmte edit ends */
-
 
                     if (next == state->top) {
                         size_t tsize = state->top_size += psize;
                         size_t tcsize = state->top_colored_size += psize;
                         state->top = p;
                         p->head = tsize | PREV_INUSE_BIT | new_tag; //tmte edit: include new tag
-                        mte_color_tag((char*)p-state->least_addr, tcsize, new_tag); //tmte edit: color whole block from p to next with new tag
+                        mte_color_tag((char*)p, tcsize, tag_to_int(new_tag)); //tmte edit: color whole block from p to next with new tag
                         if (p == state->dv) {
                             state->dv = 0;
                             state->dv_size = 0;
@@ -261,7 +260,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                         state->dv = p;
                         set_size_and_prev_inuse_of_free_chunk(p, dsize);
                         set_chunk_tag(p, new_tag); //tmte edit: set new chunk_tag
-                        mte_color_tag((char*)p-state->least_addr, dsize, new_tag); //tmte edit: color whole block from p to next with new tag
+                        mte_color_tag((char*)p, dsize, tag_to_int(new_tag)); //tmte edit: color whole block from p to next with new tag
                         goto postaction;
                     }
                     else {
@@ -270,7 +269,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                         unlink_chunk(state, next, nsize);
                         set_size_and_prev_inuse_of_free_chunk(p, psize);
                         set_chunk_tag((struct any_chunk*)p, new_tag);
-                        mte_color_tag((char*)p-state->least_addr, psize, new_tag);
+                        mte_color_tag(p, psize, tag_to_int(new_tag));
                         if (p == state->dv) {
                             state->dv_size = psize;
                             goto postaction;
@@ -278,15 +277,9 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                     }
                 }
                 else {
-                    /* tmte edit: tag computations 3*/
-                    if(new_tag <= p_tag){
-                        new_tag = p_tag + TAG_OFFSET;
-                    }
-                    /* tmte edit ends */
-
                     set_free_with_prev_inuse(p, psize, next);
                     set_chunk_tag((struct any_chunk*)p, new_tag);//tmte edit: set chunk_tag
-                    mte_color_tag((char*)p-state->least_addr, psize, new_tag >> 8);
+                    mte_color_tag(p, psize, tag_to_int(new_tag));
                 }
 
                 if (is_small(psize)) {

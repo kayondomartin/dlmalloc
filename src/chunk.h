@@ -78,7 +78,7 @@ static inline int prev_inuse(void *chunk) {
 }
 
 static inline int is_inuse(void *chunk) {
-    return (((struct any_chunk *) chunk)->head & INUSE_BITS) != PREV_INUSE_BIT;
+    return (((struct any_chunk *) chunk)->head & FLAG_BITS) != PREV_INUSE_BIT;
 }
 
 static inline int is_mmapped(void *chunk) {
@@ -505,13 +505,17 @@ static inline struct malloc_tree_chunk *leftmost_child(struct malloc_tree_chunk 
 }
 
 /* tmte edit: ops and functions */
-const int TAG_SHIFT = sizeof(size_t)*7; //ugly code
+static const int TAG_SHIFT = (sizeof(size_t)-1) << 3; //ugly code
 
-static inline uint8_t tag_to_int(size_t tag){
+static inline size_t max(size_t x, size_t y){
+    return x > y? x: y;
+}
+
+static inline u_int8_t tag_to_int(size_t tag){
     return tag >> TAG_SHIFT;
 }
 
-static inline size_t int_to_tag(uint8_t int_tag){
+static inline size_t int_to_tag(u_int8_t int_tag){
     return int_tag << TAG_SHIFT;
 }
 
