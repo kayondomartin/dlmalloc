@@ -23,7 +23,7 @@ void test_dl() {
     dl_printf("TAG_BITS=0x%016lX\n", (uintptr_t) TAG_BITS);
     dl_printf("TAG_OFFSET=0x%016lX\n", (uintptr_t) TAG_OFFSET);
     dl_printf("TAG_MASK=0x%016lX\n", (uintptr_t) TAG_MASK);
-    dl_printf("Size of size_t=%d", sizeof(size_t));
+    dl_printf("Size of size_t=%ld\n", sizeof(size_t));
     dl_printf("\n--------------Test 1------------------- \n");
     void *p1 = dl_malloc(8);
     u_int64_t p1_tag = get_chunk_tag(mem_to_chunk(p1));
