@@ -38,56 +38,68 @@ void test_dl() {
     void *x = dl_malloc(8);
     void *y = dl_malloc(300);
     //Test 1
-    u_int64_t x_tag = get_chunk_tag(mem_to_chunk(x));
-    u_int64_t y_tag = get_chunk_tag(mem_to_chunk(y));
+    u_int64_t x_tag = get_chunk_tag(mem_to_chunk(x)); 
+    dl_free(x); 
+    p1 = dl_malloc(8);
+    u_int64_t y_tag = get_chunk_tag(mem_to_chunk(y)); 
+    dl_free(y); 
+    p2 = dl_malloc(300);
     dl_assert((x == p1 && x_tag > p1_tag));
     dl_assert((y == p2 && y_tag > p2_tag));
     dl_printf("test 1: Chunk Reuse, distinct tags: PASSED\n");
-    dl_free(x);
-    dl_free(y);
-
     dl_free(p3);
-
     dl_printf("\n------------Test 2----------------\n");
-    for(int i=0; i<20; ++i){
+    p3 = dl_malloc(8);
+    dl_free(p3);
+    for(int i=0; i<16; ++i){
         x = dl_malloc(8);
         dl_free(x);
     }
+    x = dl_malloc(8);
+    size_t p3_tag = get_chunk_tag(mem_to_chunk(p3));
     x_tag = get_chunk_tag(mem_to_chunk(x));
-    p1_tag = get_chunk_tag(mem_to_chunk(p1));
-
-    for(int i=0; i<15; ++i){
+    void *p4 = dl_malloc(300);
+    dl_free(p4);
+    for(int i=0; i<16; ++i){
         y = dl_malloc(300);
         dl_free(y);
     }
+    size_t p4_tag = get_chunk_tag(mem_to_chunk(p4));
     y_tag = get_chunk_tag(mem_to_chunk(y));
-    p2_tag = get_chunk_tag(mem_to_chunk(p2));
+
 
     //Test 2
-    dl_assert((x != p1 && x_tag < p1_tag && p1_tag == TAG_BITS));
-    dl_assert((y != p2 && y_tag < p2_tag && p2_tag == TAG_BITS));
+    dl_assert((x != p3 && x_tag < p3_tag && p3_tag == TAG_BITS));
+    dl_assert((y != p4 && y_tag < p4_tag && p4_tag == TAG_BITS));
     dl_printf("test 2: Tag exhaustion, chunk Retirement: PASSED\n");
+    dl_free(x);
+    p3 = dl_malloc(8);
+    p4 = dl_malloc(300);
 
     dl_printf("\n-------------Test 3 ----------------\n");
-    p2 = dl_malloc(257);
-    y = dl_malloc(20);
-    p2_tag = get_chunk_tag(mem_to_chunk(p2));
-    y_tag = get_chunk_tag(mem_to_chunk(y));
-    p1 = dl_malloc(100);
-    dl_free(p1);
-    x = dl_malloc(50);
-    p1 = dl_malloc(20);
-    p1_tag = get_chunk_tag(mem_to_chunk(p1));
-    x_tag = get_chunk_tag(mem_to_chunk(x));
-    dl_free(p1);
-    dl_free(x);
-    dl_free(y);
-    dl_free(p2);
+    void* p5;
+    for(int i=0; i<3; ++i){
+        p5 = dl_malloc(500);
+        dl_free(p5);
+    }
+    p5 = dl_malloc(500);
+    void* p6;
+    for(int i=0; i<3; ++i){
+        p6 = dl_malloc(500);
+        dl_free(p6);
+    }
+    p6 = dl_malloc(500);
+    dl_free(p5);
+    size_t p5_tag = get_chunk_tag(mem_to_chunk(p5));
 
-    dl_printf("long size: %d", sizeof(long));
-    //Test 3
-    dl_assert(p2_tag == y_tag);
-    dl_assert(p1_tag == x_tag);
+    x = dl_malloc(20);
+    y = dl_malloc(300);
+
+    x_tag = get_chunk_tag(mem_to_chunk(x));
+    y_tag = get_chunk_tag(mem_to_chunk(y));
+
+    dl_assert(((p5_tag == y_tag) && (x_tag == p5_tag)));
+    dl_assert(p5 == x);
     dl_printf("test 3: Chunk reuse, bigger free chunk chop: PASSED\n");
 
     dl_printf("\ninspect all\n");
