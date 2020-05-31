@@ -24,7 +24,7 @@ void test_dl() {
     dl_printf("TAG_OFFSET=0x%016lX\n", (uintptr_t) TAG_OFFSET);
     dl_printf("TAG_MASK=0x%016lX\n", (uintptr_t) TAG_MASK);
     dl_printf("Size of size_t=%ld\n", sizeof(size_t));
-    dl_printf("\n--------------Test 1------------------- \n");
+    dl_printf("\n-------------Test 1------------------- \n");
     void *p1 = dl_malloc(8);
     u_int64_t p1_tag = get_chunk_tag(mem_to_chunk(p1));
     void *p2 = dl_malloc(300);
@@ -48,7 +48,7 @@ void test_dl() {
     dl_assert((y == p2 && y_tag > p2_tag));
     dl_printf("test 1: Chunk Reuse, distinct tags: PASSED\n");
     dl_free(p3);
-    dl_printf("\n------------Test 2----------------\n");
+    dl_printf("\n-------------Test 2----------------\n");
     p3 = dl_malloc(8);
     dl_free(p3);
     for(int i=0; i<16; ++i){
@@ -101,6 +101,26 @@ void test_dl() {
     dl_assert(((p5_tag == y_tag) && (x_tag == p5_tag)));
     dl_assert(p5 == x);
     dl_printf("test 3: Chunk reuse, bigger free chunk chop: PASSED\n");
+
+    //Free all, start anew.
+    dl_free(x);
+    dl_free(y);
+    dl_free(p1);
+    dl_free(p2);
+    dl_free(p3);
+    dl_free(p4);
+    dl_free(p6);
+    dl_printf("\n-------------Test 4 ----------------\n");
+
+    p1 = dl_malloc(60);
+    p2 = dl_malloc(130);
+    p3 = dl_malloc(450);
+
+    p1_tag = get_chunk_tag(mem_to_chunk(p1));
+    p2_tag = get_chunk_tag(mem_to_chunk(p2));
+    p3_tag = get_chunk_tag(mem_to_chunk(p3));
+    dl_assert((p1_tag != 0 && p2_tag != 0 && p3_tag !=0));
+    dl_printf("test 4: Arbitrary chunk alloc, check tag coloring: PASSED\n");
 
     dl_printf("\ninspect all\n");
     dl_malloc_inspect_all(&inspector, 0);
