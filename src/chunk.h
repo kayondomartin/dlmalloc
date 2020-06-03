@@ -4,6 +4,7 @@
 #include <sys/types.h>
 
 #include "config.h"
+#include "tmte.h"
 
 #define CHUNK_ALIGN_MASK    (MALLOC_ALIGNMENT - ((size_t) 1))
 

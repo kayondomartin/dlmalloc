@@ -254,8 +254,9 @@ void unlink_large_chunk(struct malloc_state *state, struct malloc_tree_chunk *ch
 /* Consolidate and bin a chunk. Differs from exported versions
    of free mainly in that the chunk need not be marked as inuse.
 */
-void dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size_t size) {
+void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size_t size) {
     struct malloc_chunk *next = chunk_plus_offset(chunk, size);
+    size_t new_tag = get_chunk_tag(chunk) + TAG_OFFSET; //tmte edit
     if (!prev_inuse(chunk)) {
         size_t prev_size = chunk->prev_foot;
         if (is_mmapped(chunk)) {
@@ -266,13 +267,25 @@ void dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size_
             return;
         }
         struct malloc_chunk *prev = chunk_minus_offset(chunk, prev_size);
-        size += prev_size;
-        chunk = prev;
+        size_t prev_tag = get_chunk_tag(prev);
+        new_tag = max(new_tag, get_chunk_tag(prev));
         if (likely(ok_address(state, prev))) { /* consolidate backward */
             if (chunk != state->dv) {
-                unlink_chunk(state, chunk, prev_size);
+                unlink_chunk(state, prev, prev_size);
+                size += prev_size;
+                chunk = prev;
             }
             else if ((next->head & INUSE_BITS) == INUSE_BITS) {
+
+                if(new_tag == prev_tag){//need only clr chunk t dispose
+                    mte_color_tag(chunk, size, tag_to_int(new_tag));
+                }else{
+                    mte_color_tag(prev, size+prev_size, tag_to_int(new_tag));
+                    set_chunk_tag(prev,new_tag);
+                }
+                set_chunk_tag(chunk, new_tag);
+                size += prev_size;
+                chunk = prev;
                 state->dv_size = size;
                 set_free_with_prev_inuse(chunk, size, next);
                 return;
