@@ -176,7 +176,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
         check_inuse_chunk(state, p);
 
         /* tmte edit: blacklist chunk if exhausted */
-        if(is_exhausted((struct any_chunk*)p)){
+        if(is_exhausted(p)){
             blacklist_chunk(state, p);
             check_blacklisted_chunk(state, p);
             goto postaction;
@@ -184,7 +184,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
         /* tmte edit end */
 
         /* tmte edit: tag ops */
-        size_t new_tag = get_chunk_tag((struct any_chunk*)p) + TAG_OFFSET;
+        size_t new_tag = get_chunk_tag(p) + TAG_OFFSET;
         /* tmte edit ends */
 
         if (likely(ok_address(state, p) && ok_inuse(p))) {
@@ -201,9 +201,8 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                 }
                 else {
                     struct malloc_chunk *prev = chunk_minus_offset(p, prev_size);
-                    new_tag = max(new_tag,get_chunk_tag((struct any_chunk*)prev)); //tmte edit: get prev tag
+                    new_tag = max(new_tag,get_chunk_tag(prev)); //tmte edit: get prev tag
                     psize += prev_size;
-                    set_chunk_tag(p, new_tag);
                     p = prev;
                     if (likely(ok_address(state, prev))) { /* consolidate backward */
                         if (p != state->dv) {
@@ -274,9 +273,12 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                     }
                 }
                 else {
-                    set_free_with_prev_inuse(p, psize, next);
-                    set_chunk_tag((struct any_chunk*)p, new_tag);//tmte edit: set chunk_tag
+                    if(!curr_inuse(p)){
+                        set_chunk_tag(next_chunk(p), new_tag);
+                    }
+                    set_chunk_tag(p, new_tag);//tmte edit: set chunk_tag
                     mte_color_tag(p, psize, tag_to_int(new_tag));
+                    set_free_with_prev_inuse(p, psize, next);
                 }
 
                 if (is_small(psize)) {

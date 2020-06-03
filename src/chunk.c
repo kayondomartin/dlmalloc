@@ -255,6 +255,12 @@ void unlink_large_chunk(struct malloc_state *state, struct malloc_tree_chunk *ch
    of free mainly in that the chunk need not be marked as inuse.
 */
 void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size_t size) {
+
+    if(is_exhausted(chunk)){
+        blacklist_chunk(state, chunk);
+        check_blacklisted_chunk(state, chunk);
+        return;
+    }
     struct malloc_chunk *next = chunk_plus_offset(chunk, size);
     size_t new_tag = get_chunk_tag(chunk) + TAG_OFFSET; //tmte edit
     if (!prev_inuse(chunk)) {
@@ -298,10 +304,25 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
     }
     if (likely(ok_address(state, next))) {
         if (!curr_inuse(next)) {  /* consolidate forward */
+
+            size_t next_tag = get_chunk_tag(next);
+            if(next_tag > new_tag){
+                new_tag = next_tag;
+                if(!curr_inuse(chunk)){
+                    set_chunk_tag(next_chunk(chunk), new_tag);
+                }else{
+                    set_chunk_tag(chunk, new_tag);
+                }
+            }else if(new_tag != next_tag){
+                set_chunk_tag(next, new_tag);
+            }
+
             if (next == state->top) {
                 size_t tsize = state->top_size += size;
+                size_t tcsize = state->top_colored_size += size;
                 state->top = chunk;
-                chunk->head = tsize | PREV_INUSE_BIT;
+                chunk->head = tsize | PREV_INUSE_BIT | new_tag; // tmte edit
+                mte_color_tag(chunk, tcsize, tag_to_int(new_tag)); //tmte edit
                 if (chunk == state->dv) {
                     state->dv = 0;
                     state->dv_size = 0;
@@ -311,6 +332,8 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
             else if (next == state->dv) {
                 size_t dsize = state->dv_size += size;
                 state->dv = chunk;
+                set_chunk_tag(chunk, new_tag);
+                mte_color_tag(chunk, dsize, tag_to_int(new_tag));
                 set_size_and_prev_inuse_of_free_chunk(chunk, dsize);
                 return;
             }
@@ -318,6 +341,8 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
                 size_t nsize = chunk_size(next);
                 size += nsize;
                 unlink_chunk(state, next, nsize);
+                set_chunk_tag(chunk, new_tag);
+                mte_color_tag(chunk, size, tag_to_int(new_tag));
                 set_size_and_prev_inuse_of_free_chunk(chunk, size);
                 if (chunk == state->dv) {
                     state->dv_size = size;
@@ -326,6 +351,11 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
             }
         }
         else {
+            if(!curr_inuse(chunk)){
+                set_chunk_tag(next_chunk(chunk), new_tag);
+            }
+            set_chunk_tag(chunk, new_tag);
+            mte_color_tag(chunk, size, tag_to_int(new_tag));
             set_free_with_prev_inuse(chunk, size, next);
         }
         insert_chunk(state, chunk, size);
