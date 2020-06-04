@@ -129,14 +129,17 @@ void test_dl() {
     }
     dl_free(p4);
 
-    p5 = dl_malloc(1900);
+    int size = 5400;
+    p5 = dl_malloc(size);
     for(int i=0; i<15; i++){
         dl_free(p5);
-        p5 = dl_malloc(1900);
+        p5 = dl_malloc(size);
     }
     dl_free(p5);
 
 
+    p6 = dl_malloc(200);
+    dl_free(p6);
     dl_printf("\ninspect all\n");
     dl_malloc_inspect_all(&inspector, 0);
     dl_printf("\n\n----------End of Tests-----------\n\n");

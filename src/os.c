@@ -518,6 +518,7 @@ void replace_released_segment(struct malloc_state* state, struct malloc_segment*
             }
             state->segment.base = tbase;
             state->segment.size = tsize;
+            state->segment.blacklisted_size = 0;
             state->segment.flags = mmap_flag;
             state->magic = params.magic;
             state->release_checks = MAX_RELEASE_CHECK_RATE;
