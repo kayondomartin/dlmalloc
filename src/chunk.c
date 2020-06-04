@@ -266,7 +266,7 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
     struct malloc_chunk *next = chunk_plus_offset(chunk, size);
     size_t new_tag = get_chunk_tag(chunk) + TAG_OFFSET; //tmte edit
     if (!prev_inuse(chunk)) {
-        size_t prev_size = chunk->prev_foot;
+        size_t prev_size = get_prev_size(chunk);
         if (is_mmapped(chunk)) {
             size += prev_size + MMAP_FOOT_PAD;
             if (call_munmap((char *) chunk - prev_size, size) == 0) {

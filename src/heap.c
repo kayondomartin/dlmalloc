@@ -190,22 +190,22 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
             size_t psize = chunk_size(p);
             struct malloc_chunk *next = chunk_plus_offset(p, psize);
             if (!prev_inuse(p)) {
-                size_t prv_size = prev_size(p);
+                size_t prev_size = get_prev_size(p);
                 if (is_mmapped(p)) {
-                    psize += prv_size + MMAP_FOOT_PAD;
-                    if (call_munmap((char *) p - prv_size, psize) == 0) {
+                    psize += prev_size + MMAP_FOOT_PAD;
+                    if (call_munmap((char *) p - prev_size, psize) == 0) {
                         state->footprint -= psize;
                     }
                     goto postaction;
                 }
                 else {
-                    struct malloc_chunk *prev = chunk_minus_offset(p, prv_size);
+                    struct malloc_chunk *prev = chunk_minus_offset(p, prev_size);
                     new_tag = max(new_tag,get_chunk_tag(prev)); //tmte edit: get prev tag
-                    psize += prv_size;
+                    psize += prev_size;
                     p = prev;
                     if (likely(ok_address(state, prev))) { /* consolidate backward */
                         if (p != state->dv) {
-                            unlink_chunk(state, p, prv_size);
+                            unlink_chunk(state, p, prev_size);
                         }
                         else if ((next->head & INUSE_BITS) == INUSE_BITS) {
                             state->dv_size = psize;
