@@ -176,19 +176,10 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
         check_inuse_chunk(state, p);
 
         /* tmte edit: blacklist chunk if exhausted */
-<<<<<<< HEAD
         // if(is_exhausted(p)){
         //     blacklist_chunk(state, p);
         //     goto postaction;
         // }
-=======
-        if(is_exhausted(p)){
-            if(blacklist_chunk(state, p) < 0){
-                goto erroraction;
-            }
-            goto postaction;
-        }
->>>>>>> 600431458bd4c112a08379169c68daae8681e666
         /* tmte edit end */
 
         /* tmte edit: tag ops */
