@@ -53,8 +53,8 @@ struct any_chunk {
 #define BLACKLIST_BIT           ((size_t)4)
 #define FLAG_BITS               (PREV_INUSE_BIT | CURR_INUSE_BIT | BLACKLIST_BIT)
 #define SIZE_BITS               (TAG_MASK & ~FLAG_BITS)
-#define NEXT_EXH_BIT            ((size_t)2)
 #define PREV_EXH_BIT            ((size_t)1)
+#define NEXT_EXH_BIT            ((size_t)2)
 #define NEXT_PEN_BIT            ((size_t)4)
 /* tmte edit end */
 
