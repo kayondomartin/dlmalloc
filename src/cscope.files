@@ -7,6 +7,7 @@
 /home/iybang/dlmalloc/src/config.h
 /home/iybang/dlmalloc/src/error.c
 /home/iybang/dlmalloc/src/lock.h
+/home/iybang/dlmalloc/src/.#os.c
 /home/iybang/dlmalloc/src/sbrk.h
 /home/iybang/dlmalloc/src/lock.c
 /home/iybang/dlmalloc/src/init.c
