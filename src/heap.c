@@ -175,12 +175,10 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
     if (!PREACTION(state)) {
         check_inuse_chunk(state, p);
 
-        /* tmte edit: blacklist chunk if exhausted */
-        // if(is_exhausted(p)){
-        //     blacklist_chunk(state, p);
-        //     goto postaction;
-        // }
-        /* tmte edit end */
+        /* tmte edit: chunk exhaustion */
+        if(is_exhausted(p)){
+
+        }
 
         /* tmte edit: tag ops */
         size_t new_tag = get_chunk_tag(p) + TAG_OFFSET;
@@ -188,7 +186,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
 
         if (likely(ok_address(state, p) && ok_inuse(p))) {
             size_t psize = chunk_size(p);
-            struct malloc_chunk *next = chunk_plus_offset(p, psize);
+            struct malloc_chunk *next = is_next_exhausted(p)? 0: chunk_plus_offset(p, psize);
             if (!prev_inuse(p)) {
                 size_t prev_size = get_prev_size(p);
                 if (is_mmapped(p)) {
@@ -220,7 +218,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                 }
             }
 
-            if (likely(ok_next(p, next) && ok_prev_inuse(next))) {
+            if (next != 0 && likely(ok_next(p, next) && ok_prev_inuse(next))) {
                 if (!curr_inuse(next)) {  /* consolidate forward */
 
                     /* tmte edit: tag computation 2*/
@@ -428,7 +426,7 @@ void *tmalloc_small(struct malloc_state *state, size_t nb) {
 struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size_t nb, int can_move) {
     struct malloc_chunk *new_p = 0;
     size_t old_size = chunk_size(chunk);
-    struct malloc_chunk *next = chunk_plus_offset(chunk, old_size);
+    struct malloc_chunk *next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, old_size);
     if (likely(ok_address(state, chunk) && ok_inuse(chunk) && ok_next(chunk, next) && ok_prev_inuse(next))) {
         if (is_mmapped(chunk)) {
             new_p = mmap_resize(state, chunk, nb, can_move);
