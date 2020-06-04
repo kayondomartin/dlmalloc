@@ -244,7 +244,7 @@ void *prepend_alloc(struct malloc_state *state, char *new_base, char *old_base, 
 void add_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t mmapped);
 
 /* tmte edit operations */
-void blacklist_chunk(struct malloc_state* state, struct malloc_chunk* chunk);
+int blacklist_chunk(struct malloc_state *state, struct malloc_chunk* chunk);
 
 void replace_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t mmapped, struct malloc_segment* pseg, struct malloc_segment* nseg);
 /* tmte edit end */

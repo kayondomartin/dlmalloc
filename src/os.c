@@ -593,3 +593,16 @@ void release_exhausted_segment(struct malloc_state *state, struct malloc_segment
         call_munmap(segment->base, segment->size);
     }
 }
+
+void release_exhausted_chunk(struct malloc_state *state, struct malloc_segment* segment, struct malloc_chunk* prev, char* base, size_t size){
+    dl_assert(segment_holds(segment, base));
+    dl_assert((segment_holds(segment, prev) || prev == 0));
+    dl_assert((segment_holds(segment, (base+size)) || segment_holds(segment, segment->next)));
+
+    char* curr_end = segment->base+segment->size;
+    struct malloc_segment* ss = 0;
+    struct malloc_segment* pseg = 0;
+    if(prev == 0){
+    }
+
+}
