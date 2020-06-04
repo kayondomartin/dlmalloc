@@ -142,7 +142,7 @@ void *sys_alloc(struct malloc_state *state, size_t size) {
      not on boundary, and round this up to a granularity unit.
     */
 
-    if (MORECORE_CONTIGUOUS && /*!*/use_noncontiguous(state)) {//disabled for checks
+    if (MORECORE_CONTIGUOUS && !use_noncontiguous(state)) {//disabled for checks
         char *br = MFAIL;
         size_t ssize = alloc_size; /* sbrk call size */
         struct malloc_segment *ss = (state->top == 0) ? 0 : segment_holding(state, (char *) state->top);
@@ -547,7 +547,7 @@ void replace_released_segment(struct malloc_state* state, struct malloc_segment*
 
 
 void release_exhausted_segment(struct malloc_state *state, struct malloc_segment* segment){
-x    size_t size  = segment->size;
+    size_t size  = segment->size;
     size_t base = segment->base;
 
     struct malloc_segment* pseg = prev_segment(state, segment);

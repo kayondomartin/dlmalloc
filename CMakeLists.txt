@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.11)
 project(dlalloc C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_VISIBILITY_PRESET hidden)
@@ -39,6 +39,7 @@ if (FOOTERS MATCHES "ON")
 endif ()
 
 set(dlalloc_sources
+        src/redblack.c
         src/chunk.c
         src/debug.c
         src/error.c
