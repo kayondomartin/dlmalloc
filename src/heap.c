@@ -177,7 +177,9 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
 
         /* tmte edit: blacklist chunk if exhausted */
         if(is_exhausted(p)){
-            blacklist_chunk(state, p);
+            if(blacklist_chunk(state, p) < 0){
+                goto erroraction;
+            }
             goto postaction;
         }
         /* tmte edit end */

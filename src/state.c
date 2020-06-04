@@ -129,18 +129,57 @@ void add_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t m
     check_top_chunk(state, state->top);
 }
 
-void blacklist_chunk(struct malloc_state* state, struct malloc_chunk* chunk){
-    chunk->head |= BLACKLIST_BIT;
-    struct malloc_segment* sh = segment_holding(state, chunk);
-    sh->blacklisted_size += chunk_size(chunk);
-    if((sh->size - sh->blacklisted_size) < 1000/*MIN_CHUNK_SIZE*/){//edited for debugging
-      release_exhausted_segment(state, sh);
+int blacklist_chunk(struct malloc_state *state, struct malloc_chunk* chunk){
+    dl_assert(is_exhausted(chunk));
+    size_t size = chunk_size(chunk);
+    size_t prev_size = chunk->prev_foot;
+    if (likely(ok_address(state, chunk) && ok_inuse(chunk))) {
+        struct malloc_chunk* next = chunk_plus_offset(chunk, size);
+        struct malloc_chunk* prev = chunk_minus_offset(chunk, prev_size);
+        if(!is_usable(prev)){//coalesce backward
+            dl_assert(is_inuse(prev));
+            size += prev_size;
+            chunk = prev;
+        }
+
+        if(likely(ok_next(chunk,next)) && ok_prev_inuse(next)){//coalesce forward
+            if(!is_usable(next)){
+                dl_assert(is_inuse(next));
+                size += chunk_size(next);
+            }
+            chunk->head = size|TAG_BITS|BLACKLIST_BIT;
+            struct malloc_segment* sh = segment_holding(state, chunk);
+            sh->blacklisted_size += chunk_size(chunk);
+            size_t page_size = params.page_size;
+            if((sh->size - sh->blacklisted_size) < 100/*MIN_CHUNK_SIZE*/){//edited for debugging
+                release_exhausted_segment(state, sh);
+            }
+            else  if(size >= page_size){
+                size_t remainder = size & (page_size-1);
+                size_t unmap_size = size-remainder;
+                char* unmap_base = 0;
+                if((size_t)chunk & (page_size-1) == 0){
+                    unmap_base = (char*)chunk;
+                    prev = 0;
+                }else if(((size_t)chunk + remainder) & (page_size-1) ==0){
+                    unmap_base = chunk + remainder;
+                    prev = chunk;
+                }
+
+                if(unmap_base != 0 && (!is_inuse(prev) || prev == 0 || (!is_usable(prev) && (((char*)unmap_base - (char*)prev) >= TOP_FOOT_SIZE)))){
+                    release_exhausted_chunk(state, sh, prev, unmap_base, unmap_size);
+                }
+            }
+            return 0;
+        }
+
     }
+    return -1;
 }
 
 void replace_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t mmapped, struct malloc_segment* pseg, struct malloc_segment* nseg){
 
-    init_top(state, (struct malloc_chunk *) tbase, tsize - TOP_FOOT_SIZE);
+    init_top(state, (struct malloc_chunk*) tbase, tsize - TOP_FOOT_SIZE);
     struct malloc_segment *ss;
 
     ss = &state->segment;
