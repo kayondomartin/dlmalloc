@@ -176,10 +176,10 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
         check_inuse_chunk(state, p);
 
         /* tmte edit: blacklist chunk if exhausted */
-        if(is_exhausted(p)){
-            blacklist_chunk(state, p);
-            goto postaction;
-        }
+        // if(is_exhausted(p)){
+        //     blacklist_chunk(state, p);
+        //     goto postaction;
+        // }
         /* tmte edit end */
 
         /* tmte edit: tag ops */
@@ -190,22 +190,22 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
             size_t psize = chunk_size(p);
             struct malloc_chunk *next = chunk_plus_offset(p, psize);
             if (!prev_inuse(p)) {
-                size_t prev_size = p->prev_foot;
+                size_t prv_size = prev_size(p);
                 if (is_mmapped(p)) {
-                    psize += prev_size + MMAP_FOOT_PAD;
-                    if (call_munmap((char *) p - prev_size, psize) == 0) {
+                    psize += prv_size + MMAP_FOOT_PAD;
+                    if (call_munmap((char *) p - prv_size, psize) == 0) {
                         state->footprint -= psize;
                     }
                     goto postaction;
                 }
                 else {
-                    struct malloc_chunk *prev = chunk_minus_offset(p, prev_size);
+                    struct malloc_chunk *prev = chunk_minus_offset(p, prv_size);
                     new_tag = max(new_tag,get_chunk_tag(prev)); //tmte edit: get prev tag
-                    psize += prev_size;
+                    psize += prv_size;
                     p = prev;
                     if (likely(ok_address(state, prev))) { /* consolidate backward */
                         if (p != state->dv) {
-                            unlink_chunk(state, p, prev_size);
+                            unlink_chunk(state, p, prv_size);
                         }
                         else if ((next->head & INUSE_BITS) == INUSE_BITS) {
                             state->dv_size = psize;
@@ -546,7 +546,7 @@ void *internal_memalign(struct malloc_state *state, size_t alignment, size_t byt
                 size_t new_size = chunk_size(p) - lead_size;
 
                 if (is_mmapped(p)) { /* For mmapped chunks, just adjust offset */
-                    new_p->prev_foot = p->prev_foot + lead_size;
+                    new_p->prev_foot = prev_size(p) + lead_size;
                     new_p->head = new_size;
                 }
                 else { /* Otherwise, give back leader, use the rest */

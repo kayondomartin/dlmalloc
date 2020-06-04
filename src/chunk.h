@@ -314,7 +314,7 @@ static inline struct malloc_chunk *next_chunk(void *chunk) {
 }
 
 static inline struct malloc_chunk *prev_chunk(void *chunk) {
-    return (struct malloc_chunk *) (((char *) chunk) - (((struct any_chunk *) chunk)->prev_foot));
+    return (struct malloc_chunk *) (((char *) chunk) - prev_size(((struct any_chunk *) chunk)));
 }
 
 /* Get the internal overhead associated with chunk p */

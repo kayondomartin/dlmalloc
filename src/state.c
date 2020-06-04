@@ -130,12 +130,12 @@ void add_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t m
 }
 
 void blacklist_chunk(struct malloc_state* state, struct malloc_chunk* chunk){
-    chunk->head |= BLACKLIST_BIT;
-    struct malloc_segment* sh = segment_holding(state, chunk);
-    sh->blacklisted_size += chunk_size(chunk);
-    if((sh->size - sh->blacklisted_size) < 1000/*MIN_CHUNK_SIZE*/){//edited for debugging
-      release_exhausted_segment(state, sh);
-    }
+    // chunk->head |= BLACKLIST_BIT;
+    // struct malloc_segment* sh = segment_holding(state, chunk);
+    // sh->blacklisted_size += chunk_size(chunk);
+    // if((sh->size - sh->blacklisted_size) < 1000/*MIN_CHUNK_SIZE*/){//edited for debugging
+    //   release_exhausted_segment(state, sh);
+    // }
 }
 
 void replace_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t mmapped, struct malloc_segment* pseg, struct malloc_segment* nseg){
