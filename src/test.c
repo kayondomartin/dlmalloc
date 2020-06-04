@@ -122,6 +122,21 @@ void test_dl() {
     dl_assert((p1_tag != 0 && p2_tag != 0 && p3_tag !=0));
     dl_printf("test 4: Arbitrary chunk alloc, check tag coloring: PASSED\n");
 
+    p4 = dl_malloc(2064);
+    for(int i=0; i<26; i++){
+        dl_free(p4);
+        p4 = dl_malloc(2064);
+    }
+    dl_free(p4);
+
+    p5 = dl_malloc(1900);
+    for(int i=0; i<15; i++){
+        dl_free(p5);
+        p5 = dl_malloc(1900);
+    }
+    dl_free(p5);
+
+
     dl_printf("\ninspect all\n");
     dl_malloc_inspect_all(&inspector, 0);
     dl_printf("\n\n----------End of Tests-----------\n\n");

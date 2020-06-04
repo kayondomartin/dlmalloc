@@ -258,7 +258,6 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
 
     if(is_exhausted(chunk)){
         blacklist_chunk(state, chunk);
-        check_blacklisted_chunk(state, chunk);
         return;
     }
     struct malloc_chunk *next = chunk_plus_offset(chunk, size);

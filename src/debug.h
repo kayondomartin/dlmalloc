@@ -17,10 +17,6 @@ void check_malloced_chunk(struct malloc_state *, void *, size_t);
 
 void check_free_chunk(struct malloc_state *, struct malloc_chunk *);
 
-/* tmte edit: check blacklisted chunk declaration */
-void check_blacklisted_chunk(struct malloc_state*, struct malloc_chunk*);
-/* tmte edit ends */
-
 void check_malloc_state(struct malloc_state *);
 
 #else
@@ -30,7 +26,6 @@ void check_malloc_state(struct malloc_state *);
 #define check_inuse_chunk(M, P)
 #define check_malloced_chunk(M, P, N)
 #define check_free_chunk(M, P)
-#define check_blacklisted_chunk(M, P)
 #define check_malloc_state(M)
 
 #endif

@@ -26,3 +26,16 @@ int has_segment_link(struct malloc_state *state, struct malloc_segment *segment)
         }
     }
 }
+
+struct malloc_segment* prev_segment(struct malloc_state* state, struct malloc_segment* curr){
+    struct malloc_segment *sp = &state->segment;
+    for(;;){
+        if(sp == curr){
+            return 0;
+        }else if(sp->next == curr){
+            return sp;
+        }else if(sp = sp->next == 0){
+            return 0;
+        }
+    }
+}

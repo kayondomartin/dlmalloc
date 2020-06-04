@@ -101,6 +101,7 @@ void add_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t m
     state->segment.size = tsize;
     state->segment.flags = mmapped;
     state->segment.next = ss;
+    state->segment.blacklisted_size = 0;
 
     /* Insert trailing fenceposts */
     for (;;) {
@@ -126,4 +127,33 @@ void add_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t m
     }
 
     check_top_chunk(state, state->top);
+}
+
+void blacklist_chunk(struct malloc_state* state, struct malloc_chunk* chunk){
+    chunk->head |= BLACKLIST_BIT;
+    struct malloc_segment* sh = segment_holding(state, chunk);
+    sh->blacklisted_size += chunk_size(chunk);
+    if((sh->size - sh->blacklisted_size) < 100/*MIN_CHUNK_SIZE*/){//edited for debugging
+        release_exhausted_segment(state, sh);
+    }
+}
+
+void replace_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t mmapped, struct malloc_segment* pseg, struct malloc_segment* nseg){
+
+    init_top(state, (struct malloc_chunk *) tbase, tsize - TOP_FOOT_SIZE);
+    struct malloc_segment *ss;
+
+    ss = &state->segment;
+    state->segment.base = tbase;
+    state->segment.size= tsize;
+    state->segment.flags = mmapped;
+    state->segment.blacklisted_size = 0;
+    state->top_colored_size = 0;
+
+    if(pseg !=0){
+        pseg->next = nseg;
+        state->segment.next = ss;
+    }else{
+        state->segment.next = nseg;
+    }
 }

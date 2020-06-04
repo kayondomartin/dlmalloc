@@ -64,4 +64,9 @@ int sys_trim(struct malloc_state *state, size_t pad);
 
 size_t release_unused_segments(struct malloc_state *state);
 
+/* tmte edit: ops */
+void release_exhausted_segment(struct malloc_state *state, struct malloc_segment* segment);
+
+void replace_released_segment(struct malloc_state* state, struct malloc_segment* pseg, struct malloc_segment* nseg);
+
 #endif //MALLOC_ALLOC_H

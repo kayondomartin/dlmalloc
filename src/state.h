@@ -178,11 +178,6 @@ static inline bin_map_t clear_small_map(struct malloc_state *state, bin_map_t in
     return state->small_map &= ~index_to_bit(index);
 }
 
-/* tmte edit operations */
-static inline void blacklist_chunk(struct malloc_state* s, struct malloc_chunk* p){
-    p->head |= BLACKLIST_BIT;
-}
-/* tmte edit end */
 
 static inline int small_map_is_marked(struct malloc_state *state, bin_index_t index) {
     return state->small_map & index_to_bit(index);
@@ -247,5 +242,11 @@ void init_bins(struct malloc_state *state);
 void *prepend_alloc(struct malloc_state *state, char *new_base, char *old_base, size_t nb);
 
 void add_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t mmapped);
+
+/* tmte edit operations */
+void blacklist_chunk(struct malloc_state* state, struct malloc_chunk* chunk);
+
+void replace_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t mmapped, struct malloc_segment* pseg, struct malloc_segment* nseg);
+/* tmte edit end */
 
 #endif //MALLOC_STATE_H

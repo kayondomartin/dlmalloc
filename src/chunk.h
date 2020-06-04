@@ -535,6 +535,10 @@ static inline int is_usable(struct malloc_chunk* p){
 static inline void set_chunk_tag(struct malloc_chunk* p, size_t tag){
     p->head &= TAG_MASK, p->head |= tag;
 }
+
+static inline int is_blacklisted(struct malloc_chunk* p){
+    return (p->head & BLACKLIST_BIT) == BLACKLIST_BIT;
+}
 /* tmte edit end */
 
 void insert_chunk(struct malloc_state *, struct malloc_chunk *, size_t);
