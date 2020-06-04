@@ -3,3 +3,8 @@
 cmake-build-*/
 out/
 build/
+*.cscope
+mk_cscope.sh
+*~
+#*
+cscope.files
