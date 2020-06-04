@@ -140,7 +140,7 @@ void blacklist_chunk(struct malloc_state* state, struct malloc_chunk* chunk){
 
 void replace_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t mmapped, struct malloc_segment* pseg, struct malloc_segment* nseg){
 
-    init_top(state, (struct malloc_chunk *) tbase, tsize - TOP_FOOT_SIZE);
+    init_top(state, (struct malloc_chunk*) tbase, tsize - TOP_FOOT_SIZE);
     struct malloc_segment *ss;
 
     ss = &state->segment;

@@ -257,8 +257,11 @@ void unlink_large_chunk(struct malloc_state *state, struct malloc_tree_chunk *ch
 void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size_t size) {
 
     if(is_exhausted(chunk)){
-        blacklist_chunk(state, chunk);
-        return;
+        if(blacklist_chunk(state, chunk) == 0){
+            return;
+        }else{
+            corruption_error(state);
+        }
     }
     struct malloc_chunk *next = chunk_plus_offset(chunk, size);
     size_t new_tag = get_chunk_tag(chunk) + TAG_OFFSET; //tmte edit
