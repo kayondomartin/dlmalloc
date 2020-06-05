@@ -254,7 +254,6 @@ void *sys_alloc(struct malloc_state *state, size_t size) {
                 init_top(state, mn, (size_t) ((tbase + tsize) - (char *) mn) - TOP_FOOT_SIZE);
             }
         }
-
         else {
             /* Try to merge with an existing segment */
             struct malloc_segment *sp = &state->segment;

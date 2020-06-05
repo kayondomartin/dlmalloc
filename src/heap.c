@@ -234,6 +234,8 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                         }else{
                             set_chunk_tag(p, new_tag);
                         }
+                    }else if(next_tag != 0){
+                        set_chunk_tag(next, new_tag);
                     }
                     /* tmte edit ends */
 
@@ -276,7 +278,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                 else {
                     set_free_with_prev_inuse(p, psize, next);
                     set_chunk_tag((struct any_chunk*)p, new_tag);//tmte edit: set chunk_tag
-                    mte_color_tag(p, psize, tag_to_int(new_tag));
+                    mte_color_tag(p, psize, tag_to_int(new_tag));// tmte edit
                 }
 
                 if (is_small(psize)) {

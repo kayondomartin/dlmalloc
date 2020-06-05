@@ -4,6 +4,7 @@
 #include <sys/types.h>
 
 #include "config.h"
+#include "tmte.h"
 
 #define CHUNK_ALIGN_MASK    (MALLOC_ALIGNMENT - ((size_t) 1))
 
@@ -52,6 +53,7 @@ struct any_chunk {
 #define BLACKLIST_BIT           ((size_t)4)
 #define FLAG_BITS               (PREV_INUSE_BIT | CURR_INUSE_BIT | BLACKLIST_BIT)
 #define SIZE_BITS               (TAG_MASK & ~FLAG_BITS)
+#define TAG_SHIFT               ((sizeof(size_t)-1) << 3)
 /* tmte edit end */
 
 /* Head value for fenceposts */
@@ -505,7 +507,6 @@ static inline struct malloc_tree_chunk *leftmost_child(struct malloc_tree_chunk 
 }
 
 /* tmte edit: ops and functions */
-static const int TAG_SHIFT = (sizeof(size_t)-1) << 3; //ugly code
 
 static inline size_t max(size_t x, size_t y){
     return x > y? x: y;

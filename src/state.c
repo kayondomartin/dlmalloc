@@ -127,3 +127,28 @@ void add_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t m
 
     check_top_chunk(state, state->top);
 }
+
+/* tmte edit operations */
+void blacklist_chunk(struct malloc_state* s, struct malloc_chunk* p){
+    p->head |= BLACKLIST_BIT;
+    struct malloc_segment* ms = segment_holding(s, p);
+    ms->blacklisted_size += chunk_size(p);
+    if((ms->size - ms->blacklisted_size) < MIN_CHUNK_SIZE){
+        if(ms == &s->segment){
+            if(ms->next == 0){//state has only one segment, delete it
+                s->top = 0;
+                s->least_addr = 0;
+                s->top_colored_size = 0;
+                s->top_size = 0;
+                s->dv_size = 0;
+            }else{
+                s->segment.base = ms->next->base;
+                s->segment = *ms->next;
+                s->footprint = 
+            }
+        }
+
+        munmap(ms->base, ms->size);
+    }
+}
+/* tmte edit end */
