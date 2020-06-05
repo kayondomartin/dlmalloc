@@ -3,10 +3,10 @@
 size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
   size_t ret = 0;
   size_t size = chunk_size(chunk);
-  for(int i = (size_t)chunk/UNMAP_UNIT; i < (chunk_plus_offset(chunk,size) -1)/UNMAP_UNIT; i+=1){
+  for(size_t i = (size_t)chunk >> UNMAP_UNIT_POWER; i < ((size_t)chunk_plus_offset(chunk,size) -1) >> UNMAP_UNIT_POWER; i+=1){
     size_t start = (i>(size_t)chunk/UNMAP_UNIT ? i*UNMAP_UNIT : (size_t)chunk);
     size_t end = ((size_t)chunk + size > (i+1) * UNMAP_UNIT ? (i+1) * UNMAP_UNIT : chunk + size);
-    if(tree_search(key)==NILL){
+    if(tree_search(i)==NILL){
       red_black_insert(i, end-start, (struct node*) chunk);
     }else{
       size_t size_h = GET_EXH(chunk);
@@ -24,8 +24,8 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
   return ret;
 }
 
-int init(){
-  global_node.color = BLACK;
+inline int init(){
+  SET_COLOR(&global_node, BLACK);
   //  struct node[NUM_TREE_NODES] TREE;
   NILL = &global_node;
   //struct node* NILL;

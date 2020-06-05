@@ -26,7 +26,7 @@
 #define BLACK 1
 //64bit architecture
 #define UNMAP_UNIT_POWER (size_t)12
-#define UNMAP_UNIT (size_t)2^UNMAP_UNIT_POWER
+#define UNMAP_UNIT (size_t)(2^UNMAP_UNIT_POWER)
 
 
 #define COLOR_BIT 1<<63
@@ -74,4 +74,4 @@ void red_black_transplant(struct node *u, struct node *v);
 void red_black_delete(struct node *z);
 void red_black_delete_fixup(struct node *x);
 
-size_t invalidate_chunk(struct malloc_state m, struct malloc_chunk chunk){};
+size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk);
