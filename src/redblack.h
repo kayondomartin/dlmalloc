@@ -1,7 +1,9 @@
+#ifndef TMTE_REDBLACK_H
+#define TMTE_REDBLACK_H
+
 #include <sys/types.h>
 #include "chunk.h"
 #include "state.h"
-
 
 /*
  * [PROG]: Red Black Tree
@@ -119,3 +121,5 @@ void red_black_delete(struct node *z);
 void red_black_delete_fixup(struct node *x);
 
 size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk);
+
+#endif

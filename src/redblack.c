@@ -12,7 +12,7 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
     }else{
       size_t size_h = GET_EXH(chunk);
       if((end-start)>>4 + size_h > (UNMAP_UNIT_POWER-MIN_CHUNK_SIZE)>>4){
-        if(call_mmunmap(i*UNMAP_UNIT, UNMAP_UNIT))
+        if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT))
           ;
         else
           ret = -1;
