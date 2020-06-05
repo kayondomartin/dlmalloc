@@ -7,12 +7,12 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
     size_t start = (i>(size_t)chunk/UNMAP_UNIT ? i*UNMAP_UNIT : (size_t)chunk);
     size_t end = ((size_t)chunk + size > (i+1) * UNMAP_UNIT ? (i+1) * UNMAP_UNIT : chunk + size);
     if(tree_search(i)==NILL){
-      red_black_insert(i, end-start, (struct node*) chunk);
+      red_black_insert(i, (end-start)>>4, (struct node*) chunk);
     }else{
       size_t size_h = GET_EXH(chunk);
-      if(end-start+size_h < MIN_CHUNK_SIZE){
+      if((end-start)>>4 + size_h > (UNMAP_UNIT_POWER-MIN_CHUNK_SIZE)>>4){
         if(call_mmunmap(i*UNMAP_UNIT, UNMAP_UNIT))
-          ;//need errorcheck
+          ;
         else
           ret = -1;
       }else{
