@@ -131,6 +131,16 @@ void add_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t m
 
 int blacklist_chunk(struct malloc_state* state, struct malloc_chunk* chunk){
     set_chunk_tag(chunk, TAG_BITS);
+    size_t csize = chunk_size(chunk);
+    struct malloc_chunk *prev = is_prev_exhausted(chunk)? 0: chunk_minus_offset(chunk, csize);
+    struct malloc_chunk *next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, csize);
+    if(prev != 0){
+        prev->prev_foot |= NEXT_EXH_BIT;
+    }
+    if(next !=0){
+        next->prev_foot |= PREV_EXH_BIT;
+    }
+    return 0;
 }
 
 void replace_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t mmapped, struct malloc_segment* pseg, struct malloc_segment* nseg){

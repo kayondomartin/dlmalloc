@@ -177,7 +177,11 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
 
         /* tmte edit: chunk exhaustion */
         if(is_exhausted(p)){
-
+            if(blacklist_chunk(state, p) == 0){
+                goto postaction;
+            }else{
+                goto erroraction;
+            }
         }
 
         /* tmte edit: tag ops */
@@ -427,7 +431,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
     struct malloc_chunk *new_p = 0;
     size_t old_size = chunk_size(chunk);
     struct malloc_chunk *next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, old_size);
-    if (likely(ok_address(state, chunk) && ok_inuse(chunk) && ok_next(chunk, next) && ok_prev_inuse(next))) {
+    if (likely(ok_address(state, chunk) && ok_inuse(chunk) && next != 0 && ok_next(chunk, next) && ok_prev_inuse(next))) {
         if (is_mmapped(chunk)) {
             new_p = mmap_resize(state, chunk, nb, can_move);
         }
@@ -544,7 +548,7 @@ void *internal_memalign(struct malloc_state *state, size_t alignment, size_t byt
                 size_t new_size = chunk_size(p) - lead_size;
 
                 if (is_mmapped(p)) { /* For mmapped chunks, just adjust offset */
-                    new_p->prev_foot = prev_size(p) + lead_size;
+                    new_p->prev_foot = get_prev_size(p) + lead_size;
                     new_p->head = new_size;
                 }
                 else { /* Otherwise, give back leader, use the rest */

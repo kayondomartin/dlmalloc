@@ -38,7 +38,7 @@ struct node{
 /* Global, since all function will access them */
 struct node *ROOT;
 struct node *NILL;
-extern struct node global_node;
+struct node global_node;
 
 void left_rotate(struct node *x);
 void right_rotate(struct node *x);

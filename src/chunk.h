@@ -50,8 +50,7 @@ struct any_chunk {
 #define TAG_MASK                ((size_t)-1 >> 4)
 #define TAG_BITS                (~TAG_MASK)
 #define TAG_OFFSET              (TAG_MASK + 1U)
-#define BLACKLIST_BIT           ((size_t)4)
-#define FLAG_BITS               (PREV_INUSE_BIT | CURR_INUSE_BIT | BLACKLIST_BIT)
+#define FLAG_BITS               (PREV_INUSE_BIT | CURR_INUSE_BIT)
 #define SIZE_BITS               (TAG_MASK & ~FLAG_BITS)
 #define PREV_EXH_BIT            ((size_t)1)
 #define NEXT_EXH_BIT            ((size_t)2)
@@ -68,7 +67,7 @@ static inline size_t chunk_size(void *chunk) {
 
 /* tmte edit: prev_size function: mask exhaustion bits */
 static inline size_t get_prev_size(void* p){
-    return ((struct any_chunk*)p)->prev_foot & EXHAUSTION_BITS;
+    return ((struct any_chunk*)p)->prev_foot & ~EXHAUSTION_BITS;
 }
 
 static inline size_t get_foot(void *chunk, size_t size) {
@@ -538,15 +537,11 @@ static inline int is_exhausted(struct malloc_chunk* p){
 }
 
 static inline int is_usable(struct malloc_chunk* p){
-    return (p->head & BLACKLIST_BIT) == 0;
+    return (p->head & TAG_BITS) != TAG_BITS;
 }
 
 static inline void set_chunk_tag(struct malloc_chunk* p, size_t tag){
     p->head &= TAG_MASK, p->head |= tag;
-}
-
-static inline int is_blacklisted(struct malloc_chunk* p){
-    return (p->head & BLACKLIST_BIT) == BLACKLIST_BIT;
 }
 
 static inline int is_next_exhausted(struct malloc_chunk* p){
