@@ -48,7 +48,7 @@ struct any_chunk {
 
 /*tmte edit: tag bits and mask*/
 #define TAG_MASK                ((size_t)-1 >> 4)
-#define TAG_BITS                (~TAG_MASK)
+#define TAG_BITS                ~((size_t)TAG_MASK)
 #define TAG_OFFSET              (TAG_MASK + 1U)
 #define FLAG_BITS               (PREV_INUSE_BIT | CURR_INUSE_BIT)
 #define SIZE_BITS               (TAG_MASK & ~FLAG_BITS)

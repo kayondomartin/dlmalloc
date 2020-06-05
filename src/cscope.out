@@ -1,4 +1,4 @@
-cscope 15 $HOME/dlmalloc/src               0000558817
+cscope 15 $HOME/dlmalloc/src               0000558819
 	@/home/iybang/dlmalloc/src/assert.h
 
 1 #iâdeà
@@ -20981,10 +20981,10 @@ node
 	gNILL
 ;
 
-41 
+41 
 node
  
-glob®_node
+	gglob®_node
 ;
 
 43 
@@ -22335,7 +22335,7 @@ tÝ
 	}
 }
 
-132 
+132 
 	$bÏckli¡_chunk
 (
 m®loc_¡©e
@@ -22347,11 +22347,11 @@ m®loc_chunk
 chunk
 ){
 
-139 
+140 
 	}
 }
 
-141 
+142 
 	$»¶aû_£gm’t
 (
 m®loc_¡©e
@@ -22375,7 +22375,7 @@ p£g
 n£g
 ){
 
-143 
+144 
 	`š™_tÝ
 (
 ¡©e
@@ -22389,13 +22389,13 @@ tsize
 TOP_FOOT_SIZE
 );
 
-144 
+145 
 m®loc_£gm’t
  *
 ss
 ;
 
-146 
+147 
 ss
  = &
 ¡©e
@@ -22403,7 +22403,7 @@ ss
 £gm’t
 ;
 
-147 
+148 
 ¡©e
 ->
 £gm’t
@@ -22413,7 +22413,7 @@ ba£
 tba£
 ;
 
-148 
+149 
 ¡©e
 ->
 £gm’t
@@ -22423,7 +22423,7 @@ size
 tsize
 ;
 
-149 
+150 
 ¡©e
 ->
 £gm’t
@@ -22433,7 +22433,7 @@ tsize
 mm­³d
 ;
 
-150 
+151 
 ¡©e
 ->
 £gm’t
@@ -22441,17 +22441,17 @@ mm­³d
 bÏckli¡ed_size
  = 0;
 
-151 
+152 
 ¡©e
 ->
 tÝ_cÞÜed_size
  = 0;
 
-153 if(
+154 if(
 p£g
  !=0){
 
-154 
+155 
 p£g
 ->
 Ãxt
@@ -22459,7 +22459,7 @@ p£g
 n£g
 ;
 
-155 
+156 
 ¡©e
 ->
 £gm’t
@@ -22469,7 +22469,7 @@ n£g
 ss
 ;
 
-157 
+158 
 ¡©e
 ->
 £gm’t
@@ -22479,7 +22479,7 @@ ss
 n£g
 ;
 
-159 
+160 
 	}
 }
 
@@ -49143,10 +49143,10 @@ node
 	gNILL
 ;
 
-41 
+41 
 node
  
-glob®_node
+	gglob®_node
 ;
 
 43 
