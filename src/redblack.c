@@ -1,10 +1,27 @@
 #include "redblack.h"
 
 size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
-  for(int i = chunk_size(chunk)/UNMAP_UNIT; i < 3;)
-    ;
-  TOP_FOOT_SIZE;
-  return 0;
+  size_t ret = 0;
+  size_t size = chunk_size(chunk);
+  for(int i = (size_t)chunk/UNMAP_UNIT; i < (chunk_plus_offset(chunk,size) -1)/UNMAP_UNIT; i+=1){
+    size_t start = (i>(size_t)chunk/UNMAP_UNIT ? i*UNMAP_UNIT : (size_t)chunk);
+    size_t end = ((size_t)chunk + size > (i+1) * UNMAP_UNIT ? (i+1) * UNMAP_UNIT : chunk + size);
+    if(tree_search(key)==NILL){
+      red_black_insert(i, end-start, (struct node*) chunk);
+    }else{
+      size_t size_h = GET_EXH(chunk);
+      if(end-start+size_h < MIN_CHUNK_SIZE){
+        if(call_mmunmap(i*UNMAP_UNIT, UNMAP_UNIT))
+          ;//need errorcheck
+        else
+          ret = -1;
+      }else{
+        SET_EXH(chunk, end-start+size_h);
+      }
+    }
+  }
+  //TOP_FOOT_SIZE;
+  return ret;
 }
 
 int init(){
@@ -56,7 +73,7 @@ int init(){
 void tree_print(struct node *x){
   if(x != NILL){
     tree_print(x->left);
-    printf("%lld\t", x->key);
+    printf("%lu %lu\t", GET_KEY(x), GET_EXH(x));
     tree_print(x->right);
   }
 }
@@ -65,8 +82,8 @@ struct node *tree_search(size_t key){
   struct node *x;
 
   x = ROOT;
-  while(x != NILL && x->key != key){
-    if(key < x->key){
+  while(x != NILL && GET_KEY(x) != key){
+    if(key < GET_KEY(x)){
       x = x->left;
     }
     else{
@@ -90,13 +107,14 @@ struct node *tree_minimum(struct node *x){
  * auxilary procedure called red_black_insert_fixup is called to fix these violation.
  */
 
-void red_black_insert(size_t key, struct node*z){
+void red_black_insert(size_t key, size_t exh, struct node*z){
   //  struct node *z, *x, *y;
   struct node *x, *y;
   //  z = malloc(sizeof(struct node));
 
-  z->key = key;
-  z->color = RED;
+  SET_EXH(z, exh);
+  SET_KEY(z, key);
+  SET_COLOR(z, RED);
   z->left = NILL;
   z->right = NILL;
 
@@ -109,7 +127,7 @@ void red_black_insert(size_t key, struct node*z){
    */
   while(x != NILL){
     y = x;
-    if(z->key <= x->key){
+    if(GET_KEY(z) <= GET_KEY(x)){
       x = x->left;
     }
     else{
@@ -120,7 +138,7 @@ void red_black_insert(size_t key, struct node*z){
   if(y == NILL){
     ROOT = z;
   }
-  else if(z->key <= y->key){
+  else if(GET_KEY(z) <= GET_KEY(y)){
     y->left = z;
   }
   else{
@@ -159,16 +177,16 @@ void red_black_insert(size_t key, struct node*z){
  */
 
 void red_black_insert_fixup(struct node *z){
-  while(z->parent->color == RED){
+  while(GET_COLOR(z->parent) == RED){
 
     /* z's parent is left child of z's grand parent*/
     if(z->parent == z->parent->parent->left){
 
       /* z's grand parent's right child is RED */
-      if(z->parent->parent->right->color == RED){
-        z->parent->color = BLACK;
-        z->parent->parent->right->color = BLACK;
-        z->parent->parent->color = RED;
+      if(GET_COLOR(z->parent->parent->right) == RED){
+        SET_COLOR(z->parent, BLACK);
+        SET_COLOR(z->parent->parent->right, BLACK);
+        SET_COLOR(z->parent->parent, RED);
         z = z->parent->parent;
       }
 
@@ -181,8 +199,8 @@ void red_black_insert_fixup(struct node *z){
           left_rotate(z);
         }
 
-        z->parent->color = BLACK;
-        z->parent->parent->color = RED;
+        SET_COLOR(z->parent, BLACK);
+        SET_COLOR(z->parent->parent, RED);
         right_rotate(z->parent->parent);
       }
     }
@@ -191,10 +209,10 @@ void red_black_insert_fixup(struct node *z){
     else{
 
       /* z's left uncle or z's grand parent's left child is also RED */
-      if(z->parent->parent->left->color == RED){
-        z->parent->color = BLACK;
-        z->parent->parent->left->color = BLACK;
-        z->parent->parent->color = RED;
+      if(GET_COLOR(z->parent->parent->left) == RED){
+        SET_COLOR(z->parent, BLACK);
+        SET_COLOR(z->parent->parent->left, BLACK);
+        SET_COLOR(z->parent->parent, RED);
         z = z->parent->parent;
       }
 
@@ -206,14 +224,14 @@ void red_black_insert_fixup(struct node *z){
           right_rotate(z);
         }
 
-        z->parent->color = BLACK;
-        z->parent->parent->color = RED;
+        SET_COLOR(z->parent, BLACK);
+        SET_COLOR(z->parent->parent, RED);
         left_rotate(z->parent->parent);
       }
     }
   }
 
-  ROOT->color = BLACK;
+  SET_COLOR(ROOT, BLACK);
 }
 
 /*
@@ -315,7 +333,7 @@ void red_black_delete(struct node *z){
   int yOriginalColor;
 
   y = z;
-  yOriginalColor = y->color;
+  yOriginalColor = GET_COLOR(y);
 
   if(z->left == NILL){
     x = z->right;
@@ -327,7 +345,7 @@ void red_black_delete(struct node *z){
   }
   else{
     y = tree_minimum(z->right);
-    yOriginalColor = y->color;
+    yOriginalColor = GET_COLOR(y);
 
     x = y->right;
 
@@ -343,7 +361,7 @@ void red_black_delete(struct node *z){
     red_black_transplant(z, y);
     y->left = z->left;
     y->left->parent = y;
-    y->color = z->color;
+    SET_COLOR(y, GET_COLOR(z));
   }
 
   if(yOriginalColor == BLACK){
@@ -382,35 +400,35 @@ void red_black_delete(struct node *z){
 void red_black_delete_fixup(struct node *x){
   struct node *w;
 
-  while(x != ROOT && x->color == BLACK){
+  while(x != ROOT && GET_COLOR(x) == BLACK){
 
     if(x == x->parent->left){
       w = x->parent->right;
 
-      if(w->color == RED){
-        w->color = BLACK;
-        x->parent->color = RED;
+      if(GET_COLOR(w) == RED){
+        SET_COLOR(w, BLACK);
+        SET_COLOR(x->parent, RED);
         left_rotate(x->parent);
         w = x->parent->right;
       }
 
-      if(w->left->color == BLACK && w->right->color == BLACK){
-        w->color = RED;
-        x->parent->color = BLACK;
+      if(GET_COLOR(w->left) == BLACK && GET_COLOR(w->right) == BLACK){
+        SET_COLOR(w, RED);
+        SET_COLOR(x->parent, BLACK);
         x = x->parent;
       }
       else{
 
-        if(w->right->color == BLACK){
-          w->color = RED;
-          w->left->color = BLACK;
+        if(GET_COLOR(w->right) == BLACK){
+          SET_COLOR(w, RED);
+          SET_COLOR(w->left, BLACK);
           right_rotate(w);
           w = x->parent->right;
         }
 
-        w->color = x->parent->color;
-        x->parent->color = BLACK;
-        x->right->color = BLACK;
+        SET_COLOR(w, GET_COLOR(x->parent));
+        SET_COLOR(x->parent, BLACK);
+        SET_COLOR(x->right, BLACK);
         left_rotate(x->parent);
         x = ROOT;
 
@@ -420,31 +438,31 @@ void red_black_delete_fixup(struct node *x){
     else{
       w = x->parent->left;
 
-      if(w->color == RED){
-        w->color = BLACK;
-        x->parent->color = BLACK;
+      if(GET_COLOR(w) == RED){
+        SET_COLOR(w, BLACK);
+        SET_COLOR(x->parent, BLACK);
         right_rotate(x->parent);
         w = x->parent->left;
       }
-
-      if(w->left->color == BLACK && w->right->color == BLACK){
-        w->color = RED;
-        x->parent->color = BLACK;
+      
+      if(GET_COLOR(w->left) == BLACK && GET_COLOR(w->right) == BLACK){
+        SET_COLOR(w, RED);
+        SET_COLOR(x->parent, BLACK);
         x = x->parent;
       }
       else{
-
-        if(w->left->color == BLACK){
-          w->color = RED;
-          w->right->color = BLACK;
+        
+        if(GET_COLOR(w->left) == BLACK){
+          SET_COLOR(w, RED);
+          SET_COLOR(w->right, BLACK);
           left_rotate(w);
           w = x->parent->left;
         }
-
-        w->color = x->parent->color;
-        x->parent->color = BLACK;
-        w->left->color = BLACK;
-        right_rotate(x->parent);
+        
+        SET_COLOR(w, GET_COLOR(x->parent));
+        SET_COLOR(x->parent, BLACK);
+        SET_COLOR(w->left, BLACK);
+        right_rotate(x-> parent);
         x = ROOT;
 
       }
@@ -452,7 +470,7 @@ void red_black_delete_fixup(struct node *x){
 
   }
 
-  x->color = BLACK;
+  SET_COLOR(x, BLACK);
 }
 
 /* replace node u with node v */
