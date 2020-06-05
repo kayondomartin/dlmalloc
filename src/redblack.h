@@ -63,6 +63,50 @@ struct node *ROOT;
 struct node *NILL;
 struct node global_node;
 
+static inline int init_redblack_tree(){
+  SET_COLOR(&global_node, BLACK);
+  //  struct node[NUM_TREE_NODES] TREE;
+  NILL = &global_node;
+  //struct node* NILL;
+
+  ROOT = NILL;
+  /*
+  printf("### RED-BLACK TREE INSERT ###\n\n");
+
+  int tcase, key;
+  printf("Number of key: ");
+  scanf("%lld", &tcase);
+  struct node* array = (struct node*)malloc(sizeof(struct node)*tcase);
+  while(tcase--){
+    printf("Enter key: ");
+    scanf("%lld", &key);
+    red_black_insert(key, (struct node*)array++);
+  }
+
+  printf("### TREE PRINT ###\n\n");
+  tree_print(ROOT);
+  printf("\n");
+
+  printf("### KEY SEARCH ###\n\n");
+  printf("Enter key: ");
+  scanf("%lld", &key);
+  printf((tree_search(key) == NILL) ? "NILL\n" : "%p\n", tree_search(key));
+
+  printf("### MIN TEST ###\n\n");
+  printf("MIN: %lld\n", (tree_minimum(ROOT))->key);
+
+  printf("### TREE DELETE TEST ###\n\n");
+  printf("Enter key to delete: ");
+  scanf("%lld", &key);
+  red_black_delete(tree_search(key));
+
+  printf("### TREE PRINT ###\n\n");
+  tree_print(ROOT);
+  printf("\n");
+  */
+  return 0;
+}
+
 void left_rotate(struct node *x);
 void right_rotate(struct node *x);
 void tree_print(struct node *x);

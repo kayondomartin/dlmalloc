@@ -533,7 +533,7 @@ static inline size_t get_chunk_tag(struct malloc_chunk* p){
 }
 
 static inline int is_exhausted(struct malloc_chunk* p){
-    return ((get_chunk_tag(p) + TAG_OFFSET) == TAG_BITS-TAG_OFFSET);
+    return ((get_chunk_tag(p) + TAG_OFFSET) == TAG_BITS);
 }
 
 static inline int is_usable(struct malloc_chunk* p){

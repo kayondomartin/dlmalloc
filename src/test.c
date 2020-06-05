@@ -121,14 +121,14 @@ void test_dl() {
     p3_tag = get_chunk_tag(mem_to_chunk(p3));
     dl_assert((p1_tag != 0 && p2_tag != 0 && p3_tag !=0));
     dl_printf("test 4: Arbitrary chunk alloc, check tag coloring: PASSED\n");
-
     p4 = dl_malloc(2064);
     for(int i=0; i<26; i++){
         dl_free(p4);
+        dl_printf("here: i=%d p4_tag=0x%016lX\n",i,get_chunk_tag(mem_to_chunk(p4)));
         p4 = dl_malloc(2064);
     }
+    
     dl_free(p4);
-
     int size = 5400;
     p5 = dl_malloc(size);
     for(int i=0; i<15; i++){
@@ -136,7 +136,6 @@ void test_dl() {
         p5 = dl_malloc(size);
     }
     dl_free(p5);
-
 
     p6 = dl_malloc(200);
     dl_free(p6);

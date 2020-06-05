@@ -5,6 +5,7 @@
 #include "chunk.h"
 #include "segment.h"
 #include "lock.h"
+#include "redblack.h"
 
 /*
    A malloc_state holds all of the bookkeeping for a space.

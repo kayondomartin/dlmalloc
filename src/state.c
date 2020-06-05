@@ -140,7 +140,7 @@ int blacklist_chunk(struct malloc_state* state, struct malloc_chunk* chunk){
     if(next !=0){
         next->prev_foot |= PREV_EXH_BIT;
     }
-    return 0;
+    return invalidate_chunk(state, chunk);
 }
 
 void replace_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t mmapped, struct malloc_segment* pseg, struct malloc_segment* nseg){

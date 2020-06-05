@@ -31,6 +31,7 @@ static inline void ensure_initialization() {
     if (params.magic == 0) {
         init_params();
         mte_init();
+        init_redblack_tree();
     }
 }
 
