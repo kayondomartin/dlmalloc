@@ -7,8 +7,8 @@
 #define OVERRIDE 1
 #endif /* OVERRIDE */
 
-#ifndef EMULATE_SBRK
-#define EMULATE_SBRK 1
+#ifdef EMULATE_SBRK
+#undef EMULATE_SBRK 
 #endif /* EMULATE_SBRK */
 
 #ifndef USE_LOCKS
@@ -107,5 +107,37 @@
 #define DL_FORWARD0_2(fun, x, y)        { fun(x, y); }
 #define DL_FORWARD0_3(fun, x, y, z)     { fun(x, y, z); }
 #endif
+
+/* ------------------- Declarations of public routines ------------------- */
+#ifndef USE_DL_PREFIX
+#define USE_DL_PREFIX 1
+#endif /* USE_DL_PREFIX */
+
+
+#if !USE_DL_PREFIX
+#define dl_calloc               calloc
+#define dl_free                 free
+#define dl_malloc               malloc
+#define dl_memalign             memalign
+#define dl_posix_memalign       posix_memalign
+#define dl_realloc              realloc
+#define dl_realloc_in_place     realloc_in_place
+#define dl_valloc               valloc
+#define dl_pvalloc              pvalloc//
+#define dl_mallinfo             mallinfo
+#define dl_mallopt              mallopt
+#define dl_malloc_trim          malloc_trim
+#define dl_malloc_stats         malloc_stats
+#define dl_malloc_usable_size   malloc_usable_size
+#define dl_malloc_footprint     malloc_footprint
+#define dl_malloc_max_footprint malloc_max_footprint
+#define dl_malloc_footprint_limit malloc_footprint_limit
+#define dl_malloc_set_footprint_limit malloc_set_footprint_limit
+#define dl_malloc_inspect_all   malloc_inspect_all
+#define dl_independent_calloc   independent_calloc
+#define dl_independent_comalloc independent_comalloc
+#define dl_bulk_free            bulk_free
+#endif /* USE_DL_PREFIX */
+
 
 #endif //MALLOC_CONFIG_H

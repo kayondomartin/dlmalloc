@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.11)
 project(dlalloc C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE "Debug")
 
 option(LOCKS "LOCKS" OFF)
 option(FOOTERS "FOOTERS" OFF)
@@ -39,6 +39,7 @@ if (FOOTERS MATCHES "ON")
 endif ()
 
 set(dlalloc_sources
+        src/redblack.c
         src/chunk.c
         src/debug.c
         src/error.c

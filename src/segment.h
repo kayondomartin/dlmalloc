@@ -82,7 +82,7 @@ static inline int segment_holds(struct malloc_segment *segment, void *p) {
 
 struct malloc_segment *segment_holding(struct malloc_state *state, void *p);
 
-struct malloc_segment *prev_segment(struct malloc_state* state, void *p);
+struct malloc_segment *prev_segment(struct malloc_state *state, struct malloc_segment* curr);
 
 int has_segment_link(struct malloc_state *state, struct malloc_segment *segment);
 

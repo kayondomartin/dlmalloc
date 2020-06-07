@@ -40,9 +40,15 @@ int has_segment_link(struct malloc_state *state, struct malloc_segment *segment)
     }
 }
 
-void unlink_segment_holding(struct malloc_state* state, void* p){
-    struct malloc_segment* prev = prev_segment(state, p);
-    if(prev == 0){
-        
+struct malloc_segment* prev_segment(struct malloc_state* state, struct malloc_segment* curr){
+    struct malloc_segment *sp = &state->segment;
+    for(;;){
+        if(sp == curr){
+            return 0;
+        }else if(sp->next == curr){
+            return sp;
+        }else if(sp = sp->next == 0){
+            return 0;
+        }
     }
 }

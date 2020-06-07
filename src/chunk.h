@@ -48,12 +48,15 @@ struct any_chunk {
 
 /*tmte edit: tag bits and mask*/
 #define TAG_MASK                ((size_t)-1 >> 4)
-#define TAG_BITS                (~TAG_MASK)
+#define TAG_BITS                ~((size_t)TAG_MASK)
 #define TAG_OFFSET              (TAG_MASK + 1U)
-#define BLACKLIST_BIT           ((size_t)4)
-#define FLAG_BITS               (PREV_INUSE_BIT | CURR_INUSE_BIT | BLACKLIST_BIT)
+#define FLAG_BITS               (PREV_INUSE_BIT | CURR_INUSE_BIT)
 #define SIZE_BITS               (TAG_MASK & ~FLAG_BITS)
 #define TAG_SHIFT               ((sizeof(size_t)-1) << 3)
+#define PREV_EXH_BIT            ((size_t)1)
+#define NEXT_EXH_BIT            ((size_t)2)
+#define NEXT_PEN_BIT            ((size_t)4)
+#define EXHAUSTION_BITS         (NEXT_PEN_BIT | NEXT_EXH_BIT | PREV_EXH_BIT)
 /* tmte edit end */
 
 /* Head value for fenceposts */
@@ -61,6 +64,11 @@ struct any_chunk {
 
 static inline size_t chunk_size(void *chunk) {
     return ((struct any_chunk *) chunk)->head & SIZE_BITS;
+}
+
+/* tmte edit: prev_size function: mask exhaustion bits */
+static inline size_t get_prev_size(void* p){
+    return ((struct any_chunk*)p)->prev_foot & ~EXHAUSTION_BITS;
 }
 
 static inline size_t get_foot(void *chunk, size_t size) {
@@ -312,7 +320,7 @@ static inline struct malloc_chunk *next_chunk(void *chunk) {
 }
 
 static inline struct malloc_chunk *prev_chunk(void *chunk) {
-    return (struct malloc_chunk *) (((char *) chunk) - (((struct any_chunk *) chunk)->prev_foot));
+    return (struct malloc_chunk *) (((char *) chunk) - get_prev_size(((struct any_chunk *) chunk)));
 }
 
 /* Get the internal overhead associated with chunk p */
@@ -525,16 +533,30 @@ static inline size_t get_chunk_tag(struct malloc_chunk* p){
 }
 
 static inline int is_exhausted(struct malloc_chunk* p){
-    return (get_chunk_tag(p) == TAG_BITS);
+    return ((get_chunk_tag(p) + TAG_OFFSET) == TAG_BITS);
 }
 
 static inline int is_usable(struct malloc_chunk* p){
-    return (p->head & BLACKLIST_BIT) == 0;
+    return (p->head & TAG_BITS) != TAG_BITS;
 }
 
 static inline void set_chunk_tag(struct malloc_chunk* p, size_t tag){
     p->head &= TAG_MASK, p->head |= tag;
 }
+
+static inline int is_next_exhausted(struct malloc_chunk* p){
+    return (p->prev_foot & NEXT_EXH_BIT) == NEXT_EXH_BIT;
+}
+
+static inline int is_prev_exhausted(struct malloc_chunk* p){
+    return (p->prev_foot & PREV_EXH_BIT) == PREV_EXH_BIT;
+}
+
+static inline int is_next_pending_deletion(struct malloc_chunk* p){
+    return (p->prev_foot & NEXT_PEN_BIT) == NEXT_PEN_BIT;
+}
+
+
 /* tmte edit end */
 
 void insert_chunk(struct malloc_state *, struct malloc_chunk *, size_t);
