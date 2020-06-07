@@ -9,17 +9,19 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
       i+=1){
     size_t start = (i>(size_t)chunk>>UNMAP_UNIT_POWER ? i*UNMAP_UNIT : (size_t)chunk);
     size_t end = ((size_t)chunk + size > (i+1) * UNMAP_UNIT ? (i+1) * UNMAP_UNIT : (size_t)chunk + size);
-    if(tree_search(i)==NILL){
+    struct node * node_t = tree_search(i);
+    if(node_t==NILL){
       red_black_insert(i, (end-start)>>4, (struct node*) chunk);
     }else{
-      size_t size_h = GET_EXH(chunk);
-      if((end-start)>>4 + size_h > (UNMAP_UNIT_POWER-MIN_CHUNK_SIZE)>>4){
+      size_t size_h = GET_EXH(node_t);
+      size_t size_n = (((end-start) >> 4) + size_h);
+      if(size_n > (UNMAP_UNIT_POWER-MIN_CHUNK_SIZE)>>4){
         if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT))
           ;
         else
           ret = -1;
       }else{
-        SET_EXH(chunk, end-start+size_h);
+        SET_EXH(node_t, size_n);
       }
     }
   }

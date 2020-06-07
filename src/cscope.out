@@ -1,4 +1,4 @@
-cscope 15 $HOME/dlmalloc/src               0000558819
+cscope 15 $HOME/dlmalloc/src               0000563883
 	@/home/iybang/dlmalloc/src/assert.h
 
 1 #i‚de‡
@@ -1669,7 +1669,7 @@ size
 √xt
 )) {
 
-310 
+309 
 size_t
  
 √xt_èg
@@ -1679,25 +1679,25 @@ size_t
 √xt
 );
 
-311 if(
+310 if(
 √xt_èg
  > 
 √w_èg
 ){
 
-312 
+311 
 √w_èg
  = 
 √xt_èg
 ;
 
-313 if(!
+312 if(!
 	`cuº_öu£
 (
 chunk
 )){
 
-314 
+313 
 	`£t_chunk_èg
 (
 	`√xt_chunk
@@ -1707,7 +1707,7 @@ chunk
 √w_èg
 );
 
-316 
+315 
 	`£t_chunk_èg
 (
 chunk
@@ -1715,13 +1715,13 @@ chunk
 √w_èg
 );
 
-318 }if(
+317 }if(
 √w_èg
  !
 √xt_èg
 ){
 
-319 
+318 
 	`£t_chunk_èg
 (
 √xt
@@ -1729,7 +1729,7 @@ chunk
 √w_èg
 );
 
-322 i‡(
+321 i‡(
 √xt
  =
 °©e
@@ -1737,7 +1737,7 @@ chunk
 t›
 ) {
 
-323 
+322 
 size_t
  
 tsize
@@ -1749,7 +1749,7 @@ t›_size
 size
 ;
 
-324 
+323 
 size_t
  
 tcsize
@@ -1761,7 +1761,7 @@ t›_cﬁ‹ed_size
 size
 ;
 
-325 
+324 
 °©e
 ->
 t›
@@ -1769,7 +1769,7 @@ t›
 chunk
 ;
 
-326 
+325 
 chunk
 ->
 hód
@@ -1781,7 +1781,7 @@ PREV_INUSE_BIT
 √w_èg
 ;
 
-327 
+326 
 	`mã_cﬁ‹_èg
 (
 chunk
@@ -1793,7 +1793,7 @@ tcsize
 √w_èg
 ));
 
-328 i‡(
+327 i‡(
 chunk
  =
 °©e
@@ -1801,19 +1801,19 @@ chunk
 dv
 ) {
 
-329 
+328 
 °©e
 ->
 dv
  = 0;
 
-330 
+329 
 °©e
 ->
 dv_size
  = 0;
 
-334 i‡(
+333 i‡(
 √xt
  =
 °©e
@@ -1821,7 +1821,7 @@ dv_size
 dv
 ) {
 
-335 
+334 
 size_t
  
 dsize
@@ -1833,7 +1833,7 @@ dv_size
 size
 ;
 
-336 
+335 
 °©e
 ->
 dv
@@ -1841,7 +1841,7 @@ dv
 chunk
 ;
 
-337 
+336 
 	`£t_chunk_èg
 (
 chunk
@@ -1849,7 +1849,7 @@ chunk
 √w_èg
 );
 
-338 
+337 
 	`mã_cﬁ‹_èg
 (
 chunk
@@ -1861,7 +1861,7 @@ dsize
 √w_èg
 ));
 
-339 
+338 
 	`£t_size_™d_¥ev_öu£_of_‰ì_chunk
 (
 chunk
@@ -1869,7 +1869,27 @@ chunk
 dsize
 );
 
-343 
+339 
+	`£t_chunk_èg
+(
+chunk
+, 
+√w_èg
+);
+
+340 
+	`mã_cﬁ‹_èg
+(
+chunk
+, 
+dsize
+, 
+	`èg_to_öt
+(
+√w_èg
+));
+
+344 
 size_t
  
 nsize
@@ -1879,13 +1899,13 @@ nsize
 √xt
 );
 
-344 
+345 
 size
  +
 nsize
 ;
 
-345 
+346 
 	`u∆ök_chunk
 (
 °©e
@@ -1895,7 +1915,7 @@ nsize
 nsize
 );
 
-346 
+347 
 	`£t_chunk_èg
 (
 chunk
@@ -1903,7 +1923,7 @@ chunk
 √w_èg
 );
 
-347 
+348 
 	`mã_cﬁ‹_èg
 (
 chunk
@@ -1915,7 +1935,7 @@ size
 √w_èg
 ));
 
-348 
+349 
 	`£t_size_™d_¥ev_öu£_of_‰ì_chunk
 (
 chunk
@@ -1923,7 +1943,25 @@ chunk
 size
 );
 
-349 i‡(
+350 
+	`£t_chunk_èg
+(
+chunk
+, 
+√w_èg
+);
+
+351 
+	`mã_cﬁ‹_èg
+(
+chunk
+, 
+size
+, 
+√w_èg
+);
+
+352 i‡(
 chunk
  =
 °©e
@@ -1931,7 +1969,7 @@ chunk
 dv
 ) {
 
-350 
+353 
 °©e
 ->
 dv_size
@@ -1939,13 +1977,13 @@ dv_size
 size
 ;
 
-356 if(!
+359 if(!
 	`cuº_öu£
 (
 chunk
 )){
 
-357 
+360 
 	`£t_chunk_èg
 (
 	`√xt_chunk
@@ -1955,7 +1993,7 @@ chunk
 √w_èg
 );
 
-359 
+362 
 	`£t_chunk_èg
 (
 chunk
@@ -1963,7 +2001,7 @@ chunk
 √w_èg
 );
 
-360 
+363 
 	`mã_cﬁ‹_èg
 (
 chunk
@@ -1975,7 +2013,7 @@ size
 √w_èg
 ));
 
-361 
+364 
 	`£t_‰ì_wôh_¥ev_öu£
 (
 chunk
@@ -1985,7 +2023,27 @@ size
 √xt
 );
 
-363 
+365 
+	`£t_chunk_èg
+(
+chunk
+, 
+√w_èg
+);
+
+366 
+	`mã_cﬁ‹_èg
+(
+chunk
+, 
+size
+, 
+	`èg_to_öt
+(
+√w_èg
+));
+
+368 
 	`ö£π_chunk
 (
 °©e
@@ -1995,13 +2053,13 @@ chunk
 size
 );
 
-366 
+371 
 	`c‹ru±i⁄_îr‹
 (
 °©e
 );
 
-368 
+373 
 	}
 }
 
@@ -2161,7 +2219,9 @@ size_t
 
 51 
 	#TAG_BITS
- (~
+ ~((
+size_t
+)
 TAG_MASK
 )
 
@@ -2176,32 +2236,30 @@ TAG_MASK
 	)
 
 53 
-	#BLACKLIST_BIT
- ((
-size_t
-)4)
-
-	)
-
-54 
 	#FLAG_BITS
  (
 PREV_INUSE_BIT
  | 
 CURR_INUSE_BIT
- | 
-BLACKLIST_BIT
 )
 
 	)
 
-55 
+54 
 	#SIZE_BITS
  (
 TAG_MASK
  & ~
 FLAG_BITS
 )
+
+	)
+
+55 
+	#TAG_SHIFT
+ (((
+size_t
+)-1Ë<< 3)
 
 	)
 
@@ -2291,7 +2349,7 @@ p
 p
 )->
 ¥ev_foŸ
- & 
+ & ~
 EXHAUSTION_BITS
 ;
 
@@ -3401,13 +3459,7 @@ TREE_BIN_SHIFT
 
 	)
 
-518 c⁄° 
-	gTAG_SHIFT
- = ((
-size_t
-)-1) << 3;
-
-520 
+519 
 ölöe
  
 size_t
@@ -3421,17 +3473,17 @@ x
 y
 ){
 
-521  
+520  
 x
  > 
 y
 ? x: y;
 
-522 
+521 
 	}
 }
 
-524 
+523 
 ölöe
  
 u_öt8_t
@@ -3443,17 +3495,17 @@ size_t
 èg
 ){
 
-525  
+524  
 èg
  >> 
 TAG_SHIFT
 ;
 
-526 
+525 
 	}
 }
 
-528 
+527 
 ölöe
  
 size_t
@@ -3465,17 +3517,17 @@ u_öt8_t
 öt_èg
 ){
 
-529  
+528  
 öt_èg
  << 
 TAG_SHIFT
 ;
 
-530 
+529 
 	}
 }
 
-532 
+531 
 ölöe
  
 size_t
@@ -3487,7 +3539,7 @@ mÆloc_chunk
 p
 ){
 
-533  
+532  
 p
 ->
 hód
@@ -3495,11 +3547,11 @@ hód
 TAG_BITS
 ;
 
-534 
+533 
 	}
 }
 
-536 
+535 
 ölöe
  
 	$is_exhau°ed
@@ -3509,19 +3561,21 @@ mÆloc_chunk
 p
 ){
 
-537  (
+536  ((
 	`gë_chunk_èg
 (
 p
+Ë+ 
+TAG_OFFSET
 Ë=
 TAG_BITS
 );
 
-538 
+537 
 	}
 }
 
-540 
+539 
 ölöe
  
 	$is_ußbÀ
@@ -3531,19 +3585,19 @@ mÆloc_chunk
 p
 ){
 
-541  (
+540  (
 p
 ->
 hód
  & 
-BLACKLIST_BIT
-) == 0;
+TAG_BITS
+) != TAG_BITS;
 
-542 
+541 
 	}
 }
 
-544 
+543 
 ölöe
  
 	$£t_chunk_èg
@@ -3557,7 +3611,7 @@ size_t
 èg
 ){
 
-545 
+544 
 p
 ->
 hód
@@ -3567,33 +3621,11 @@ TAG_MASK
 èg
 ;
 
-546 
+545 
 	}
 }
 
-548 
-ölöe
- 
-	$is_bœckli°ed
-(
-mÆloc_chunk
-* 
-p
-){
-
-549  (
-p
-->
-hód
- & 
-BLACKLIST_BIT
-) == BLACKLIST_BIT;
-
-550 
-	}
-}
-
-552 
+547 
 ölöe
  
 	$is_√xt_exhau°ed
@@ -3603,7 +3635,7 @@ mÆloc_chunk
 p
 ){
 
-553  (
+548  (
 p
 ->
 ¥ev_foŸ
@@ -3611,11 +3643,11 @@ p
 NEXT_EXH_BIT
 ) == NEXT_EXH_BIT;
 
-554 
+549 
 	}
 }
 
-556 
+551 
 ölöe
  
 	$is_¥ev_exhau°ed
@@ -3625,7 +3657,7 @@ mÆloc_chunk
 p
 ){
 
-557  (
+552  (
 p
 ->
 ¥ev_foŸ
@@ -3633,11 +3665,11 @@ p
 PREV_EXH_BIT
 ) == PREV_EXH_BIT;
 
-558 
+553 
 	}
 }
 
-560 
+555 
 ölöe
  
 	$is_√xt_≥ndög_dñëi⁄
@@ -3647,7 +3679,7 @@ mÆloc_chunk
 p
 ){
 
-561  (
+556  (
 p
 ->
 ¥ev_foŸ
@@ -3655,11 +3687,11 @@ p
 NEXT_PEN_BIT
 ) == NEXT_PEN_BIT;
 
-562 
+557 
 	}
 }
 
-567 
+562 
 ö£π_chunk
 (
 mÆloc_°©e
@@ -3669,7 +3701,7 @@ mÆloc_chunk
 size_t
 );
 
-569 
+564 
 u∆ök_chunk
 (
 mÆloc_°©e
@@ -3679,7 +3711,7 @@ mÆloc_chunk
 size_t
 );
 
-571 
+566 
 ö£π_smÆl_chunk
 (
 mÆloc_°©e
@@ -3689,7 +3721,7 @@ mÆloc_chunk
 size_t
 );
 
-573 
+568 
 u∆ök_smÆl_chunk
 (
 mÆloc_°©e
@@ -3699,7 +3731,7 @@ mÆloc_chunk
 size_t
 );
 
-575 
+570 
 u∆ök_fú°_smÆl_chunk
 (
 mÆloc_°©e
@@ -3709,7 +3741,7 @@ mÆloc_chunk
 bö_ödex_t
 );
 
-577 
+572 
 ª∂a˚_dv
 (
 mÆloc_°©e
@@ -3719,7 +3751,7 @@ mÆloc_chunk
 size_t
 );
 
-579 
+574 
 ö£π_œrge_chunk
 (
 mÆloc_°©e
@@ -3729,7 +3761,7 @@ mÆloc_åì_chunk
 size_t
 );
 
-581 
+576 
 u∆ök_œrge_chunk
 (
 mÆloc_°©e
@@ -3737,7 +3769,7 @@ mÆloc_°©e
 mÆloc_åì_chunk
  *);
 
-583 
+578 
 di•o£_chunk
 (
 mÆloc_°©e
@@ -9819,7 +9851,29 @@ p
 p
 );
 
-186 
+179 if(
+	`is_exhau°ed
+(
+p
+)){
+
+180 if(
+	`bœckli°_chunk
+(
+°©e
+, 
+p
+) == 0){
+
+181 
+po°a˘i⁄
+;
+
+183 
+îr‹a˘i⁄
+;
+
+188 
 size_t
  
 √w_èg
@@ -9831,7 +9885,7 @@ p
 TAG_OFFSET
 ;
 
-189 i‡(
+191 i‡(
 	`likñy
 (
 	`ok_addªss
@@ -9843,7 +9897,7 @@ p
 	`ok_öu£
 (p))) {
 
-190 
+192 
 size_t
  
 psize
@@ -9853,25 +9907,27 @@ psize
 p
 );
 
-191 
+193 
 mÆloc_chunk
  *
 √xt
  = 
-	`chunk_∂us_off£t
+	`is_√xt_exhau°ed
 (
 p
-, 
+)? 0: 
+	`chunk_∂us_off£t
+’, 
 psize
 );
 
-192 i‡(!
+194 i‡(!
 	`¥ev_öu£
 (
 p
 )) {
 
-193 
+195 
 size_t
  
 ¥ev_size
@@ -9881,13 +9937,13 @@ size_t
 p
 );
 
-194 i‡(
+196 i‡(
 	`is_mm≠≥d
 (
 p
 )) {
 
-195 
+197 
 psize
  +
 ¥ev_size
@@ -9895,7 +9951,7 @@ psize
 MMAP_FOOT_PAD
 ;
 
-196 i‡(
+198 i‡(
 	`ˇŒ_munm≠
 ((*Ë
 p
@@ -9905,7 +9961,7 @@ p
 psize
 ) == 0) {
 
-197 
+199 
 °©e
 ->
 foŸ¥öt
@@ -9913,11 +9969,11 @@ foŸ¥öt
 psize
 ;
 
-199 
+201 
 po°a˘i⁄
 ;
 
-202 
+204 
 mÆloc_chunk
  *
 ¥ev
@@ -9929,7 +9985,7 @@ p
 ¥ev_size
 );
 
-203 
+205 
 √w_èg
  = 
 	`max
@@ -9939,19 +9995,19 @@ p
 ¥ev
 ));
 
-204 
+206 
 psize
  +
 ¥ev_size
 ;
 
-205 
+207 
 p
  = 
 ¥ev
 ;
 
-206 i‡(
+208 i‡(
 	`likñy
 (
 	`ok_addªss
@@ -9961,7 +10017,7 @@ p
 ¥ev
 ))) {
 
-207 i‡(
+209 i‡(
 p
  !
 °©e
@@ -9969,7 +10025,7 @@ p
 dv
 ) {
 
-208 
+210 
 	`u∆ök_chunk
 (
 °©e
@@ -9979,7 +10035,7 @@ p
 ¥ev_size
 );
 
-210 i‡((
+212 i‡((
 √xt
 ->
 hód
@@ -9987,7 +10043,7 @@ hód
 INUSE_BITS
 ) == INUSE_BITS) {
 
-211 
+213 
 °©e
 ->
 dv_size
@@ -9995,7 +10051,7 @@ dv_size
 psize
 ;
 
-212 
+214 
 	`£t_‰ì_wôh_¥ev_öu£
 (
 p
@@ -10005,7 +10061,7 @@ psize
 √xt
 );
 
-213 
+215 
 	`mã_cﬁ‹_èg
 ((*)
 p
@@ -10017,33 +10073,33 @@ psize
 √w_èg
 ));
 
-214 
+216 
 po°a˘i⁄
 ;
 
-218 
+220 
 îr‹a˘i⁄
 ;
 
-223 i‡(
+225 i‡(
+√xt
+ !0 && 
 	`likñy
 (
 	`ok_√xt
 (
 p
-, 
-√xt
-Ë&& 
+,ÇextË&& 
 	`ok_¥ev_öu£
 (next))) {
 
-224 i‡(!
+226 i‡(!
 	`cuº_öu£
 (
 √xt
 )) {
 
-227 
+229 
 size_t
  
 √xt_èg
@@ -10055,25 +10111,25 @@ size_t
 √xt
 );
 
-228 if(
+230 if(
 √xt_èg
  > 
 √w_èg
 ){
 
-229 
+231 
 √w_èg
  = 
 √xt_èg
 ;
 
-230 if(!
+232 if(!
 	`cuº_öu£
 (
 p
 )){
 
-231 
+233 
 	`£t_chunk_èg
 (
 	`√xt_chunk
@@ -10083,7 +10139,7 @@ p
 √w_èg
 );
 
-233 
+235 
 	`£t_chunk_èg
 (
 p
@@ -10091,7 +10147,19 @@ p
 √w_èg
 );
 
-238 i‡(
+237 }if(
+√xt_èg
+ != 0){
+
+238 
+	`£t_chunk_èg
+(
+√xt
+, 
+√w_èg
+);
+
+242 i‡(
 √xt
  =
 °©e
@@ -10099,7 +10167,7 @@ p
 t›
 ) {
 
-239 
+243 
 size_t
  
 tsize
@@ -10111,7 +10179,7 @@ t›_size
 psize
 ;
 
-240 
+244 
 size_t
  
 tcsize
@@ -10123,7 +10191,7 @@ t›_cﬁ‹ed_size
 psize
 ;
 
-241 
+245 
 °©e
 ->
 t›
@@ -10131,7 +10199,7 @@ t›
 p
 ;
 
-242 
+246 
 p
 ->
 hód
@@ -10143,7 +10211,7 @@ PREV_INUSE_BIT
 √w_èg
 ;
 
-243 
+247 
 	`mã_cﬁ‹_èg
 ((*)
 p
@@ -10155,7 +10223,7 @@ tcsize
 √w_èg
 ));
 
-244 i‡(
+248 i‡(
 p
  =
 °©e
@@ -10163,19 +10231,19 @@ p
 dv
 ) {
 
-245 
+249 
 °©e
 ->
 dv
  = 0;
 
-246 
+250 
 °©e
 ->
 dv_size
  = 0;
 
-248 i‡(
+252 i‡(
 	`should_åim
 (
 °©e
@@ -10183,17 +10251,17 @@ dv_size
 tsize
 )) {
 
-249 
+253 
 	`sys_åim
 (
 °©e
 , 0);
 
-251 
+255 
 po°a˘i⁄
 ;
 
-253 i‡(
+257 i‡(
 √xt
  =
 °©e
@@ -10201,7 +10269,7 @@ po°a˘i⁄
 dv
 ) {
 
-254 
+258 
 size_t
  
 dsize
@@ -10213,7 +10281,7 @@ dv_size
 psize
 ;
 
-255 
+259 
 °©e
 ->
 dv
@@ -10221,7 +10289,7 @@ dv
 p
 ;
 
-256 
+260 
 	`£t_size_™d_¥ev_öu£_of_‰ì_chunk
 (
 p
@@ -10229,7 +10297,7 @@ p
 dsize
 );
 
-257 
+261 
 	`£t_chunk_èg
 (
 p
@@ -10237,7 +10305,7 @@ p
 √w_èg
 );
 
-258 
+262 
 	`mã_cﬁ‹_èg
 ((*)
 p
@@ -10249,11 +10317,11 @@ dsize
 √w_èg
 ));
 
-259 
+263 
 po°a˘i⁄
 ;
 
-262 
+266 
 size_t
  
 nsize
@@ -10263,13 +10331,13 @@ nsize
 √xt
 );
 
-263 
+267 
 psize
  +
 nsize
 ;
 
-264 
+268 
 	`u∆ök_chunk
 (
 °©e
@@ -10279,7 +10347,7 @@ nsize
 nsize
 );
 
-265 
+269 
 	`£t_size_™d_¥ev_öu£_of_‰ì_chunk
 (
 p
@@ -10287,7 +10355,7 @@ p
 psize
 );
 
-266 
+270 
 	`£t_chunk_èg
 ((
 ™y_chunk
@@ -10297,7 +10365,7 @@ p
 √w_èg
 );
 
-267 
+271 
 	`mã_cﬁ‹_èg
 (
 p
@@ -10309,7 +10377,7 @@ psize
 √w_èg
 ));
 
-268 i‡(
+272 i‡(
 p
  =
 °©e
@@ -10317,7 +10385,7 @@ p
 dv
 ) {
 
-269 
+273 
 °©e
 ->
 dv_size
@@ -10325,17 +10393,17 @@ dv_size
 psize
 ;
 
-270 
+274 
 po°a˘i⁄
 ;
 
-275 if(!
+279 if(!
 	`cuº_öu£
 (
 p
 )){
 
-276 
+280 
 	`£t_chunk_èg
 (
 	`√xt_chunk
@@ -10345,7 +10413,7 @@ p
 √w_èg
 );
 
-278 
+282 
 	`£t_chunk_èg
 (
 p
@@ -10353,7 +10421,7 @@ p
 √w_èg
 );
 
-279 
+283 
 	`mã_cﬁ‹_èg
 (
 p
@@ -10365,7 +10433,7 @@ psize
 √w_èg
 ));
 
-280 
+284 
 	`£t_‰ì_wôh_¥ev_öu£
 (
 p
@@ -10375,13 +10443,13 @@ psize
 √xt
 );
 
-283 i‡(
+287 i‡(
 	`is_smÆl
 (
 psize
 )) {
 
-284 
+288 
 	`ö£π_smÆl_chunk
 (
 °©e
@@ -10391,7 +10459,7 @@ p
 psize
 );
 
-285 
+289 
 	`check_‰ì_chunk
 (
 °©e
@@ -10399,7 +10467,7 @@ psize
 p
 );
 
-288 
+292 
 mÆloc_åì_chunk
  *
 ç
@@ -10407,7 +10475,7 @@ mÆloc_åì_chunk
 p
 ;
 
-289 
+293 
 	`ö£π_œrge_chunk
 (
 °©e
@@ -10417,7 +10485,7 @@ p
 psize
 );
 
-290 
+294 
 	`check_‰ì_chunk
 (
 °©e
@@ -10425,27 +10493,27 @@ psize
 p
 );
 
-291 i‡(--
+295 i‡(--
 °©e
 ->
 ªÀa£_checks
  == 0) {
 
-292 
+296 
 	`ªÀa£_unu£d_£gmíts
 (
 °©e
 );
 
-295 
+299 
 po°a˘i⁄
 ;
 
-298 
+302 
 îr‹a˘i⁄
 :
 
-299 
+303 
 	`ußge_îr‹
 (
 °©e
@@ -10453,21 +10521,21 @@ po°a˘i⁄
 p
 );
 
-300 
+304 
 po°a˘i⁄
 :
 
-301 
+305 
 	`POSTACTION
 (
 °©e
 );
 
-303 
+307 
 	}
 }
 
-306 *
+310 *
 	$tmÆloc_œrge
 (
 mÆloc_°©e
@@ -10479,13 +10547,13 @@ size_t
 nb
 ) {
 
-307 
+311 
 mÆloc_åì_chunk
  *
 v
  = 0;
 
-308 
+312 
 size_t
  
 rsize
@@ -10493,19 +10561,19 @@ rsize
 nb
 ;
 
-309 
+313 
 mÆloc_åì_chunk
  *
 t
 ;
 
-310 
+314 
 bö_ödex_t
  
 idx
 ;
 
-311 
+315 
 	`compuã_åì_ödex
 (
 nb
@@ -10513,7 +10581,7 @@ nb
 idx
 );
 
-312 i‡((
+316 i‡((
 t
  = *
 	`åì_bö_©
@@ -10523,7 +10591,7 @@ t
 idx
 )) != 0) {
 
-314 
+318 
 size_t
  
 sizebôs
@@ -10535,19 +10603,19 @@ nb
 idx
 );
 
-315 
+319 
 mÆloc_åì_chunk
  *
 r°
  = 0;
 
-317 
+321 
 mÆloc_åì_chunk
  *
 π
 ;
 
-318 
+322 
 size_t
  
 åem
@@ -10559,25 +10627,25 @@ t
 nb
 ;
 
-319 i‡(
+323 i‡(
 åem
  < 
 rsize
 ) {
 
-320 
+324 
 v
  = 
 t
 ;
 
-321 i‡((
+325 i‡((
 rsize
  = 
 åem
 ) == 0) {
 
-325 
+329 
 π
  = 
 t
@@ -10585,7 +10653,7 @@ t
 chûd
 [1];
 
-326 
+330 
 t
  =Å->
 chûd
@@ -10597,39 +10665,39 @@ SIZE_T_BITSIZE
 size_t
 ) 1)) & 1];
 
-327 i‡(
+331 i‡(
 π
  !0 &&Ñà!
 t
 ) {
 
-328 
+332 
 r°
  = 
 π
 ;
 
-330 i‡(
+334 i‡(
 t
  == 0) {
 
-331 
+335 
 t
  = 
 r°
 ;
 
-334 
+338 
 sizebôs
  <<= 1;
 
-337 i‡(
+341 i‡(
 t
  =0 && 
 v
  == 0) {
 
-338 
+342 
 bö_m≠_t
  
 À·_bôs
@@ -10645,17 +10713,17 @@ idx
 åì_m≠
 ;
 
-339 i‡(
+343 i‡(
 À·_bôs
  != 0) {
 
-340 
+344 
 bö_ödex_t
  
 i
 ;
 
-341 
+345 
 bö_m≠_t
  
 Àa°_bô
@@ -10665,7 +10733,7 @@ bö_m≠_t
 À·_bôs
 );
 
-342 
+346 
 	`compuã_bô2idx
 (
 Àa°_bô
@@ -10673,7 +10741,7 @@ bö_m≠_t
 i
 );
 
-343 
+347 
 t
  = *
 	`åì_bö_©
@@ -10683,11 +10751,11 @@ t
 i
 );
 
-347 
+351 
 t
  != 0) {
 
-348 
+352 
 size_t
  
 åem
@@ -10699,31 +10767,31 @@ t
 nb
 ;
 
-349 i‡(
+353 i‡(
 åem
  < 
 rsize
 ) {
 
-350 
+354 
 rsize
  = 
 åem
 ;
 
-351 
+355 
 v
  = 
 t
 ;
 
-353 
+357 
 t
  = 
 	`À·mo°_chûd
 (t);
 
-357 i‡(
+361 i‡(
 v
  !0 && 
 rsize
@@ -10737,7 +10805,7 @@ dv_size
 nb
 )) {
 
-358 i‡(
+362 i‡(
 	`likñy
 (
 	`ok_addªss
@@ -10747,7 +10815,7 @@ nb
 v
 ))) {
 
-359 
+363 
 mÆloc_chunk
  *
 r
@@ -10759,7 +10827,7 @@ v
 nb
 );
 
-360 
+364 
 	`dl_as£π
 (
 	`chunk_size
@@ -10771,7 +10839,7 @@ rsize
 nb
 );
 
-361 i‡(
+365 i‡(
 	`likñy
 (
 	`ok_√xt
@@ -10781,7 +10849,7 @@ v
 r
 ))) {
 
-362 
+366 
 	`u∆ök_œrge_chunk
 (
 °©e
@@ -10789,13 +10857,13 @@ r
 v
 );
 
-363 i‡(
+367 i‡(
 rsize
  < 
 MIN_CHUNK_SIZE
 ) {
 
-364 
+368 
 	`£t_öu£_™d_¥ev_öu£
 (
 °©e
@@ -10807,7 +10875,7 @@ rsize
 nb
 ));
 
-367 
+371 
 	`£t_size_™d_¥ev_öu£_of_öu£_chunk
 (
 °©e
@@ -10817,7 +10885,7 @@ v
 nb
 );
 
-370 
+374 
 	`£t_chunk_èg
 ((
 ™y_chunk
@@ -10829,7 +10897,7 @@ r
 v
 ));
 
-373 
+377 
 	`£t_size_™d_¥ev_öu£_of_‰ì_chunk
 (
 r
@@ -10837,7 +10905,7 @@ r
 rsize
 );
 
-374 
+378 
 	`ö£π_chunk
 (
 °©e
@@ -10847,23 +10915,23 @@ r
 rsize
 );
 
-376  
+380  
 	`chunk_to_mem
 (
 v
 );
 
-379 
+383 
 	`c‹ru±i⁄_îr‹
 (
 °©e
 );
 
-382 
+386 
 	}
 }
 
-385 *
+389 *
 	$tmÆloc_smÆl
 (
 mÆloc_°©e
@@ -10875,7 +10943,7 @@ size_t
 nb
 ) {
 
-386 
+390 
 mÆloc_åì_chunk
  *
 t
@@ -10883,13 +10951,13 @@ t
 v
 ;
 
-387 
+391 
 bö_ödex_t
  
 i
 ;
 
-388 
+392 
 bö_m≠_t
  
 Àa°_bô
@@ -10901,7 +10969,7 @@ bö_m≠_t
 åì_m≠
 );
 
-389 
+393 
 	`compuã_bô2idx
 (
 Àa°_bô
@@ -10909,7 +10977,7 @@ bö_m≠_t
 i
 );
 
-390 
+394 
 v
  = 
 t
@@ -10921,7 +10989,7 @@ t
 i
 );
 
-391 
+395 
 size_t
  
 rsize
@@ -10933,13 +11001,13 @@ t
 nb
 ;
 
-393 (
+397 (
 t
  = 
 	`À·mo°_chûd
 (t)) != 0) {
 
-394 
+398 
 size_t
  
 åem
@@ -10951,25 +11019,25 @@ t
 nb
 ;
 
-395 i‡(
+399 i‡(
 åem
  < 
 rsize
 ) {
 
-396 
+400 
 rsize
  = 
 åem
 ;
 
-397 
+401 
 v
  = 
 t
 ;
 
-401 i‡(
+405 i‡(
 	`likñy
 (
 	`ok_addªss
@@ -10979,7 +11047,7 @@ t
 v
 ))) {
 
-402 
+406 
 mÆloc_chunk
  *
 r
@@ -10991,7 +11059,7 @@ v
 nb
 );
 
-403 
+407 
 	`dl_as£π
 (
 	`chunk_size
@@ -11003,7 +11071,7 @@ rsize
 nb
 );
 
-404 i‡(
+408 i‡(
 	`likñy
 (
 	`ok_√xt
@@ -11013,7 +11081,7 @@ v
 r
 ))) {
 
-405 
+409 
 	`u∆ök_œrge_chunk
 (
 °©e
@@ -11021,13 +11089,13 @@ r
 v
 );
 
-406 i‡(
+410 i‡(
 rsize
  < 
 MIN_CHUNK_SIZE
 ) {
 
-407 
+411 
 	`£t_öu£_™d_¥ev_öu£
 (
 °©e
@@ -11039,7 +11107,7 @@ rsize
 nb
 ));
 
-410 
+414 
 	`£t_size_™d_¥ev_öu£_of_öu£_chunk
 (
 °©e
@@ -11049,7 +11117,7 @@ v
 nb
 );
 
-413 
+417 
 	`£t_chunk_èg
 ((
 ™y_chunk
@@ -11061,7 +11129,7 @@ r
 v
 ));
 
-416 
+420 
 	`£t_size_™d_¥ev_öu£_of_‰ì_chunk
 (
 r
@@ -11069,7 +11137,7 @@ r
 rsize
 );
 
-417 
+421 
 	`ª∂a˚_dv
 (
 °©e
@@ -11079,23 +11147,23 @@ r
 rsize
 );
 
-419  
+423  
 	`chunk_to_mem
 (
 v
 );
 
-423 
+427 
 	`c‹ru±i⁄_îr‹
 (
 °©e
 );
 
-425 
+429 
 	}
 }
 
-428 
+432 
 mÆloc_chunk
  *
 	$åy_ªÆloc_chunk
@@ -11115,13 +11183,13 @@ nb
 ˇn_move
 ) {
 
-429 
+433 
 mÆloc_chunk
  *
 √w_p
  = 0;
 
-430 
+434 
 size_t
  
 ﬁd_size
@@ -11131,19 +11199,21 @@ size_t
 chunk
 );
 
-431 
+435 
 mÆloc_chunk
  *
 √xt
  = 
-	`chunk_∂us_off£t
+	`is_√xt_exhau°ed
 (
 chunk
-, 
+)? 0: 
+	`chunk_∂us_off£t
+(chunk, 
 ﬁd_size
 );
 
-432 i‡(
+436 i‡(
 	`likñy
 (
 	`ok_addªss
@@ -11154,20 +11224,20 @@ chunk
 Ë&& 
 	`ok_öu£
 (chunkË&& 
-	`ok_√xt
-(chunk, 
 √xt
-Ë&& 
+ !0 && 
+	`ok_√xt
+(chunk,ÇextË&& 
 	`ok_¥ev_öu£
 (next))) {
 
-433 i‡(
+437 i‡(
 	`is_mm≠≥d
 (
 chunk
 )) {
 
-434 
+438 
 √w_p
  = 
 	`mm≠_ªsize
@@ -11181,13 +11251,13 @@ nb
 ˇn_move
 );
 
-436 i‡(
+440 i‡(
 ﬁd_size
  >
 nb
 ) {
 
-437 
+441 
 size_t
  
 rsize
@@ -11197,13 +11267,13 @@ rsize
 nb
 ;
 
-438 i‡(
+442 i‡(
 rsize
  >
 MIN_CHUNK_SIZE
 ) {
 
-439 
+443 
 mÆloc_chunk
  *
 r
@@ -11215,7 +11285,7 @@ chunk
 nb
 );
 
-440 
+444 
 	`£t_öu£
 (
 °©e
@@ -11225,7 +11295,7 @@ chunk
 nb
 );
 
-441 
+445 
 	`£t_öu£
 (
 °©e
@@ -11235,7 +11305,7 @@ r
 rsize
 );
 
-442 
+446 
 	`di•o£_chunk
 (
 °©e
@@ -11245,13 +11315,13 @@ r
 rsize
 );
 
-444 
+448 
 √w_p
  = 
 chunk
 ;
 
-446 i‡(
+450 i‡(
 √xt
  =
 °©e
@@ -11259,7 +11329,7 @@ chunk
 t›
 ) {
 
-447 i‡(
+451 i‡(
 ﬁd_size
  + 
 °©e
@@ -11269,7 +11339,7 @@ t›_size
 nb
 ) {
 
-448 
+452 
 size_t
  
 √w_size
@@ -11281,7 +11351,7 @@ size_t
 t›_size
 ;
 
-449 
+453 
 size_t
  
 √w_t›_size
@@ -11291,7 +11361,7 @@ size_t
 nb
 ;
 
-450 
+454 
 mÆloc_chunk
  *
 √w_t›
@@ -11303,7 +11373,7 @@ chunk
 nb
 );
 
-451 
+455 
 	`£t_öu£
 (
 °©e
@@ -11313,7 +11383,7 @@ chunk
 nb
 );
 
-452 
+456 
 √w_t›
 ->
 hód
@@ -11323,7 +11393,7 @@ hód
 PREV_INUSE_BIT
 ;
 
-453 
+457 
 °©e
 ->
 t›
@@ -11331,7 +11401,7 @@ t›
 √w_t›
 ;
 
-454 
+458 
 °©e
 ->
 t›_size
@@ -11339,13 +11409,13 @@ t›_size
 √w_t›_size
 ;
 
-455 
+459 
 √w_p
  = 
 chunk
 ;
 
-458 i‡(
+462 i‡(
 √xt
  =
 °©e
@@ -11353,7 +11423,7 @@ chunk
 dv
 ) {
 
-459 
+463 
 size_t
  
 dvs
@@ -11363,7 +11433,7 @@ dvs
 dv_size
 ;
 
-460 i‡(
+464 i‡(
 ﬁd_size
  + 
 dvs
@@ -11371,7 +11441,7 @@ dvs
 nb
 ) {
 
-461 
+465 
 size_t
  
 dsize
@@ -11383,13 +11453,13 @@ dvs
 nb
 ;
 
-462 i‡(
+466 i‡(
 dsize
  >
 MIN_CHUNK_SIZE
 ) {
 
-463 
+467 
 mÆloc_chunk
  *
 r
@@ -11401,7 +11471,7 @@ chunk
 nb
 );
 
-464 
+468 
 mÆloc_chunk
  *
 n
@@ -11413,7 +11483,7 @@ r
 dsize
 );
 
-465 
+469 
 	`£t_öu£
 (
 °©e
@@ -11423,7 +11493,7 @@ chunk
 nb
 );
 
-466 
+470 
 	`£t_size_™d_¥ev_öu£_of_‰ì_chunk
 (
 r
@@ -11431,13 +11501,13 @@ r
 dsize
 );
 
-467 
+471 
 	`˛ór_¥ev_öu£
 (
 n
 );
 
-468 
+472 
 °©e
 ->
 dv_size
@@ -11445,7 +11515,7 @@ dv_size
 dsize
 ;
 
-469 
+473 
 °©e
 ->
 dv
@@ -11453,7 +11523,7 @@ dv
 r
 ;
 
-472 
+476 
 size_t
  
 √w_size
@@ -11463,7 +11533,7 @@ size_t
 dvs
 ;
 
-473 
+477 
 	`£t_öu£
 (
 °©e
@@ -11473,31 +11543,31 @@ chunk
 √w_size
 );
 
-474 
+478 
 °©e
 ->
 dv_size
  = 0;
 
-475 
+479 
 °©e
 ->
 dv
  = 0;
 
-477 
+481 
 √w_p
  = 
 chunk
 ;
 
-480 i‡(!
+484 i‡(!
 	`cuº_öu£
 (
 √xt
 )) {
 
-481 
+485 
 size_t
  
 √xt_size
@@ -11507,7 +11577,7 @@ size_t
 √xt
 );
 
-482 i‡(
+486 i‡(
 ﬁd_size
  + 
 √xt_size
@@ -11515,7 +11585,7 @@ size_t
 nb
 ) {
 
-483 
+487 
 size_t
  
 rsize
@@ -11527,7 +11597,7 @@ rsize
 nb
 ;
 
-484 
+488 
 	`u∆ök_chunk
 (
 °©e
@@ -11537,13 +11607,13 @@ nb
 √xt_size
 );
 
-485 i‡(
+489 i‡(
 rsize
  < 
 MIN_CHUNK_SIZE
 ) {
 
-486 
+490 
 size_t
  
 √w_size
@@ -11553,7 +11623,7 @@ size_t
 √xt_size
 ;
 
-487 
+491 
 	`£t_öu£
 (
 °©e
@@ -11563,7 +11633,7 @@ chunk
 √w_size
 );
 
-490 
+494 
 mÆloc_chunk
  *
 r
@@ -11575,7 +11645,7 @@ chunk
 nb
 );
 
-491 
+495 
 	`£t_öu£
 (
 °©e
@@ -11585,7 +11655,7 @@ chunk
 nb
 );
 
-492 
+496 
 	`£t_öu£
 (
 °©e
@@ -11595,7 +11665,7 @@ r
 rsize
 );
 
-493 
+497 
 	`di•o£_chunk
 (
 °©e
@@ -11605,13 +11675,13 @@ r
 rsize
 );
 
-495 
+499 
 √w_p
  = 
 chunk
 ;
 
-500 
+504 
 	`ußge_îr‹
 (
 °©e
@@ -11621,15 +11691,15 @@ chunk
 chunk
 ));
 
-502  
+506  
 √w_p
 ;
 
-503 
+507 
 	}
 }
 
-505 *
+509 *
 	$öã∫Æ_memÆign
 (
 mÆloc_°©e
@@ -11643,29 +11713,29 @@ size_t
 byãs
 ) {
 
-506 *
+510 *
 mem
  = 0;
 
-507 i‡(
+511 i‡(
 Æignmít
  < 
 MIN_CHUNK_SIZE
 ) {
 
-508 
+512 
 Æignmít
  = 
 MIN_CHUNK_SIZE
 ;
 
-510 i‡((
+514 i‡((
 Æignmít
  & (Æignmíà- (
 size_t
 ) 1)) != 0) {
 
-511 
+515 
 size_t
  
 a
@@ -11673,23 +11743,23 @@ a
 MALLOC_ALIGNMENT
  << 1;
 
-512 
+516 
 a
  < 
 Æignmít
 ) {
 
-513 
+517 
 a
  <<= 1;
 
-515 
+519 
 Æignmít
  = 
 a
 ;
 
-517 i‡(
+521 i‡(
 byãs
  >
 MAX_REQUEST
@@ -11697,15 +11767,15 @@ MAX_REQUEST
 Æignmít
 ) {
 
-518 i‡(
+522 i‡(
 °©e
  != 0) {
 
-519 
+523 
 	`mÆloc_Áûuª
 ();
 
-523 
+527 
 size_t
  
 nb
@@ -11715,7 +11785,7 @@ nb
 byãs
 );
 
-524 
+528 
 size_t
  
 ªq
@@ -11729,7 +11799,7 @@ MIN_CHUNK_SIZE
 CHUNK_OVERHEAD
 ;
 
-525 
+529 
 mem
  = 
 	`öã∫Æ_mÆloc
@@ -11739,11 +11809,11 @@ mem
 ªq
 );
 
-526 i‡(
+530 i‡(
 mem
  != 0) {
 
-527 
+531 
 mÆloc_chunk
  *
 p
@@ -11753,13 +11823,13 @@ p
 mem
 );
 
-528 i‡(
+532 i‡(
 	`PREACTION
 (
 °©e
 )) {
 
-531 i‡((((
+535 i‡((((
 size_t
 Ë
 mem
@@ -11767,13 +11837,13 @@ mem
 Æignmít
  - 1)) != 0) {
 
-540 *
+544 *
 br
  = (*Ë
 	`mem_to_chunk
 (
 
-541 (*Ë(((
+545 (*Ë(((
 size_t
 Ë((*Ë
 mem
@@ -11781,7 +11851,7 @@ mem
 Æignmít
  - (size_t) 1)) & -alignment));
 
-542 *
+546 *
 pos
  = (
 size_t
@@ -11793,13 +11863,13 @@ p
 MIN_CHUNK_SIZE
 
 
-543 ? 
+547 ? 
 br
  : b∏+ 
 Æignmít
 ;
 
-544 
+548 
 mÆloc_chunk
  *
 √w_p
@@ -11807,7 +11877,7 @@ mÆloc_chunk
 pos
 ;
 
-545 
+549 
 size_t
  
 Àad_size
@@ -11817,7 +11887,7 @@ pos
 p
 ;
 
-546 
+550 
 size_t
  
 √w_size
@@ -11829,25 +11899,25 @@ p
 Àad_size
 ;
 
-548 i‡(
+552 i‡(
 	`is_mm≠≥d
 (
 p
 )) {
 
-549 
+553 
 √w_p
 ->
 ¥ev_foŸ
  = 
-	`¥ev_size
+	`gë_¥ev_size
 (
 p
 Ë+ 
 Àad_size
 ;
 
-550 
+554 
 √w_p
 ->
 hód
@@ -11855,7 +11925,7 @@ hód
 √w_size
 ;
 
-553 
+557 
 	`£t_öu£
 (
 °©e
@@ -11865,7 +11935,7 @@ hód
 √w_size
 );
 
-554 
+558 
 	`£t_öu£
 (
 °©e
@@ -11875,7 +11945,7 @@ p
 Àad_size
 );
 
-555 
+559 
 	`di•o£_chunk
 (
 °©e
@@ -11885,19 +11955,19 @@ p
 Àad_size
 );
 
-557 
+561 
 p
  = 
 √w_p
 ;
 
-561 i‡(!
+565 i‡(!
 	`is_mm≠≥d
 (
 p
 )) {
 
-562 
+566 
 size_t
  
 size
@@ -11907,7 +11977,7 @@ size
 p
 );
 
-563 i‡(
+567 i‡(
 size
  > 
 nb
@@ -11915,7 +11985,7 @@ nb
 MIN_CHUNK_SIZE
 ) {
 
-564 
+568 
 size_t
  
 ªmaödî_size
@@ -11925,7 +11995,7 @@ size
 nb
 ;
 
-565 
+569 
 mÆloc_chunk
  *
 ªmaödî
@@ -11937,7 +12007,7 @@ p
 nb
 );
 
-566 
+570 
 	`£t_öu£
 (
 °©e
@@ -11947,18 +12017,8 @@ p
 nb
 );
 
-567 
+571 
 	`£t_öu£
-(
-°©e
-, 
-ªmaödî
-, 
-ªmaödî_size
-);
-
-568 
-	`di•o£_chunk
 (
 °©e
 , 
@@ -11968,6 +12028,16 @@ nb
 );
 
 572 
+	`di•o£_chunk
+(
+°©e
+, 
+ªmaödî
+, 
+ªmaödî_size
+);
+
+576 
 mem
  = 
 	`chunk_to_mem
@@ -11975,7 +12045,7 @@ mem
 p
 );
 
-573 
+577 
 	`dl_as£π
  (
 	`chunk_size
@@ -11985,7 +12055,7 @@ p
 nb
 );
 
-574 
+578 
 	`dl_as£π
 (((
 size_t
@@ -11995,7 +12065,7 @@ mem
 Æignmít
  - 1)) == 0);
 
-575 
+579 
 	`check_öu£_chunk
 (
 °©e
@@ -12003,21 +12073,21 @@ mem
 p
 );
 
-576 
+580 
 	`POSTACTION
 (
 °©e
 );
 
-579  
+583  
 mem
 ;
 
-580 
+584 
 	}
 }
 
-589 **
+593 **
 	$üŒoc
 (
 mÆloc_°©e
@@ -12035,109 +12105,109 @@ sizes
 chunks
 []) {
 
-590 
+594 
 size_t
  
 ñemít_size
 ;
 
-591 
+595 
 size_t
  
 c⁄ã¡s_size
 ;
 
-592 
+596 
 size_t
  
 ¨øy_size
 ;
 
-593 *
+597 *
 mem
 ;
 
-594 
+598 
 mÆloc_chunk
  *
 p
 ;
 
-595 
+599 
 size_t
  
 ªmaödî_size
 ;
 
-596 **
+600 **
 m¨øy
 ;
 
-597 
+601 
 mÆloc_chunk
  *
 ¨øy_chunk
 ;
 
-598 
+602 
 Êag_t
  
 was_íabÀd
 ;
 
-599 
+603 
 size_t
  
 size
 ;
 
-600 
+604 
 size_t
  
 i
 ;
 
-602 
+606 
 	`ísuª_öôüliz©i⁄
 ();
 
-604 i‡(
+608 i‡(
 chunks
  != 0) {
 
-605 i‡(
+609 i‡(
 n_ñemíts
  == 0) {
 
-606  
+610  
 chunks
 ;
 
-608 
+612 
 m¨øy
  = 
 chunks
 ;
 
-609 
+613 
 ¨øy_size
  = 0;
 
-613 i‡(
+617 i‡(
 n_ñemíts
  == 0) {
 
-614  (**Ë
+618  (**Ë
 	`öã∫Æ_mÆloc
 (
 °©e
 , 0);
 
-616 
+620 
 m¨øy
  = 0;
 
-617 
+621 
 ¨øy_size
  = 
 	`ªque°_to_size
@@ -12145,11 +12215,11 @@ m¨øy
 n_ñemíts
  * ((*)));
 
-621 i‡(
+625 i‡(
 ›ts
  & 0x1) {
 
-622 
+626 
 ñemít_size
  = 
 	`ªque°_to_size
@@ -12157,7 +12227,7 @@ n_ñemíts
 sizes
 );
 
-623 
+627 
 c⁄ã¡s_size
  = 
 n_ñemíts
@@ -12165,21 +12235,21 @@ n_ñemíts
 ñemít_size
 ;
 
-626 
+630 
 ñemít_size
  = 0;
 
-627 
+631 
 c⁄ã¡s_size
  = 0;
 
-628 
+632 
 i
  = 0; i !
 n_ñemíts
 ; ++i) {
 
-629 
+633 
 c⁄ã¡s_size
  +
 	`ªque°_to_size
@@ -12189,7 +12259,7 @@ sizes
 i
 ]);
 
-633 
+637 
 size
  = 
 c⁄ã¡s_size
@@ -12197,7 +12267,7 @@ c⁄ã¡s_size
 ¨øy_size
 ;
 
-640 
+644 
 was_íabÀd
  = 
 	`u£_mm≠
@@ -12205,13 +12275,13 @@ was_íabÀd
 °©e
 );
 
-641 
+645 
 	`dißbÀ_mm≠
 (
 °©e
 );
 
-642 
+646 
 mem
  = 
 	`öã∫Æ_mÆloc
@@ -12223,27 +12293,27 @@ size
 CHUNK_OVERHEAD
 );
 
-643 i‡(
+647 i‡(
 was_íabÀd
 ) {
 
-644 
+648 
 	`íabÀ_mm≠
 (
 °©e
 );
 
-646 i‡(
+650 i‡(
 mem
  == 0) {
 
-650 i‡(
+654 i‡(
 	`PREACTION
 (
 °©e
 )) {
 
-653 
+657 
 p
  = 
 	`mem_to_chunk
@@ -12251,7 +12321,7 @@ p
 mem
 );
 
-654 
+658 
 ªmaödî_size
  = 
 	`chunk_size
@@ -12259,7 +12329,7 @@ mem
 p
 );
 
-656 
+660 
 	`dl_as£π
 (!
 	`is_mm≠≥d
@@ -12267,11 +12337,11 @@ p
 p
 ));
 
-658 i‡(
+662 i‡(
 ›ts
  & 0x2) {
 
-659 
+663 
 	`mem£t
 ((
 size_t
@@ -12283,17 +12353,17 @@ mem
 ¨øy_size
 );
 
-663 i‡(
+667 i‡(
 m¨øy
  == 0) {
 
-664 
+668 
 size_t
  
 ¨øy_chunk_size
 ;
 
-665 
+669 
 ¨øy_chunk
  = 
 	`chunk_∂us_off£t
@@ -12303,7 +12373,7 @@ p
 c⁄ã¡s_size
 );
 
-666 
+670 
 ¨øy_chunk_size
  = 
 ªmaödî_size
@@ -12311,7 +12381,7 @@ c⁄ã¡s_size
 c⁄ã¡s_size
 ;
 
-667 
+671 
 m¨øy
  = (**Ë(
 	`chunk_to_mem
@@ -12319,7 +12389,7 @@ m¨øy
 ¨øy_chunk
 ));
 
-668 
+672 
 	`£t_size_™d_¥ev_öu£_of_öu£_chunk
 (
 °©e
@@ -12329,17 +12399,17 @@ m¨øy
 ¨øy_chunk_size
 );
 
-669 
+673 
 ªmaödî_size
  = 
 c⁄ã¡s_size
 ;
 
-673 
+677 
 i
  = 0;; ++i) {
 
-674 
+678 
 m¨øy
 [
 i
@@ -12349,23 +12419,23 @@ i
 p
 );
 
-675 i‡(
+679 i‡(
 i
  !
 n_ñemíts
  - 1) {
 
-676 i‡(
+680 i‡(
 ñemít_size
  != 0) {
 
-677 
+681 
 size
  = 
 ñemít_size
 ;
 
-680 
+684 
 size
  = 
 	`ªque°_to_size
@@ -12375,29 +12445,11 @@ sizes
 i
 ]);
 
-682 
+686 
 ªmaödî_size
  -
 size
 ;
-
-683 
-	`£t_size_™d_¥ev_öu£_of_öu£_chunk
-(
-°©e
-, 
-p
-, 
-size
-);
-
-684 
-p
- = 
-	`chunk_∂us_off£t
-’, 
-size
-);
 
 687 
 	`£t_size_™d_¥ev_öu£_of_öu£_chunk
@@ -12406,24 +12458,42 @@ size
 , 
 p
 , 
+size
+);
+
+688 
+p
+ = 
+	`chunk_∂us_off£t
+’, 
+size
+);
+
+691 
+	`£t_size_™d_¥ev_öu£_of_öu£_chunk
+(
+°©e
+, 
+p
+, 
 ªmaödî_size
 );
 
-692 #i‡
+696 #i‡
 DEBUG
 
 
-693 i‡(
+697 i‡(
 m¨øy
  !
 chunks
 ) {
 
-695 i‡(
+699 i‡(
 ñemít_size
  != 0) {
 
-696 
+700 
 	`dl_as£π
 (
 ªmaödî_size
@@ -12431,7 +12501,7 @@ chunks
 ñemít_size
 );
 
-699 
+703 
 	`dl_as£π
 (
 ªmaödî_size
@@ -12443,7 +12513,7 @@ sizes
 i
 ]));
 
-701 
+705 
 	`check_öu£_chunk
 (
 °©e
@@ -12453,13 +12523,13 @@ i
 m¨øy
 ));
 
-703 
+707 
 i
  = 0; i !
 n_ñemíts
 ; ++i) {
 
-704 
+708 
 	`check_öu£_chunk
 (
 °©e
@@ -12471,21 +12541,21 @@ m¨øy
 i
 ]));
 
-709 
+713 
 	`POSTACTION
 (
 °©e
 );
 
-710  
+714  
 m¨øy
 ;
 
-711 
+715 
 	}
 }
 
-720 
+724 
 size_t
  
 	$öã∫Æ_bulk_‰ì
@@ -12501,23 +12571,23 @@ size_t
 √Àm
 ) {
 
-721 
+725 
 size_t
  
 un‰ìd
  = 0;
 
-722 i‡(!
+726 i‡(!
 	`PREACTION
 (
 °©e
 )) {
 
-723 **
+727 **
 a
 ;
 
-724 **
+728 **
 „n˚
  = &(
 ¨øy
@@ -12525,7 +12595,7 @@ a
 √Àm
 ]);
 
-725 
+729 
 a
  = 
 ¨øy
@@ -12533,17 +12603,17 @@ a
 „n˚
 ; ++a) {
 
-726 *
+730 *
 mem
  = *
 a
 ;
 
-727 i‡(
+731 i‡(
 mem
  != 0) {
 
-728 
+732 
 mÆloc_chunk
  *
 p
@@ -12553,7 +12623,7 @@ p
 mem
 );
 
-729 
+733 
 size_t
  
 p_size
@@ -12563,11 +12633,11 @@ p_size
 p
 );
 
-730 #i‡
+734 #i‡
 FOOTERS
 
 
-731 i‡(
+735 i‡(
 	`gë_°©e_f‹
 (
 p
@@ -12575,11 +12645,11 @@ p
 °©e
 ) {
 
-732 ++
+736 ++
 un‰ìd
 ;
 
-736 
+740 
 	`check_öu£_chunk
 (
 °©e
@@ -12587,11 +12657,11 @@ un‰ìd
 p
 );
 
-737 *
+741 *
 a
  = 0;
 
-738 i‡(
+742 i‡(
 	`likñy
 (
 	`ok_addªss
@@ -12603,13 +12673,13 @@ p
 	`ok_öu£
 (p))) {
 
-739 **
+743 **
 b
  = 
 a
  + 1;
 
-740 
+744 
 mÆloc_chunk
  *
 √xt
@@ -12619,7 +12689,7 @@ mÆloc_chunk
 p
 );
 
-741 i‡(
+745 i‡(
 b
  !
 „n˚
@@ -12629,7 +12699,7 @@ b
 √xt
 )) {
 
-742 
+746 
 size_t
  
 √w_size
@@ -12641,7 +12711,7 @@ size_t
 p_size
 ;
 
-743 
+747 
 	`£t_öu£
 (
 °©e
@@ -12651,7 +12721,7 @@ p
 √w_size
 );
 
-744 *
+748 *
 b
  = 
 	`chunk_to_mem
@@ -12659,7 +12729,7 @@ b
 p
 );
 
-747 
+751 
 	`di•o£_chunk
 (
 °©e
@@ -12669,13 +12739,13 @@ p
 p_size
 );
 
-751 
+755 
 	`c‹ru±i⁄_îr‹
 (
 °©e
 );
 
-756 i‡(
+760 i‡(
 	`should_åim
 (
 °©e
@@ -12683,23 +12753,23 @@ p_size
 t›_size
 )) {
 
-757 
+761 
 	`sys_åim
 (
 °©e
 , 0);
 
-759 
+763 
 	`POSTACTION
 (
 °©e
 );
 
-761  
+765  
 un‰ìd
 ;
 
-762 
+766 
 	}
 }
 
@@ -13377,17 +13447,21 @@ magic
 	`mã_öô
 ();
 
-35 
+34 
+	`öô_ªdbœck_åì
+();
+
+36 
 	}
 }
 
-38 
+39 
 mÆloc_°©e
  
 globÆ_mÆloc_°©e
 ;
 
-40 
+41 
 ölöe
  
 	$is_globÆ
@@ -13397,17 +13471,17 @@ mÆloc_°©e
 °©e
 ) {
 
-41  
+42  
 °©e
  =&
 globÆ_mÆloc_°©e
 ;
 
-42 
+43 
 	}
 }
 
-45 
+46 
 ölöe
  
 size_t
@@ -13419,7 +13493,7 @@ size_t
 size
 ) {
 
-46  (
+47  (
 size
  + (
 ∑øms
@@ -13429,11 +13503,11 @@ size
 size_t
 ) 1)) & ~(params.page_size - (size_t) 1);
 
-47 
+48 
 	}
 }
 
-49 
+50 
 ölöe
  
 	$is_∑ge_Æig√d
@@ -13441,7 +13515,7 @@ size_t
 size
 ) {
 
-50  ((
+51  ((
 size_t
 Ë
 size
@@ -13451,11 +13525,11 @@ size
 ∑ge_size
  - (size_t) 1)) == 0;
 
-51 
+52 
 	}
 }
 
-54 
+55 
 ölöe
  
 size_t
@@ -13467,7 +13541,7 @@ size_t
 size
 ) {
 
-55  (
+56  (
 size
  + (
 ∑øms
@@ -13477,11 +13551,11 @@ gønuœrôy
 size_t
 ) 1)) & ~(params.granularity - (size_t) 1);
 
-56 
+57 
 	}
 }
 
-59 
+60 
 ölöe
  
 size_t
@@ -13493,13 +13567,13 @@ size_t
 size
 ) {
 
-60  
+61  
 	`∑ge_Æign
 (
 size
 );
 
-61 
+62 
 	}
 }
 
@@ -19419,7 +19493,11 @@ size
 	~"ªdbœck.h
 "
 
-3 
+2 
+	~"os.h
+"
+
+4 
 size_t
  
 	$övÆid©e_chunk
@@ -19433,53 +19511,155 @@ mÆloc_chunk
 chunk
 ){
 
-4 
-i
+5 
+size_t
+ 
+ªt
+ = 0;
+
+6 
+size_t
+ 
+size
  = 
 	`chunk_size
 (
 chunk
-)/
-UNMAP_UNIT
-; i < 3;)
+);
 
-6 
-TOP_FOOT_SIZE
+7 
+size_t
+ 
+i
+ = (size_t)
+chunk
+ >> 
+UNMAP_UNIT_POWER
 ;
 
 8 
-	}
-}
+i
+ <((
+size_t
+)
+	`chunk_∂us_off£t
+(
+chunk
+,
+size
+Ë-1Ë>> 
+UNMAP_UNIT_POWER
+;
 
-10 
-	$öô
-(){
+9 
+i
++=1){
+
+10 
+size_t
+ 
+°¨t
+ = (
+i
+>(size_t)
+chunk
+>>
+UNMAP_UNIT_POWER
+ ? i*
+UNMAP_UNIT
+ : (size_t)chunk);
 
 11 
-globÆ_node
-.
-cﬁ‹
- = 
-BLACK
-;
+size_t
+ 
+íd
+ = ((size_t)
+chunk
+ + 
+size
+ > (
+i
++1Ë* 
+UNMAP_UNIT
+ ? (i+1) * UNMAP_UNIT : (size_t)chunk + size);
+
+12 if(
+	`åì_£¨ch
+(
+i
+)==
+NILL
+){
 
 13 
-NILL
- = &
-globÆ_node
-;
+	`ªd_bœck_ö£π
+(
+i
+, (
+íd
+-
+°¨t
+)>>4, (
+node
+*Ë
+chunk
+);
 
-16 
-ROOT
+15 
+size_t
+ 
+size_h
  = 
-NILL
+	`GET_EXH
+(
+chunk
+);
+
+16 if((
+íd
+-
+°¨t
+)>>4 + 
+size_h
+ > (
+UNMAP_UNIT_POWER
+-
+MIN_CHUNK_SIZE
+)>>4){
+
+17 if(
+	`ˇŒ_munm≠
+(
+i
+*
+UNMAP_UNIT
+, UNMAP_UNIT))
+
+20 
+ªt
+ = -1;
+
+22 
+	`SET_EXH
+(
+chunk
+, (
+íd
+-
+°¨t
+)>>4+
+size_h
+);
+
+27  
+ªt
 ;
 
-52 
+28 
 	}
 }
 
-56 
+33 
 	$åì_¥öt
 (
 node
@@ -19487,13 +19667,13 @@ node
 x
 ){
 
-57 if(
+34 if(
 x
  !
 NILL
 ){
 
-58 
+35 
 	`åì_¥öt
 (
 x
@@ -19501,15 +19681,17 @@ x
 À·
 );
 
-59 
+36 
 	`¥ötf
-("%Œd\t", 
+("%lu %lu\t", 
+	`GET_KEY
+(
 x
-->
-key
-);
+), 
+	`GET_EXH
+(x));
 
-60 
+37 
 	`åì_¥öt
 (
 x
@@ -19517,11 +19699,11 @@ x
 right
 );
 
-62 
+39 
 	}
 }
 
-64 
+41 
 node
  *
 	$åì_£¨ch
@@ -19531,53 +19713,57 @@ size_t
 key
 ){
 
-65 
+42 
 node
  *
 x
 ;
 
-67 
+44 
 x
  = 
 ROOT
 ;
 
-68 
+45 
 x
  !
 NILL
- && x->
+ && 
+	`GET_KEY
+(xË!
 key
- != key){
+){
 
-69 if(
+46 if(
 key
  < 
+	`GET_KEY
+(
 x
-->key){
+)){
 
-70 
+47 
 x
  = x->
 À·
 ;
 
-73 
+50 
 x
  = x->
 right
 ;
 
-77  
+54  
 x
 ;
 
-78 
+55 
 	}
 }
 
-80 
+57 
 node
  *
 	$åì_möimum
@@ -19587,7 +19773,7 @@ node
 x
 ){
 
-81 
+58 
 x
 ->
 À·
@@ -19595,33 +19781,35 @@ x
 NILL
 ){
 
-82 
+59 
 x
  = x->
 À·
 ;
 
-84  
+61  
 x
 ;
 
-85 
+62 
 	}
 }
 
-93 
+70 
 	$ªd_bœck_ö£π
 (
 size_t
  
 key
+, size_à
+exh
 , 
 node
 *
 z
 ){
 
-95 
+72 
 node
  *
 x
@@ -19629,21 +19817,31 @@ x
 y
 ;
 
-98 
+75 
+	`SET_EXH
+(
 z
-->
+, 
+exh
+);
+
+76 
+	`SET_KEY
+(
+z
+, 
 key
- = key;
+);
 
-99 
+77 
+	`SET_COLOR
+(
 z
-->
-cﬁ‹
- = 
+, 
 RED
-;
+);
 
-100 
+78 
 z
 ->
 À·
@@ -19651,7 +19849,7 @@ z
 NILL
 ;
 
-101 
+79 
 z
 ->
 right
@@ -19659,71 +19857,71 @@ right
 NILL
 ;
 
-103 
+81 
 x
  = 
 ROOT
 ;
 
-104 
+82 
 y
  = 
 NILL
 ;
 
-110 
+88 
 x
  !
 NILL
 ){
 
-111 
+89 
 y
  = 
 x
 ;
 
-112 if(
+90 if(
+	`GET_KEY
+(
 z
-->
-key
- <
+Ë<GET_KEY(
 x
-->key){
+)){
 
-113 
+91 
 x
  = x->
 À·
 ;
 
-116 
+94 
 x
  = x->
 right
 ;
 
-120 if(
+98 if(
 y
  =
 NILL
 ){
 
-121 
+99 
 ROOT
  = 
 z
 ;
 
-123 if(
+101 if(
+	`GET_KEY
+(
 z
-->
-key
- <
+Ë<GET_KEY(
 y
-->key){
+)){
 
-124 
+102 
 y
 ->
 À·
@@ -19731,7 +19929,7 @@ y
 z
 ;
 
-127 
+105 
 y
 ->
 right
@@ -19739,7 +19937,7 @@ right
 z
 ;
 
-130 
+108 
 z
 ->
 ∑ª¡
@@ -19747,17 +19945,17 @@ z
 y
 ;
 
-132 
+110 
 	`ªd_bœck_ö£π_fixup
 (
 z
 );
 
-133 
+111 
 	}
 }
 
-161 
+139 
 	$ªd_bœck_ö£π_fixup
 (
 node
@@ -19765,17 +19963,17 @@ node
 z
 ){
 
-162 
+140 
+	`GET_COLOR
+(
 z
 ->
 ∑ª¡
-->
-cﬁ‹
- =
+Ë=
 RED
 ){
 
-165 if(
+143 if(
 z
 ->
 ∑ª¡
@@ -19783,57 +19981,57 @@ z
 À·
 ){
 
-168 if(
+146 if(
+	`GET_COLOR
+(
 z
 ->
 ∑ª¡
 ->∑ª¡->
 right
-->
-cﬁ‹
- =
+Ë=
 RED
 ){
 
-169 
+147 
+	`SET_COLOR
+(
 z
 ->
 ∑ª¡
-->
-cﬁ‹
- = 
+, 
 BLACK
-;
+);
 
-170 
+148 
+	`SET_COLOR
+(
 z
 ->
 ∑ª¡
 ->∑ª¡->
 right
-->
-cﬁ‹
- = 
+, 
 BLACK
-;
+);
 
-171 
+149 
+	`SET_COLOR
+(
 z
 ->
 ∑ª¡
-->∑ª¡->
-cﬁ‹
- = 
+->∑ª¡, 
 RED
-;
+);
 
-172 
+150 
 z
  = z->
 ∑ª¡
 ->parent;
 
-179 if(
+157 if(
 z
  =z->
 ∑ª¡
@@ -19841,137 +20039,137 @@ z
 right
 ){
 
-180 
+158 
 z
  = z->
 ∑ª¡
 ;
 
-181 
+159 
 	`À·_rŸ©e
 (
 z
 );
+
+162 
+	`SET_COLOR
+(
+z
+->
+∑ª¡
+, 
+BLACK
+);
+
+163 
+	`SET_COLOR
+(
+z
+->
+∑ª¡
+->∑ª¡, 
+RED
+);
+
+164 
+	`right_rŸ©e
+(
+z
+->
+∑ª¡
+->parent);
+
+172 if(
+	`GET_COLOR
+(
+z
+->
+∑ª¡
+->∑ª¡->
+À·
+Ë=
+RED
+){
+
+173 
+	`SET_COLOR
+(
+z
+->
+∑ª¡
+, 
+BLACK
+);
+
+174 
+	`SET_COLOR
+(
+z
+->
+∑ª¡
+->∑ª¡->
+À·
+, 
+BLACK
+);
+
+175 
+	`SET_COLOR
+(
+z
+->
+∑ª¡
+->∑ª¡, 
+RED
+);
+
+176 
+z
+ = z->
+∑ª¡
+->parent;
+
+182 if(
+z
+ =z->
+∑ª¡
+->
+À·
+){
+
+183 
+z
+ = z->
+∑ª¡
+;
 
 184 
-z
-->
-∑ª¡
-->
-cﬁ‹
- = 
-BLACK
-;
-
-185 
-z
-->
-∑ª¡
-->∑ª¡->
-cﬁ‹
- = 
-RED
-;
-
-186 
-	`right_rŸ©e
-(
-z
-->
-∑ª¡
-->parent);
-
-194 if(
-z
-->
-∑ª¡
-->∑ª¡->
-À·
-->
-cﬁ‹
- =
-RED
-){
-
-195 
-z
-->
-∑ª¡
-->
-cﬁ‹
- = 
-BLACK
-;
-
-196 
-z
-->
-∑ª¡
-->∑ª¡->
-À·
-->
-cﬁ‹
- = 
-BLACK
-;
-
-197 
-z
-->
-∑ª¡
-->∑ª¡->
-cﬁ‹
- = 
-RED
-;
-
-198 
-z
- = z->
-∑ª¡
-->parent;
-
-204 if(
-z
- =z->
-∑ª¡
-->
-À·
-){
-
-205 
-z
- = z->
-∑ª¡
-;
-
-206 
 	`right_rŸ©e
 (
 z
 );
 
-209 
+187 
+	`SET_COLOR
+(
 z
 ->
 ∑ª¡
-->
-cﬁ‹
- = 
+, 
 BLACK
-;
+);
 
-210 
+188 
+	`SET_COLOR
+(
 z
 ->
 ∑ª¡
-->∑ª¡->
-cﬁ‹
- = 
+->∑ª¡, 
 RED
-;
+);
 
-211 
+189 
 	`À·_rŸ©e
 (
 z
@@ -19979,19 +20177,19 @@ z
 ∑ª¡
 ->parent);
 
-216 
+194 
+	`SET_COLOR
+(
 ROOT
-->
-cﬁ‹
- = 
+, 
 BLACK
-;
+);
 
-217 
+195 
 	}
 }
 
-230 
+208 
 	$À·_rŸ©e
 (
 node
@@ -19999,13 +20197,13 @@ node
 x
 ){
 
-231 
+209 
 node
  *
 y
 ;
 
-234 
+212 
 y
  = 
 x
@@ -20013,7 +20211,7 @@ x
 right
 ;
 
-235 
+213 
 x
 ->
 right
@@ -20023,7 +20221,7 @@ y
 À·
 ;
 
-236 if(
+214 if(
 y
 ->
 À·
@@ -20031,7 +20229,7 @@ y
 NILL
 ){
 
-237 
+215 
 y
 ->
 À·
@@ -20041,7 +20239,7 @@ y
 x
 ;
 
-241 
+219 
 y
 ->
 ∑ª¡
@@ -20049,7 +20247,7 @@ y
 x
 ->parent;
 
-242 if(
+220 if(
 y
 ->
 ∑ª¡
@@ -20057,13 +20255,13 @@ y
 NILL
 ){
 
-243 
+221 
 ROOT
  = 
 y
 ;
 
-245 if(
+223 if(
 x
  =x->
 ∑ª¡
@@ -20071,7 +20269,7 @@ x
 À·
 ){
 
-246 
+224 
 x
 ->
 ∑ª¡
@@ -20081,7 +20279,7 @@ x
 y
 ;
 
-249 
+227 
 x
 ->
 ∑ª¡
@@ -20091,7 +20289,7 @@ right
 y
 ;
 
-253 
+231 
 y
 ->
 À·
@@ -20099,7 +20297,7 @@ y
 x
 ;
 
-254 
+232 
 x
 ->
 ∑ª¡
@@ -20107,11 +20305,11 @@ x
 y
 ;
 
-255 
+233 
 	}
 }
 
-269 
+247 
 	$right_rŸ©e
 (
 node
@@ -20119,13 +20317,13 @@ node
 x
 ){
 
-270 
+248 
 node
  *
 y
 ;
 
-273 
+251 
 y
  = 
 x
@@ -20133,7 +20331,7 @@ x
 À·
 ;
 
-274 
+252 
 x
 ->
 À·
@@ -20143,7 +20341,7 @@ y
 right
 ;
 
-275 if(
+253 if(
 y
 ->
 right
@@ -20151,7 +20349,7 @@ right
 NILL
 ){
 
-276 
+254 
 y
 ->
 right
@@ -20161,7 +20359,7 @@ right
 x
 ;
 
-280 
+258 
 y
 ->
 ∑ª¡
@@ -20169,7 +20367,7 @@ y
 x
 ->parent;
 
-281 if(
+259 if(
 y
 ->
 ∑ª¡
@@ -20177,13 +20375,13 @@ y
 NILL
 ){
 
-282 
+260 
 ROOT
  = 
 y
 ;
 
-284 if(
+262 if(
 x
  =x->
 ∑ª¡
@@ -20191,7 +20389,7 @@ x
 À·
 ){
 
-285 
+263 
 x
 ->
 ∑ª¡
@@ -20201,7 +20399,7 @@ x
 y
 ;
 
-288 
+266 
 x
 ->
 ∑ª¡
@@ -20211,7 +20409,7 @@ right
 y
 ;
 
-292 
+270 
 y
 ->
 right
@@ -20219,7 +20417,7 @@ right
 x
 ;
 
-293 
+271 
 x
 ->
 ∑ª¡
@@ -20227,11 +20425,11 @@ x
 y
 ;
 
-294 
+272 
 	}
 }
 
-313 
+291 
 	$ªd_bœck_dñëe
 (
 node
@@ -20239,7 +20437,7 @@ node
 z
 ){
 
-314 
+292 
 node
  *
 y
@@ -20247,25 +20445,25 @@ y
 x
 ;
 
-315 
+293 
 yOrigöÆCﬁ‹
 ;
 
-317 
+295 
 y
  = 
 z
 ;
 
-318 
+296 
 yOrigöÆCﬁ‹
  = 
+	`GET_COLOR
+(
 y
-->
-cﬁ‹
-;
+);
 
-320 if(
+298 if(
 z
 ->
 À·
@@ -20273,7 +20471,7 @@ z
 NILL
 ){
 
-321 
+299 
 x
  = 
 z
@@ -20281,7 +20479,7 @@ z
 right
 ;
 
-322 
+300 
 	`ªd_bœck_å™•œ¡
 (
 z
@@ -20289,7 +20487,7 @@ z
 right
 );
 
-324 if(
+302 if(
 z
 ->
 right
@@ -20297,7 +20495,7 @@ right
 NILL
 ){
 
-325 
+303 
 x
  = 
 z
@@ -20305,7 +20503,7 @@ z
 À·
 ;
 
-326 
+304 
 	`ªd_bœck_å™•œ¡
 (
 z
@@ -20313,7 +20511,7 @@ z
 À·
 );
 
-329 
+307 
 y
  = 
 	`åì_möimum
@@ -20323,15 +20521,15 @@ z
 right
 );
 
-330 
+308 
 yOrigöÆCﬁ‹
  = 
+	`GET_COLOR
+(
 y
-->
-cﬁ‹
-;
+);
 
-332 
+310 
 x
  = 
 y
@@ -20339,7 +20537,7 @@ y
 right
 ;
 
-334 if(
+312 if(
 y
 ->
 ∑ª¡
@@ -20347,7 +20545,7 @@ y
 z
 ){
 
-335 
+313 
 x
 ->
 ∑ª¡
@@ -20355,7 +20553,7 @@ x
 y
 ;
 
-338 
+316 
 	`ªd_bœck_å™•œ¡
 (
 y
@@ -20363,7 +20561,7 @@ y
 right
 );
 
-339 
+317 
 y
 ->
 right
@@ -20371,7 +20569,7 @@ right
 z
 ->right;
 
-340 
+318 
 y
 ->
 right
@@ -20379,7 +20577,7 @@ right
 ∑ª¡
  = y;
 
-343 
+321 
 	`ªd_bœck_å™•œ¡
 (
 z
@@ -20387,7 +20585,7 @@ z
 y
 );
 
-344 
+322 
 y
 ->
 À·
@@ -20395,7 +20593,7 @@ y
 z
 ->left;
 
-345 
+323 
 y
 ->
 À·
@@ -20403,31 +20601,33 @@ y
 ∑ª¡
  = y;
 
-346 
+324 
+	`SET_COLOR
+(
 y
-->
-cﬁ‹
- = 
+, 
+	`GET_COLOR
+(
 z
-->color;
+));
 
-349 if(
+327 if(
 yOrigöÆCﬁ‹
  =
 BLACK
 ){
 
-350 
+328 
 	`ªd_bœck_dñëe_fixup
 (
 x
 );
 
-352 
+330 
 	}
 }
 
-382 
+360 
 	$ªd_bœck_dñëe_fixup
 (
 node
@@ -20435,23 +20635,23 @@ node
 x
 ){
 
-383 
+361 
 node
  *
 w
 ;
 
-385 
+363 
 x
  !
 ROOT
- && x->
-cﬁ‹
- =
+ && 
+	`GET_COLOR
+(xË=
 BLACK
 ){
 
-387 if(
+365 if(
 x
  =x->
 ∑ª¡
@@ -20459,7 +20659,7 @@ x
 À·
 ){
 
-388 
+366 
 w
  = 
 x
@@ -20469,33 +20669,33 @@ x
 right
 ;
 
-390 if(
+368 if(
+	`GET_COLOR
+(
 w
-->
-cﬁ‹
- =
+Ë=
 RED
 ){
 
-391 
+369 
+	`SET_COLOR
+(
 w
-->
-cﬁ‹
- = 
+, 
 BLACK
-;
+);
 
-392 
+370 
+	`SET_COLOR
+(
 x
 ->
 ∑ª¡
-->
-cﬁ‹
- = 
+, 
 RED
-;
+);
 
-393 
+371 
 	`À·_rŸ©e
 (
 x
@@ -20503,7 +20703,7 @@ x
 ∑ª¡
 );
 
-394 
+372 
 w
  = 
 x
@@ -20513,255 +20713,257 @@ x
 right
 ;
 
-397 if(
+375 if(
+	`GET_COLOR
+(
 w
 ->
 À·
-->
-cﬁ‹
- =
+Ë=
 BLACK
- && w->
+ && GET_COLOR(w->
 right
-->color == BLACK){
+) == BLACK){
 
-398 
+376 
+	`SET_COLOR
+(
+w
+, 
+RED
+);
+
+377 
+	`SET_COLOR
+(
+x
+->
+∑ª¡
+, 
+BLACK
+);
+
+378 
+x
+ = x->
+∑ª¡
+;
+
+382 if(
+	`GET_COLOR
+(
 w
 ->
-cﬁ‹
- = 
+right
+Ë=
+BLACK
+){
+
+383 
+	`SET_COLOR
+(
+w
+, 
 RED
+);
+
+384 
+	`SET_COLOR
+(
+w
+->
+À·
+, 
+BLACK
+);
+
+385 
+	`right_rŸ©e
+(
+w
+);
+
+386 
+w
+ = 
+x
+->
+∑ª¡
+->
+right
+;
+
+389 
+	`SET_COLOR
+(
+w
+, 
+	`GET_COLOR
+(
+x
+->
+∑ª¡
+));
+
+390 
+	`SET_COLOR
+(
+x
+->
+∑ª¡
+, 
+BLACK
+);
+
+391 
+	`SET_COLOR
+(
+x
+->
+right
+, 
+BLACK
+);
+
+392 
+	`À·_rŸ©e
+(
+x
+->
+∑ª¡
+);
+
+393 
+x
+ = 
+ROOT
 ;
 
 399 
-x
-->
-∑ª¡
-->
-cﬁ‹
- = 
-BLACK
-;
-
-400 
-x
- = x->
-∑ª¡
-;
-
-404 if(
 w
+ = 
+x
 ->
-right
+∑ª¡
 ->
-cﬁ‹
- =
-BLACK
+À·
+;
+
+401 if(
+	`GET_COLOR
+(
+w
+Ë=
+RED
 ){
+
+402 
+	`SET_COLOR
+(
+w
+, 
+BLACK
+);
+
+403 
+	`SET_COLOR
+(
+x
+->
+∑ª¡
+, 
+BLACK
+);
+
+404 
+	`right_rŸ©e
+(
+x
+->
+∑ª¡
+);
 
 405 
 w
-->
-cﬁ‹
- = 
-RED
-;
-
-406 
-w
-->
-À·
-->
-cﬁ‹
- = 
-BLACK
-;
-
-407 
-	`right_rŸ©e
-(
-w
-);
-
-408 
-w
  = 
 x
 ->
 ∑ª¡
 ->
-right
+À·
 ;
+
+408 if(
+	`GET_COLOR
+(
+w
+->
+À·
+Ë=
+BLACK
+ && GET_COLOR(w->
+right
+) == BLACK){
+
+409 
+	`SET_COLOR
+(
+w
+, 
+RED
+);
+
+410 
+	`SET_COLOR
+(
+x
+->
+∑ª¡
+, 
+BLACK
+);
 
 411 
-w
-->
-cﬁ‹
- = 
-x
-->
-∑ª¡
-->color;
-
-412 
-x
-->
-∑ª¡
-->
-cﬁ‹
- = 
-BLACK
-;
-
-413 
-x
-->
-right
-->
-cﬁ‹
- = 
-BLACK
-;
-
-414 
-	`À·_rŸ©e
-(
-x
-->
-∑ª¡
-);
-
-415 
-x
- = 
-ROOT
-;
-
-421 
-w
- = 
-x
-->
-∑ª¡
-->
-À·
-;
-
-423 if(
-w
-->
-cﬁ‹
- =
-RED
-){
-
-424 
-w
-->
-cﬁ‹
- = 
-BLACK
-;
-
-425 
-x
-->
-∑ª¡
-->
-cﬁ‹
- = 
-BLACK
-;
-
-426 
-	`right_rŸ©e
-(
-x
-->
-∑ª¡
-);
-
-427 
-w
- = 
-x
-->
-∑ª¡
-->
-À·
-;
-
-430 if(
-w
-->
-À·
-->
-cﬁ‹
- =
-BLACK
- && w->
-right
-->color == BLACK){
-
-431 
-w
-->
-cﬁ‹
- = 
-RED
-;
-
-432 
-x
-->
-∑ª¡
-->
-cﬁ‹
- = 
-BLACK
-;
-
-433 
 x
  = x->
 ∑ª¡
 ;
 
-437 if(
+415 if(
+	`GET_COLOR
+(
 w
 ->
 À·
-->
-cﬁ‹
- =
+Ë=
 BLACK
 ){
 
-438 
+416 
+	`SET_COLOR
+(
 w
-->
-cﬁ‹
- = 
+, 
 RED
-;
+);
 
-439 
+417 
+	`SET_COLOR
+(
 w
 ->
 right
-->
-cﬁ‹
- = 
+, 
 BLACK
-;
+);
 
-440 
+418 
 	`À·_rŸ©e
 (
 w
 );
 
-441 
+419 
 w
  = 
 x
@@ -20771,63 +20973,65 @@ x
 À·
 ;
 
-444 
+422 
+	`SET_COLOR
+(
 w
-->
-cﬁ‹
- = 
-x
-->
-∑ª¡
-->color;
-
-445 
-x
-->
-∑ª¡
-->
-cﬁ‹
- = 
-BLACK
-;
-
-446 
-w
-->
-À·
-->
-cﬁ‹
- = 
-BLACK
-;
-
-447 
-	`right_rŸ©e
+, 
+	`GET_COLOR
 (
 x
 ->
 ∑ª¡
+));
+
+423 
+	`SET_COLOR
+(
+x
+->
+∑ª¡
+, 
+BLACK
 );
 
-448 
+424 
+	`SET_COLOR
+(
+w
+->
+À·
+, 
+BLACK
+);
+
+425 
+	`right_rŸ©e
+(
+x
+-> 
+∑ª¡
+);
+
+426 
 x
  = 
 ROOT
 ;
 
-455 
+433 
+	`SET_COLOR
+(
 x
-->
-cﬁ‹
- = 
+, 
 BLACK
-;
+);
 
-456 
+434 
 	}
 }
 
-459 
+437 
 	$ªd_bœck_å™•œ¡
 (
 node
@@ -20837,7 +21041,7 @@ u
 v
 ){
 
-460 if(
+438 if(
 u
 ->
 ∑ª¡
@@ -20845,13 +21049,13 @@ u
 NILL
 ){
 
-461 
+439 
 ROOT
  = 
 v
 ;
 
-463 if(
+441 if(
 u
  =u->
 ∑ª¡
@@ -20859,7 +21063,7 @@ u
 À·
 ){
 
-464 
+442 
 u
 ->
 ∑ª¡
@@ -20869,7 +21073,7 @@ u
 v
 ;
 
-467 
+445 
 u
 ->
 ∑ª¡
@@ -20879,7 +21083,7 @@ right
 v
 ;
 
-470 
+448 
 v
 ->
 ∑ª¡
@@ -20887,107 +21091,319 @@ v
 u
 ->parent;
 
-471 
+449 
 	}
 }
 
 	@/home/iybang/dlmalloc/src/redblack.h
 
-1 
+1 #i‚de‡
+TMTE_REDBLACK_H
+
+
+2 
+	#TMTE_REDBLACK_H
+
+
+	)
+
+4 
 	~<sys/ty≥s.h
 >
 
-2 
+5 
 	~"chunk.h
 "
 
-3 
+6 
 	~"°©e.h
 "
 
-23 
+27 
 	#RED
  0
 
 	)
 
-24 
+28 
 	#BLACK
  1
 
 	)
 
-25 
+30 
+	#UNMAP_UNIT_POWER
+ (
+size_t
+)12
+
+	)
+
+31 
 	#UNMAP_UNIT
  (
 size_t
-)4U*(size_t)1024U
+)(2<<
+UNMAP_UNIT_POWER
+)
 
 	)
 
-26 
-	#NUM_TREE_NODES
- 200
+34 
+	#COLOR_BIT
+ 1<<63
 
 	)
 
-28 
+35 
+	#COLOR_MASK
+ ~((
+size_t
+)
+COLOR_BIT
+)
+
+	)
+
+36 
+	#KEY_BITS
+ (
+size_t
+)-1 >> 
+UNMAP_UNIT_POWER
+
+
+	)
+
+37 
+	#KEY_MASK
+ ~((
+size_t
+)
+KEY_BITS
+)
+
+	)
+
+38 
+	#EXH_BITS
+ (
+size_t
+)-1 & 
+COLOR_MASK
+ & 
+KEY_MASK
+
+
+	)
+
+39 
+	#EXH_MASK
+ ~((
+size_t
+)
+EXH_BITS
+)
+
+	)
+
+41 
+	#GET_COLOR
+(
+p
+)\
+
+42 ()((
+p
+)->
+hód
+ >> 63)
+
+	)
+
+43 
+	#SET_COLOR
+(
+p
+, 
+c
+)\
+
+44 ((
+node
+*)
+p
+)->
+hód
+ = (p)->hód & 
+COLOR_MASK
+ | (
+size_t
+)
+c
+<<63
+
+	)
+
+45 
+	#GET_KEY
+(
+p
+)\
+
+46 (
+size_t
+)((
+p
+)->
+hód
+ & 
+KEY_BITS
+)
+
+	)
+
+48 
+	#SET_KEY
+(
+p
+, 
+k
+)\
+
+49 ((
+node
+*)
+p
+)->
+hód
+ = ((’)->hódË& 
+KEY_MASK
+ | 
+k
+)
+
+	)
+
+50 
+	#GET_EXH
+(
+p
+)\
+
+51 (
+size_t
+)(((
+p
+)->
+hód
+ & 
+EXH_BITS
+Ë>> 64-
+UNMAP_UNIT_POWER
+)
+
+	)
+
+53 
+	#SET_EXH
+(
+p
+, 
+e
+)\
+
+54 (
+p
+)->
+hód
+ = (p)->hód & 
+EXH_MASK
+ | (
+e
+<<(64-
+UNMAP_UNIT_POWER
+))
+
+	)
+
+56 
 	snode
 {
 
-29 
+57 
 size_t
  
-	mkey
+	mhód
 ;
 
-30 
-	mcﬁ‹
-;
-
-31 
-size_t
- 
-	mexhau°ed_size
-;
-
-32 
+58 
 node
  *
 	m∑ª¡
 ;
 
-33 
+59 
 node
  *
 	mÀ·
 ;
 
-34 
+60 
 node
  *
 	mright
 ;
 
-39 
+64 
 node
  *
 	gROOT
 ;
 
-40 
+65 
 node
  *
 	gNILL
 ;
 
-41 
+66 
 node
  
 	gglobÆ_node
 ;
 
-43 
+68 
+ölöe
+ 
+	$öô_ªdbœck_åì
+(){
+
+69 
+	`SET_COLOR
+(&
+globÆ_node
+, 
+BLACK
+);
+
+71 
+NILL
+ = &
+globÆ_node
+;
+
+74 
+ROOT
+ = 
+NILL
+;
+
+110 
+	}
+}
+
+112 
 À·_rŸ©e
 (
 node
@@ -20995,7 +21411,7 @@ node
 x
 );
 
-44 
+113 
 right_rŸ©e
 (
 node
@@ -21003,7 +21419,7 @@ node
 x
 );
 
-45 
+114 
 åì_¥öt
 (
 node
@@ -21011,19 +21427,21 @@ node
 x
 );
 
-46 
+115 
 ªd_bœck_ö£π
 (
 size_t
  
 key
+, size_à
+exh
 , 
 node
  *
 z
 );
 
-47 
+116 
 ªd_bœck_ö£π_fixup
 (
 node
@@ -21031,7 +21449,7 @@ node
 z
 );
 
-48 
+117 
 node
  *
 åì_£¨ch
@@ -21041,7 +21459,7 @@ size_t
 key
 );
 
-49 
+118 
 node
  *
 åì_möimum
@@ -21049,7 +21467,7 @@ node
 x
 );
 
-50 
+119 
 ªd_bœck_å™•œ¡
 (
 node
@@ -21059,7 +21477,7 @@ u
 v
 );
 
-51 
+120 
 ªd_bœck_dñëe
 (
 node
@@ -21067,7 +21485,7 @@ node
 z
 );
 
-52 
+121 
 ªd_bœck_dñëe_fixup
 (
 node
@@ -21075,7 +21493,7 @@ node
 x
 );
 
-54 
+123 
 size_t
  
 övÆid©e_chunk
@@ -21545,6 +21963,18 @@ mÆloc_°©e
 mÆloc_£gmít
  *
 £gmít
+);
+
+89 
+u∆ök_£gmít
+(
+mÆloc_°©e
+* 
+°©e
+, 
+mÆloc_£gmít
+* 
+£gmít_hﬁdög
 );
 
 	@/home/iybang/dlmalloc/src/state.c
@@ -22347,11 +22777,89 @@ mÆloc_chunk
 chunk
 ){
 
-140 
+133 
+	`£t_chunk_èg
+(
+chunk
+, 
+TAG_BITS
+);
+
+134 
+size_t
+ 
+csize
+ = 
+	`chunk_size
+(
+chunk
+);
+
+135 
+mÆloc_chunk
+ *
+¥ev
+ = 
+	`is_¥ev_exhau°ed
+(
+chunk
+)? 0: 
+	`chunk_möus_off£t
+(chunk, 
+csize
+);
+
+136 
+mÆloc_chunk
+ *
+√xt
+ = 
+	`is_√xt_exhau°ed
+(
+chunk
+)? 0: 
+	`chunk_∂us_off£t
+(chunk, 
+csize
+);
+
+137 if(
+¥ev
+ != 0){
+
+138 
+¥ev
+->
+¥ev_foŸ
+ |
+NEXT_EXH_BIT
+;
+
+140 if(
+√xt
+ !=0){
+
+141 
+√xt
+->
+¥ev_foŸ
+ |
+PREV_EXH_BIT
+;
+
+143  
+	`övÆid©e_chunk
+(
+°©e
+, 
+chunk
+);
+
+144 
 	}
 }
 
-142 
+146 
 	$ª∂a˚_£gmít
 (
 mÆloc_°©e
@@ -22375,7 +22883,7 @@ p£g
 n£g
 ){
 
-144 
+148 
 	`öô_t›
 (
 °©e
@@ -22389,13 +22897,13 @@ tsize
 TOP_FOOT_SIZE
 );
 
-145 
+149 
 mÆloc_£gmít
  *
 ss
 ;
 
-147 
+151 
 ss
  = &
 °©e
@@ -22403,7 +22911,7 @@ ss
 £gmít
 ;
 
-148 
+152 
 °©e
 ->
 £gmít
@@ -22413,7 +22921,7 @@ ba£
 tba£
 ;
 
-149 
+153 
 °©e
 ->
 £gmít
@@ -22423,7 +22931,7 @@ size
 tsize
 ;
 
-150 
+154 
 °©e
 ->
 £gmít
@@ -22433,7 +22941,7 @@ tsize
 mm≠≥d
 ;
 
-151 
+155 
 °©e
 ->
 £gmít
@@ -22441,17 +22949,17 @@ mm≠≥d
 bœckli°ed_size
  = 0;
 
-152 
+156 
 °©e
 ->
 t›_cﬁ‹ed_size
  = 0;
 
-154 if(
+158 if(
 p£g
  !=0){
 
-155 
+159 
 p£g
 ->
 √xt
@@ -22459,7 +22967,7 @@ p£g
 n£g
 ;
 
-156 
+160 
 °©e
 ->
 £gmít
@@ -22469,7 +22977,7 @@ n£g
 ss
 ;
 
-158 
+162 
 °©e
 ->
 £gmít
@@ -22479,7 +22987,187 @@ ss
 n£g
 ;
 
-160 
+164 
+	}
+}
+
+166 
+	$•lô_™d_unm≠_£gmít
+(
+mÆloc_°©e
+* 
+°©e
+, 
+mÆloc_£gmít
+* 
+£gmít
+, 
+mÆloc_chunk
+* 
+¥ev
+, mÆloc_chunk* 
+√xt
+, * 
+•lô_°¨t
+, 
+size_t
+ 
+unm≠_size
+){
+
+167 
+	`dl_as£π
+(
+	`£gmít_hﬁds
+(
+£gmít
+, 
+•lô_°¨t
+));
+
+168 
+	`dl_as£π
+(
+	`£gmít_hﬁds
+(
+£gmít
+, 
+•lô_°¨t
++
+unm≠_size
+));
+
+169 
+	`dl_as£π
+(
+£gmít
+->
+ba£
+ =
+•lô_°¨t
+ || 
+	`£gmít_hﬁds
+(£gmít, 
+¥ev
+));
+
+185 * 
+unm≠_íd
+ = 
+•lô_°¨t
+ + 
+unm≠_size
+;
+
+187 if(
+unm≠_íd
+ > 
+√xt
+){
+
+188 
+size_t
+ 
+•lô_ªm
+ = 
+unm≠_íd
+ - (*)
+√xt
+;
+
+189 
+size_t
+ 
+off£t
+ = 
+	`Æign_off£t
+(
+	`chunk_to_mem
+(++
+unm≠_íd
+));
+
+190 
+unm≠_íd
+--;
+
+192 * 
+¥ev_ch¨
+ = (*)
+¥ev
+;
+
+193 * 
+£gmít_íd
+ = 
+£gmít
+->
+ba£
+ + segmít->
+size
+;
+
+194 
+size_t
+ 
+ssize
+ = 
+	`∑d_ªque°
+((
+mÆloc_£gmít
+));
+
+195 * 
+øw•
+ = 
+£gmít_íd
+ - (
+ssize
+ + (
+size_t
+)*4 + 
+CHUNK_ALIGN_MASK
+);
+
+196 
+size_t
+ 
+off£t
+ = 
+	`Æign_off£t
+(
+	`chunk_to_mem
+(
+øw•
+));
+
+197 * 
+a•
+ = 
+øw•
+ + 
+off£t
+;
+
+198 * 
+c•
+ = (
+a•
+ < (
+¥ev_ch¨
+ + 
+MIN_CHUNK_SIZE
+))?Örev_char:ásp;
+
+199 if(
+£gmít
+->
+ba£
+ =
+•lô_°¨t
+){
+
+202 
 	}
 }
 
@@ -22511,31 +23199,35 @@ MALLOC_STATE_H
 	~"lock.h
 "
 
-95 
+8 
+	~"ªdbœck.h
+"
+
+96 
 	#NUM_SMALL_BINS
  (32U)
 
 	)
 
-96 
+97 
 	#NUM_TREE_BINS
  (32U)
 
 	)
 
-97 
+98 
 	#SMALL_BIN_SHIFT
  (3U)
 
 	)
 
-98 
+99 
 	#TREE_BIN_SHIFT
  (8U)
 
 	)
 
-99 
+100 
 	#MIN_LARGE_SIZE
  ((
 size_t
@@ -22545,7 +23237,7 @@ TREE_BIN_SHIFT
 
 	)
 
-100 
+101 
 	#MAX_SMALL_SIZE
  (
 MIN_LARGE_SIZE
@@ -22555,7 +23247,7 @@ size_t
 
 	)
 
-101 
+102 
 	#MAX_SMALL_REQUEST
  (
 MAX_SMALL_SIZE
@@ -22567,7 +23259,7 @@ CHUNK_OVERHEAD
 
 	)
 
-105 
+106 
 ölöe
  
 	$is_smÆl
@@ -22577,7 +23269,7 @@ size_t
 size
 ) {
 
-106  (
+107  (
 size
  >> 
 SMALL_BIN_SHIFT
@@ -22585,11 +23277,11 @@ SMALL_BIN_SHIFT
 NUM_SMALL_BINS
 ;
 
-107 
+108 
 	}
 }
 
-109 
+110 
 ölöe
  
 bö_ödex_t
@@ -22601,7 +23293,7 @@ size_t
 size
 ) {
 
-110  (
+111  (
 bö_ödex_t
 Ë(
 size
@@ -22609,11 +23301,11 @@ size
 SMALL_BIN_SHIFT
 );
 
-111 
+112 
 	}
 }
 
-113 
+114 
 ölöe
  
 size_t
@@ -22625,17 +23317,17 @@ bö_ödex_t
 ödex
 ) {
 
-114  
+115  
 ödex
  << 
 SMALL_BIN_SHIFT
 ;
 
-115 
+116 
 	}
 }
 
-118 
+119 
 ölöe
  
 bö_ödex_t
@@ -22647,7 +23339,7 @@ bö_ödex_t
 i
 ) {
 
-119  
+120  
 i
  =
 NUM_TREE_BINS
@@ -22659,11 +23351,11 @@ size_t
 TREE_BIN_SHIFT
  - 2);
 
-120 
+121 
 	}
 }
 
-123 
+124 
 ölöe
  
 bö_ödex_t
@@ -22675,7 +23367,7 @@ bö_ödex_t
 i
 ) {
 
-124  ((
+125  ((
 size_t
 Ë1 << ((
 i
@@ -22683,7 +23375,7 @@ i
 TREE_BIN_SHIFT
 ))
 
-125 | (((
+126 | (((
 size_t
 Ë(
 i
@@ -22691,73 +23383,73 @@ i
 TREE_BIN_SHIFT
  - 1));
 
-126 
+127 
 	}
 }
 
-128 
+129 
 	smÆloc_°©e
  {
 
-129 
+130 
 bö_m≠_t
  
 	msmÆl_m≠
 ;
 
-130 
+131 
 bö_m≠_t
  
 	måì_m≠
 ;
 
-131 
+132 
 size_t
  
 	mdv_size
 ;
 
-132 
+133 
 size_t
  
 	mt›_size
 ;
 
-133 *
+134 *
 	mÀa°_addr
-;
-
-134 
-mÆloc_chunk
- *
-	mdv
 ;
 
 135 
 mÆloc_chunk
  *
-	mt›
+	mdv
 ;
 
-136 
-size_t
- 
-	måim_check
+136 
+mÆloc_chunk
+ *
+	mt›
 ;
 
 137 
 size_t
  
-	mªÀa£_checks
+	måim_check
 ;
 
 138 
 size_t
  
+	mªÀa£_checks
+;
+
+139 
+size_t
+ 
 	mmagic
 ;
 
-139 
+140 
 mÆloc_chunk
  *
 	msmÆl_bös
@@ -22765,7 +23457,7 @@ mÆloc_chunk
 NUM_SMALL_BINS
  + 1) * 2];
 
-140 
+141 
 mÆloc_åì_chunk
  *
 	måì_bös
@@ -22773,53 +23465,53 @@ mÆloc_åì_chunk
 NUM_TREE_BINS
 ];
 
-141 
+142 
 size_t
  
 	mfoŸ¥öt
 ;
 
-142 
+143 
 size_t
  
 	mmax_foŸ¥öt
 ;
 
-143 
+144 
 size_t
  
 	mfoŸ¥öt_limô
 ;
 
-144 
+145 
 Êag_t
  
 	mÊags
 ;
 
-145 #i‡
+146 #i‡
 USE_LOCKS
 
 
-146 
+147 
 MLOCK_T
  
 	mmuãx
 ;
 
-148 
+149 
 mÆloc_£gmít
  
 	m£gmít
 ;
 
-150 
+151 
 size_t
  
 	mt›_cﬁ‹ed_size
 ;
 
-153 
+154 
 ölöe
  
 	$is_öôülized
@@ -22829,17 +23521,17 @@ mÆloc_°©e
 °©e
 ) {
 
-154  
+155  
 °©e
 ->
 t›
  != 0;
 
-155 
+156 
 	}
 }
 
-158 
+159 
 ölöe
  
 mÆloc_chunk
@@ -22855,7 +23547,7 @@ bö_ödex_t
 ödex
 ) {
 
-159  (
+160  (
 mÆloc_chunk
  *Ë(*Ë&(
 °©e
@@ -22865,11 +23557,11 @@ smÆl_bös
 ödex
  << 1]);
 
-160 
+161 
 	}
 }
 
-162 
+163 
 ölöe
  
 mÆloc_åì_chunk
@@ -22885,7 +23577,7 @@ bö_ödex_t
 ödex
 ) {
 
-163  &(
+164  &(
 °©e
 ->
 åì_bös
@@ -22893,11 +23585,11 @@ bö_ödex_t
 ödex
 ]);
 
-164 
+165 
 	}
 }
 
-167 
+168 
 ölöe
  
 bö_m≠_t
@@ -22909,17 +23601,17 @@ bö_m≠_t
 ödex
 ) {
 
-168  (
+169  (
 bö_m≠_t
 Ë1 << 
 ödex
 ;
 
-169 
+170 
 	}
 }
 
-172 
+173 
 ölöe
  
 bö_m≠_t
@@ -22935,7 +23627,7 @@ bö_m≠_t
 ödex
 ) {
 
-173  
+174  
 °©e
 ->
 smÆl_m≠
@@ -22945,11 +23637,11 @@ smÆl_m≠
 ödex
 );
 
-174 
+175 
 	}
 }
 
-177 
+178 
 ölöe
  
 bö_m≠_t
@@ -22965,7 +23657,7 @@ bö_m≠_t
 ödex
 ) {
 
-178  
+179  
 °©e
 ->
 smÆl_m≠
@@ -22975,7 +23667,7 @@ smÆl_m≠
 ödex
 );
 
-179 
+180 
 	}
 }
 
@@ -24075,21 +24767,33 @@ p3_èg
 	`dl_¥ötf
 ("test 4: Arbitrary chunkálloc, checkÅag coloring: PASSED\n");
 
-125 
+124 
 p4
  = 
 	`dl_mÆloc
 (2064);
 
-126 
+125 
 i
 =0; i<26; i++){
 
-127 
+126 
 	`dl_‰ì
 (
 p4
 );
+
+127 
+	`dl_¥ötf
+("hîe: i=%dÖ4_èg=0x%016lX\n",
+i
+,
+	`gë_chunk_èg
+(
+	`mem_to_chunk
+(
+p4
+)));
 
 128 
 p4
@@ -24097,7 +24801,7 @@ p4
 	`dl_mÆloc
 (2064);
 
-130 
+131 
 	`dl_‰ì
 (
 p4
@@ -24139,45 +24843,45 @@ size
 p5
 );
 
-141 
+140 
 p6
  = 
 	`dl_mÆloc
 (200);
 
-142 
+141 
 	`dl_‰ì
 (
 p6
 );
 
-143 
+142 
 	`dl_¥ötf
 ("\ninspectáll\n");
 
-144 
+143 
 	`dl_mÆloc_ö•e˘_Æl
 (&
 ö•e˘‹
 , 0);
 
-145 
+144 
 	`dl_¥ötf
 ("\n\n----------End of Tests-----------\n\n");
 
-146 
+145 
 	}
 }
 
-148 
+147 
 	$maö
 () {
 
-149 
+148 
 	`ã°_dl
 ();
 
-152 
+151 
 	}
 }
 
@@ -44999,7 +45703,9 @@ size_t
 
 51 
 	#TAG_BITS
- (~
+ ~((
+size_t
+)
 TAG_MASK
 )
 
@@ -45014,32 +45720,30 @@ TAG_MASK
 	)
 
 53 
-	#BLACKLIST_BIT
- ((
-size_t
-)4)
-
-	)
-
-54 
 	#FLAG_BITS
  (
 PREV_INUSE_BIT
  | 
 CURR_INUSE_BIT
- | 
-BLACKLIST_BIT
 )
 
 	)
 
-55 
+54 
 	#SIZE_BITS
  (
 TAG_MASK
  & ~
 FLAG_BITS
 )
+
+	)
+
+55 
+	#TAG_SHIFT
+ (((
+size_t
+)-1Ë<< 3)
 
 	)
 
@@ -45129,7 +45833,7 @@ p
 p
 )->
 ¥ev_foŸ
- & 
+ & ~
 EXHAUSTION_BITS
 ;
 
@@ -46239,13 +46943,7 @@ TREE_BIN_SHIFT
 
 	)
 
-518 c⁄° 
-	gTAG_SHIFT
- = ((
-size_t
-)-1) << 3;
-
-520 
+519 
 ölöe
  
 size_t
@@ -46259,17 +46957,17 @@ x
 y
 ){
 
-521  
+520  
 x
  > 
 y
 ? x: y;
 
-522 
+521 
 	}
 }
 
-524 
+523 
 ölöe
  
 u_öt8_t
@@ -46281,17 +46979,17 @@ size_t
 èg
 ){
 
-525  
+524  
 èg
  >> 
 TAG_SHIFT
 ;
 
-526 
+525 
 	}
 }
 
-528 
+527 
 ölöe
  
 size_t
@@ -46303,17 +47001,17 @@ u_öt8_t
 öt_èg
 ){
 
-529  
+528  
 öt_èg
  << 
 TAG_SHIFT
 ;
 
-530 
+529 
 	}
 }
 
-532 
+531 
 ölöe
  
 size_t
@@ -46325,7 +47023,7 @@ mÆloc_chunk
 p
 ){
 
-533  
+532  
 p
 ->
 hód
@@ -46333,11 +47031,11 @@ hód
 TAG_BITS
 ;
 
-534 
+533 
 	}
 }
 
-536 
+535 
 ölöe
  
 	$is_exhau°ed
@@ -46347,19 +47045,21 @@ mÆloc_chunk
 p
 ){
 
-537  (
+536  ((
 	`gë_chunk_èg
 (
 p
+Ë+ 
+TAG_OFFSET
 Ë=
 TAG_BITS
 );
 
-538 
+537 
 	}
 }
 
-540 
+539 
 ölöe
  
 	$is_ußbÀ
@@ -46369,19 +47069,19 @@ mÆloc_chunk
 p
 ){
 
-541  (
+540  (
 p
 ->
 hód
  & 
-BLACKLIST_BIT
-) == 0;
+TAG_BITS
+) != TAG_BITS;
 
-542 
+541 
 	}
 }
 
-544 
+543 
 ölöe
  
 	$£t_chunk_èg
@@ -46395,7 +47095,7 @@ size_t
 èg
 ){
 
-545 
+544 
 p
 ->
 hód
@@ -46405,33 +47105,11 @@ TAG_MASK
 èg
 ;
 
-546 
+545 
 	}
 }
 
-548 
-ölöe
- 
-	$is_bœckli°ed
-(
-mÆloc_chunk
-* 
-p
-){
-
-549  (
-p
-->
-hód
- & 
-BLACKLIST_BIT
-) == BLACKLIST_BIT;
-
-550 
-	}
-}
-
-552 
+547 
 ölöe
  
 	$is_√xt_exhau°ed
@@ -46441,7 +47119,7 @@ mÆloc_chunk
 p
 ){
 
-553  (
+548  (
 p
 ->
 ¥ev_foŸ
@@ -46449,11 +47127,11 @@ p
 NEXT_EXH_BIT
 ) == NEXT_EXH_BIT;
 
-554 
+549 
 	}
 }
 
-556 
+551 
 ölöe
  
 	$is_¥ev_exhau°ed
@@ -46463,7 +47141,7 @@ mÆloc_chunk
 p
 ){
 
-557  (
+552  (
 p
 ->
 ¥ev_foŸ
@@ -46471,11 +47149,11 @@ p
 PREV_EXH_BIT
 ) == PREV_EXH_BIT;
 
-558 
+553 
 	}
 }
 
-560 
+555 
 ölöe
  
 	$is_√xt_≥ndög_dñëi⁄
@@ -46485,7 +47163,7 @@ mÆloc_chunk
 p
 ){
 
-561  (
+556  (
 p
 ->
 ¥ev_foŸ
@@ -46493,11 +47171,11 @@ p
 NEXT_PEN_BIT
 ) == NEXT_PEN_BIT;
 
-562 
+557 
 	}
 }
 
-567 
+562 
 ö£π_chunk
 (
 mÆloc_°©e
@@ -46507,7 +47185,7 @@ mÆloc_chunk
 size_t
 );
 
-569 
+564 
 u∆ök_chunk
 (
 mÆloc_°©e
@@ -46517,7 +47195,7 @@ mÆloc_chunk
 size_t
 );
 
-571 
+566 
 ö£π_smÆl_chunk
 (
 mÆloc_°©e
@@ -46527,7 +47205,7 @@ mÆloc_chunk
 size_t
 );
 
-573 
+568 
 u∆ök_smÆl_chunk
 (
 mÆloc_°©e
@@ -46537,7 +47215,7 @@ mÆloc_chunk
 size_t
 );
 
-575 
+570 
 u∆ök_fú°_smÆl_chunk
 (
 mÆloc_°©e
@@ -46547,7 +47225,7 @@ mÆloc_chunk
 bö_ödex_t
 );
 
-577 
+572 
 ª∂a˚_dv
 (
 mÆloc_°©e
@@ -46557,7 +47235,7 @@ mÆloc_chunk
 size_t
 );
 
-579 
+574 
 ö£π_œrge_chunk
 (
 mÆloc_°©e
@@ -46567,7 +47245,7 @@ mÆloc_åì_chunk
 size_t
 );
 
-581 
+576 
 u∆ök_œrge_chunk
 (
 mÆloc_°©e
@@ -46575,7 +47253,7 @@ mÆloc_°©e
 mÆloc_åì_chunk
  *);
 
-583 
+578 
 di•o£_chunk
 (
 mÆloc_°©e
@@ -47807,17 +48485,21 @@ magic
 	`mã_öô
 ();
 
-35 
+34 
+	`öô_ªdbœck_åì
+();
+
+36 
 	}
 }
 
-38 
+39 
 mÆloc_°©e
  
 globÆ_mÆloc_°©e
 ;
 
-40 
+41 
 ölöe
  
 	$is_globÆ
@@ -47827,17 +48509,17 @@ mÆloc_°©e
 °©e
 ) {
 
-41  
+42  
 °©e
  =&
 globÆ_mÆloc_°©e
 ;
 
-42 
+43 
 	}
 }
 
-45 
+46 
 ölöe
  
 size_t
@@ -47849,7 +48531,7 @@ size_t
 size
 ) {
 
-46  (
+47  (
 size
  + (
 ∑øms
@@ -47859,11 +48541,11 @@ size
 size_t
 ) 1)) & ~(params.page_size - (size_t) 1);
 
-47 
+48 
 	}
 }
 
-49 
+50 
 ölöe
  
 	$is_∑ge_Æig√d
@@ -47871,7 +48553,7 @@ size_t
 size
 ) {
 
-50  ((
+51  ((
 size_t
 Ë
 size
@@ -47881,11 +48563,11 @@ size
 ∑ge_size
  - (size_t) 1)) == 0;
 
-51 
+52 
 	}
 }
 
-54 
+55 
 ölöe
  
 size_t
@@ -47897,7 +48579,7 @@ size_t
 size
 ) {
 
-55  (
+56  (
 size
  + (
 ∑øms
@@ -47907,11 +48589,11 @@ gønuœrôy
 size_t
 ) 1)) & ~(params.granularity - (size_t) 1);
 
-56 
+57 
 	}
 }
 
-59 
+60 
 ölöe
  
 size_t
@@ -47923,13 +48605,13 @@ size_t
 size
 ) {
 
-60  
+61  
 	`∑ge_Æign
 (
 size
 );
 
-61 
+62 
 	}
 }
 
@@ -49055,101 +49737,313 @@ size
 
 	@redblack.h
 
-1 
+1 #i‚de‡
+TMTE_REDBLACK_H
+
+
+2 
+	#TMTE_REDBLACK_H
+
+
+	)
+
+4 
 	~<sys/ty≥s.h
 >
 
-2 
+5 
 	~"chunk.h
 "
 
-3 
+6 
 	~"°©e.h
 "
 
-23 
+27 
 	#RED
  0
 
 	)
 
-24 
+28 
 	#BLACK
  1
 
 	)
 
-25 
+30 
+	#UNMAP_UNIT_POWER
+ (
+size_t
+)12
+
+	)
+
+31 
 	#UNMAP_UNIT
  (
 size_t
-)4U*(size_t)1024U
+)(2<<
+UNMAP_UNIT_POWER
+)
 
 	)
 
-26 
-	#NUM_TREE_NODES
- 200
+34 
+	#COLOR_BIT
+ 1<<63
 
 	)
 
-28 
+35 
+	#COLOR_MASK
+ ~((
+size_t
+)
+COLOR_BIT
+)
+
+	)
+
+36 
+	#KEY_BITS
+ (
+size_t
+)-1 >> 
+UNMAP_UNIT_POWER
+
+
+	)
+
+37 
+	#KEY_MASK
+ ~((
+size_t
+)
+KEY_BITS
+)
+
+	)
+
+38 
+	#EXH_BITS
+ (
+size_t
+)-1 & 
+COLOR_MASK
+ & 
+KEY_MASK
+
+
+	)
+
+39 
+	#EXH_MASK
+ ~((
+size_t
+)
+EXH_BITS
+)
+
+	)
+
+41 
+	#GET_COLOR
+(
+p
+)\
+
+42 ()((
+p
+)->
+hód
+ >> 63)
+
+	)
+
+43 
+	#SET_COLOR
+(
+p
+, 
+c
+)\
+
+44 ((
+node
+*)
+p
+)->
+hód
+ = (p)->hód & 
+COLOR_MASK
+ | (
+size_t
+)
+c
+<<63
+
+	)
+
+45 
+	#GET_KEY
+(
+p
+)\
+
+46 (
+size_t
+)((
+p
+)->
+hód
+ & 
+KEY_BITS
+)
+
+	)
+
+48 
+	#SET_KEY
+(
+p
+, 
+k
+)\
+
+49 ((
+node
+*)
+p
+)->
+hód
+ = ((’)->hódË& 
+KEY_MASK
+ | 
+k
+)
+
+	)
+
+50 
+	#GET_EXH
+(
+p
+)\
+
+51 (
+size_t
+)(((
+p
+)->
+hód
+ & 
+EXH_BITS
+Ë>> 64-
+UNMAP_UNIT_POWER
+)
+
+	)
+
+53 
+	#SET_EXH
+(
+p
+, 
+e
+)\
+
+54 (
+p
+)->
+hód
+ = (p)->hód & 
+EXH_MASK
+ | (
+e
+<<(64-
+UNMAP_UNIT_POWER
+))
+
+	)
+
+56 
 	snode
 {
 
-29 
+57 
 size_t
  
-	mkey
+	mhód
 ;
 
-30 
-	mcﬁ‹
-;
-
-31 
-size_t
- 
-	mexhau°ed_size
-;
-
-32 
+58 
 node
  *
 	m∑ª¡
 ;
 
-33 
+59 
 node
  *
 	mÀ·
 ;
 
-34 
+60 
 node
  *
 	mright
 ;
 
-39 
+64 
 node
  *
 	gROOT
 ;
 
-40 
+65 
 node
  *
 	gNILL
 ;
 
-41 
+66 
 node
  
 	gglobÆ_node
 ;
 
-43 
+68 
+ölöe
+ 
+	$öô_ªdbœck_åì
+(){
+
+69 
+	`SET_COLOR
+(&
+globÆ_node
+, 
+BLACK
+);
+
+71 
+NILL
+ = &
+globÆ_node
+;
+
+74 
+ROOT
+ = 
+NILL
+;
+
+110 
+	}
+}
+
+112 
 À·_rŸ©e
 (
 node
@@ -49157,7 +50051,7 @@ node
 x
 );
 
-44 
+113 
 right_rŸ©e
 (
 node
@@ -49165,7 +50059,7 @@ node
 x
 );
 
-45 
+114 
 åì_¥öt
 (
 node
@@ -49173,19 +50067,21 @@ node
 x
 );
 
-46 
+115 
 ªd_bœck_ö£π
 (
 size_t
  
 key
+, size_à
+exh
 , 
 node
  *
 z
 );
 
-47 
+116 
 ªd_bœck_ö£π_fixup
 (
 node
@@ -49193,7 +50089,7 @@ node
 z
 );
 
-48 
+117 
 node
  *
 åì_£¨ch
@@ -49203,7 +50099,7 @@ size_t
 key
 );
 
-49 
+118 
 node
  *
 åì_möimum
@@ -49211,7 +50107,7 @@ node
 x
 );
 
-50 
+119 
 ªd_bœck_å™•œ¡
 (
 node
@@ -49221,7 +50117,7 @@ u
 v
 );
 
-51 
+120 
 ªd_bœck_dñëe
 (
 node
@@ -49229,7 +50125,7 @@ node
 z
 );
 
-52 
+121 
 ªd_bœck_dñëe_fixup
 (
 node
@@ -49237,7 +50133,7 @@ node
 x
 );
 
-54 
+123 
 size_t
  
 övÆid©e_chunk
@@ -49429,6 +50325,18 @@ mÆloc_£gmít
 £gmít
 );
 
+89 
+u∆ök_£gmít
+(
+mÆloc_°©e
+* 
+°©e
+, 
+mÆloc_£gmít
+* 
+£gmít_hﬁdög
+);
+
 	@state.h
 
 1 #i‚de‡
@@ -49457,31 +50365,35 @@ MALLOC_STATE_H
 	~"lock.h
 "
 
-95 
+8 
+	~"ªdbœck.h
+"
+
+96 
 	#NUM_SMALL_BINS
  (32U)
 
 	)
 
-96 
+97 
 	#NUM_TREE_BINS
  (32U)
 
 	)
 
-97 
+98 
 	#SMALL_BIN_SHIFT
  (3U)
 
 	)
 
-98 
+99 
 	#TREE_BIN_SHIFT
  (8U)
 
 	)
 
-99 
+100 
 	#MIN_LARGE_SIZE
  ((
 size_t
@@ -49491,7 +50403,7 @@ TREE_BIN_SHIFT
 
 	)
 
-100 
+101 
 	#MAX_SMALL_SIZE
  (
 MIN_LARGE_SIZE
@@ -49501,7 +50413,7 @@ size_t
 
 	)
 
-101 
+102 
 	#MAX_SMALL_REQUEST
  (
 MAX_SMALL_SIZE
@@ -49513,7 +50425,7 @@ CHUNK_OVERHEAD
 
 	)
 
-105 
+106 
 ölöe
  
 	$is_smÆl
@@ -49523,7 +50435,7 @@ size_t
 size
 ) {
 
-106  (
+107  (
 size
  >> 
 SMALL_BIN_SHIFT
@@ -49531,11 +50443,11 @@ SMALL_BIN_SHIFT
 NUM_SMALL_BINS
 ;
 
-107 
+108 
 	}
 }
 
-109 
+110 
 ölöe
  
 bö_ödex_t
@@ -49547,7 +50459,7 @@ size_t
 size
 ) {
 
-110  (
+111  (
 bö_ödex_t
 Ë(
 size
@@ -49555,11 +50467,11 @@ size
 SMALL_BIN_SHIFT
 );
 
-111 
+112 
 	}
 }
 
-113 
+114 
 ölöe
  
 size_t
@@ -49571,17 +50483,17 @@ bö_ödex_t
 ödex
 ) {
 
-114  
+115  
 ödex
  << 
 SMALL_BIN_SHIFT
 ;
 
-115 
+116 
 	}
 }
 
-118 
+119 
 ölöe
  
 bö_ödex_t
@@ -49593,7 +50505,7 @@ bö_ödex_t
 i
 ) {
 
-119  
+120  
 i
  =
 NUM_TREE_BINS
@@ -49605,11 +50517,11 @@ size_t
 TREE_BIN_SHIFT
  - 2);
 
-120 
+121 
 	}
 }
 
-123 
+124 
 ölöe
  
 bö_ödex_t
@@ -49621,7 +50533,7 @@ bö_ödex_t
 i
 ) {
 
-124  ((
+125  ((
 size_t
 Ë1 << ((
 i
@@ -49629,7 +50541,7 @@ i
 TREE_BIN_SHIFT
 ))
 
-125 | (((
+126 | (((
 size_t
 Ë(
 i
@@ -49637,73 +50549,73 @@ i
 TREE_BIN_SHIFT
  - 1));
 
-126 
+127 
 	}
 }
 
-128 
+129 
 	smÆloc_°©e
  {
 
-129 
+130 
 bö_m≠_t
  
 	msmÆl_m≠
 ;
 
-130 
+131 
 bö_m≠_t
  
 	måì_m≠
 ;
 
-131 
+132 
 size_t
  
 	mdv_size
 ;
 
-132 
+133 
 size_t
  
 	mt›_size
 ;
 
-133 *
+134 *
 	mÀa°_addr
-;
-
-134 
-mÆloc_chunk
- *
-	mdv
 ;
 
 135 
 mÆloc_chunk
  *
-	mt›
+	mdv
 ;
 
-136 
-size_t
- 
-	måim_check
+136 
+mÆloc_chunk
+ *
+	mt›
 ;
 
 137 
 size_t
  
-	mªÀa£_checks
+	måim_check
 ;
 
 138 
 size_t
  
+	mªÀa£_checks
+;
+
+139 
+size_t
+ 
 	mmagic
 ;
 
-139 
+140 
 mÆloc_chunk
  *
 	msmÆl_bös
@@ -49711,7 +50623,7 @@ mÆloc_chunk
 NUM_SMALL_BINS
  + 1) * 2];
 
-140 
+141 
 mÆloc_åì_chunk
  *
 	måì_bös
@@ -49719,53 +50631,53 @@ mÆloc_åì_chunk
 NUM_TREE_BINS
 ];
 
-141 
+142 
 size_t
  
 	mfoŸ¥öt
 ;
 
-142 
+143 
 size_t
  
 	mmax_foŸ¥öt
 ;
 
-143 
+144 
 size_t
  
 	mfoŸ¥öt_limô
 ;
 
-144 
+145 
 Êag_t
  
 	mÊags
 ;
 
-145 #i‡
+146 #i‡
 USE_LOCKS
 
 
-146 
+147 
 MLOCK_T
  
 	mmuãx
 ;
 
-148 
+149 
 mÆloc_£gmít
  
 	m£gmít
 ;
 
-150 
+151 
 size_t
  
 	mt›_cﬁ‹ed_size
 ;
 
-153 
+154 
 ölöe
  
 	$is_öôülized
@@ -49775,17 +50687,17 @@ mÆloc_°©e
 °©e
 ) {
 
-154  
+155  
 °©e
 ->
 t›
  != 0;
 
-155 
+156 
 	}
 }
 
-158 
+159 
 ölöe
  
 mÆloc_chunk
@@ -49801,7 +50713,7 @@ bö_ödex_t
 ödex
 ) {
 
-159  (
+160  (
 mÆloc_chunk
  *Ë(*Ë&(
 °©e
@@ -49811,11 +50723,11 @@ smÆl_bös
 ödex
  << 1]);
 
-160 
+161 
 	}
 }
 
-162 
+163 
 ölöe
  
 mÆloc_åì_chunk
@@ -49831,7 +50743,7 @@ bö_ödex_t
 ödex
 ) {
 
-163  &(
+164  &(
 °©e
 ->
 åì_bös
@@ -49839,11 +50751,11 @@ bö_ödex_t
 ödex
 ]);
 
-164 
+165 
 	}
 }
 
-167 
+168 
 ölöe
  
 bö_m≠_t
@@ -49855,17 +50767,17 @@ bö_m≠_t
 ödex
 ) {
 
-168  (
+169  (
 bö_m≠_t
 Ë1 << 
 ödex
 ;
 
-169 
+170 
 	}
 }
 
-172 
+173 
 ölöe
  
 bö_m≠_t
@@ -49881,7 +50793,7 @@ bö_m≠_t
 ödex
 ) {
 
-173  
+174  
 °©e
 ->
 smÆl_m≠
@@ -49891,11 +50803,11 @@ smÆl_m≠
 ödex
 );
 
-174 
+175 
 	}
 }
 
-177 
+178 
 ölöe
  
 bö_m≠_t
@@ -49911,7 +50823,7 @@ bö_m≠_t
 ödex
 ) {
 
-178  
+179  
 °©e
 ->
 smÆl_m≠
@@ -49921,7 +50833,7 @@ smÆl_m≠
 ödex
 );
 
-179 
+180 
 	}
 }
 
