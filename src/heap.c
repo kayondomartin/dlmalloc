@@ -294,6 +294,12 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                         release_unused_segments(state);
                     }
                 }
+                if(is_next_pending_deletion(p)){
+                    struct malloc_chunk* c = chunk_plus_offset(p, psize);
+                    size_t cs = chunk_size(c);
+                    struct malloc_chunk* n = is_next_deleted(c)? 0: chunk_plus_offset(c, cs);
+                    release_exhausted_chunk(state, c, p, n, cs);
+                }
                 goto postaction;
             }
         }

@@ -72,7 +72,6 @@ void *prepend_alloc(struct malloc_state *state, char *new_base, char *old_base, 
     check_malloced_chunk(state, chunk_to_mem(p), nb);
     return chunk_to_mem(p);
 }
-
 /* Add a segment to hold a new noncontiguous region */
 void add_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t mmapped) {
     /* Determine locations and sizes of segment, fenceposts, old top */
@@ -159,52 +158,9 @@ int blacklist_chunk(struct malloc_state *state, struct malloc_chunk* chunk){
                 release_exhausted_segment(state, sh);
             }
             else  if(size >= page_size){
-                size_t offset = params.page_size-1;
-                char* unmap_base = (size_t)chunk & ~offset;
-                unmap_base = unmap_base < (char*)chunk? unmap_base+page_size: unmap_base;
-                char* unmap_end = (size_t)((char*)chunk + size) & ~offset;
-                size_t unmap_size = unmap_end-unmap_base;
-                size_t remainder_p = unmap_base-(char*)chunk;
-                size_t remainder_n = ((char*)chunk+size)-unmap_end;
-
-                if(unmap_size < page_size){
-                    goto abort_op;
-                }
-
-                if(remainder_p !=0 && remainder_p < MIN_CHUNK_SIZE){
-                    prev->prev_foot |= NEXT_PEN_BIT;
-                    goto abort_op;
-                }
-                int prev_op = remainder_p > 0? 1: prev != 0? 2: 0;
-
-                if(remainder_n !=0 && remainder_n < MIN_CHUNK_SIZE){
-                    goto abort_op;
-                }else if(remainder_n > 0){
-                    next = align_as_chunk(unmap_end);
-                    next->head = TAG_BITS| remainder_n| chunk->head & FLAG_BITS;
-                    next->prev_foot = PREV_EXH_BIT;
-                }else if(next != 0){
-                    next->prev_foot = PREV_EXH_BIT;
-                }
-
-                switch (prev_op){
-                    case 1: {
-                        prev = chunk;
-                        prev->head = chunk->head & ~SIZE_BITS| remainder_p| TAG_BITS| chunk->head & FLAG_BITS;
-                        prev->prev_foot = chunk->prev_foot|NEXT_EXH_BIT;
-                        break;
-                    }
-
-                    case 2: {
-                        prev->prev_foot |= NEXT_EXH_BIT;
-                        break;
-                    }
-                }
-                
-                return call_munmap(unmap_base, unmap_size);
+                return release_exhausted_chunk(state,chunk, prev, next, size);
             }
 
-            abort_op:
             return 0;
         }
 
