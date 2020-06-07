@@ -56,6 +56,7 @@ struct any_chunk {
 #define PREV_EXH_BIT            ((size_t)1)
 #define NEXT_EXH_BIT            ((size_t)2)
 #define NEXT_PEN_BIT            ((size_t)4)
+#define EXHAUSTION_BITS         (PREV_EXH_BIT | NEXT_EXH_BIT | NEXT_PEN_BIT)
 /* tmte edit end */
 
 /* Head value for fenceposts */
@@ -66,11 +67,13 @@ static inline size_t chunk_size(void *chunk) {
 }
 
 static inline size_t get_foot(void *chunk, size_t size) {
-    return ((struct any_chunk *) ((char *) chunk + size))->prev_foot;
+    return ((struct any_chunk *) ((char *) chunk + size))->prev_foot & ~EXHAUSTION_BITS;
 }
 
 static inline void set_foot(void *chunk, size_t size) {
-    ((struct any_chunk *) ((char *) chunk + size))->prev_foot = size;
+    struct any_chunk* next = ((struct any_chunk *) ((char *) chunk + size));
+    next->prev_foot &= EXHAUSTION_BITS;
+    next->prev_foot |= size;
 }
 
 static inline int curr_inuse(void *chunk) {
@@ -528,11 +531,11 @@ static inline size_t get_chunk_tag(struct malloc_chunk* p){
 }
 
 static inline int is_exhausted(struct malloc_chunk* p){
-    return (get_chunk_tag(p) == TAG_BITS);
+    return (get_chunk_tag(p) == TAG_BITS-TAG_OFFSET);
 }
 
 static inline int is_usable(struct malloc_chunk* p){
-    return (p->head & BLACKLIST_BIT) == 0;
+    return (p->head & TAG_BITS) != TAG_BITS;
 }
 
 static inline void set_chunk_tag(struct malloc_chunk* p, size_t tag){
@@ -541,6 +544,22 @@ static inline void set_chunk_tag(struct malloc_chunk* p, size_t tag){
 
 static inline int is_blacklisted(struct malloc_chunk* p){
     return (p->head & BLACKLIST_BIT) == BLACKLIST_BIT;
+}
+
+static inline int is_next_deleted(struct malloc_chunk* p){
+    return p->prev_foot & NEXT_EXH_BIT == NEXT_EXH_BIT;
+}
+
+static inline int is_prev_deleted(struct malloc_chunk* p){
+    return p->prev_foot & PREV_EXH_BIT == PREV_EXH_BIT;
+}
+
+static inline int is_next_pending_deletion(struct malloc_chunk* p){
+    return p->prev_foot & NEXT_PEN_BIT == NEXT_PEN_BIT;
+}
+
+static inline get_prev_size(struct malloc_chunk* p){
+    return p->prev_foot & ~EXHAUSTION_BITS;
 }
 /* tmte edit end */
 

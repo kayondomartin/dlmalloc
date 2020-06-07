@@ -142,7 +142,7 @@ void *sys_alloc(struct malloc_state *state, size_t size) {
      not on boundary, and round this up to a granularity unit.
     */
 
-    if (MORECORE_CONTIGUOUS && !use_noncontiguous(state)) {//disabled for checks
+    if (MORECORE_CONTIGUOUS && !use_noncontiguous(state)) {
         char *br = MFAIL;
         size_t ssize = alloc_size; /* sbrk call size */
         struct malloc_segment *ss = (state->top == 0) ? 0 : segment_holding(state, (char *) state->top);

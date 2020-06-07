@@ -122,14 +122,14 @@ void test_dl() {
     dl_assert((p1_tag != 0 && p2_tag != 0 && p3_tag !=0));
     dl_printf("test 4: Arbitrary chunk alloc, check tag coloring: PASSED\n");
 
-    p4 = dl_malloc(2064);
+    p4 = dl_malloc(15064);
     for(int i=0; i<26; i++){
         dl_free(p4);
-        p4 = dl_malloc(2064);
+        p4 = dl_malloc(15064);
     }
     dl_free(p4);
 
-    int size = 5400;
+    int size = 15400;
     p5 = dl_malloc(size);
     for(int i=0; i<15; i++){
         dl_free(p5);
