@@ -191,7 +191,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
         if (likely(ok_address(state, p) && ok_inuse(p))) {
             size_t psize = chunk_size(p);
             struct malloc_chunk *next = is_next_exhausted(p)? 0: chunk_plus_offset(p, psize);
-            if (!prev_inuse(p)) {
+            if (!is_prev_exhausted(p) && !prev_inuse(p)) {
                 size_t prev_size = get_prev_size(p);
                 if (is_mmapped(p)) {
                     psize += prev_size + MMAP_FOOT_PAD;
