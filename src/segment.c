@@ -14,19 +14,6 @@ struct malloc_segment *segment_holding(struct malloc_state *state, void *p) {
     }
 }
 
-struct malloc_segment* prev_segment(struct malloc_state *state, void *p){
-    struct malloc_segment* segment = &state->segment;
-    for(;;){
-        if(segment_holds(segment->next, p)){
-            return segment;
-        }else if(segment->next == 0){
-            return 0;
-        }
-
-        segment = segment->next;
-    }
-}
-
 /* Return true if segment contains a segment link */
 int has_segment_link(struct malloc_state *state, struct malloc_segment *segment) {
     struct malloc_segment *sp = &state->segment;
