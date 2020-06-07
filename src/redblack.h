@@ -38,24 +38,38 @@
 #define EXH_BITS (size_t)-1 & COLOR_MASK & KEY_MASK
 #define EXH_MASK ~((size_t)EXH_BITS)
 
-#define GET_COLOR(p)\
-  (int)((p)->head >> 63)
-#define SET_COLOR(p, c)\
-  ((struct node*)p)->head = (p)->head & COLOR_MASK | (size_t)c<<63
-#define GET_KEY(p)\
-  (size_t)((p)->head & KEY_BITS)
+#define GET_COLOR(n)\
+  (int)((n)->head >> 63)
+#define SET_COLOR(n, c)\
+  ((struct node*)n)->head = (n)->head & COLOR_MASK | (size_t)c<<63
+#define GET_KEY(n)\
+  (size_t)((n)->head & KEY_BITS)
 //K >> 12
-#define SET_KEY(p, k)\
-  ((struct node*)p)->head = (((p)->head) & KEY_MASK | k)
-#define GET_EXH(p)\
-  (size_t)(((p)->head & EXH_BITS) >> 64-UNMAP_UNIT_POWER)
+#define SET_KEY(n, k)\
+  ((struct node*)n)->head = (((n)->head) & KEY_MASK | k)
+#define GET_EXH(n)\
+  (size_t)(((n)->head & EXH_BITS) >> (64-UNMAP_UNIT_POWER))
 // E >> 4
-#define SET_EXH(p, e)\
-  (p)->head = (p)->head & EXH_MASK | (e<<(64-UNMAP_UNIT_POWER))
+#define SET_EXH(n, e)\
+  (n)->head = (n)->head & EXH_MASK | (e<<(64-UNMAP_UNIT_POWER))
+
+/*tag preservation*/
+#define GET_P(n)\
+  (struct node *)((size_t)((n)->parent) & TAG_MASK)
+#define SET_P(n, p)\
+  (n)->parent = ((size_t)((n)->parent) & TAG_BITS) | ((size_t)p & TAG_MASK)
+#define GET_L(n)\
+  (struct node *)((size_t)((n)->left) & TAG_MASK)
+#define SET_L(n, l)\
+  (n)->left = ((size_t)((n)->left) & TAG_BITS) | ((size_t)l & TAG_MASK)
+#define GET_R(n)\
+  (struct node *)((size_t)((n)->right) & TAG_MASK)
+#define SET_R(n, r)\
+  (n)->right = ((size_t)((n)->right) & TAG_BITS) | ((size_t)r & TAG_MASK)
 
 struct node{
   size_t head;//topmost:color_bit / lower 48 key_bit / rest size>>4
-  struct node *parent;
+  struct node *parent;//should contain tag
   struct node *left;
   struct node *right;
 };

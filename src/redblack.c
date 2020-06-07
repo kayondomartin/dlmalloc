@@ -107,7 +107,7 @@ void red_black_insert(size_t key, size_t exh, struct node*z){
     y->right = z;
   }
 
-  z->parent = y;
+  SET_P(z, y);
 
   red_black_insert_fixup(z);
 }
@@ -139,31 +139,31 @@ void red_black_insert(size_t key, size_t exh, struct node*z){
  */
 
 void red_black_insert_fixup(struct node *z){
-  while(GET_COLOR(z->parent) == RED){
+  while(GET_COLOR(GET_P(z)) == RED){
 
     /* z's parent is left child of z's grand parent*/
-    if(z->parent == z->parent->parent->left){
+    if(GET_P(z) == GET_L(GET_P(GET_P(z)))){
 
       /* z's grand parent's right child is RED */
-      if(GET_COLOR(z->parent->parent->right) == RED){
-        SET_COLOR(z->parent, BLACK);
-        SET_COLOR(z->parent->parent->right, BLACK);
-        SET_COLOR(z->parent->parent, RED);
-        z = z->parent->parent;
+      if(GET_COLOR( GET_R(GET_P(GET_P(z)))) == RED){
+        SET_COLOR(GET_P(z), BLACK);
+        SET_COLOR(GET_R(GET_P(GET_P(z))), BLACK);
+        SET_COLOR(GET_P(GET_P(z)), RED);
+        z = GET_P(GET_P(z));
       }
 
       /* z's grand parent's right child is not RED */
       else{
 
         /* z is z's parent's right child */
-        if(z == z->parent->right){
-          z = z->parent;
+        if(z == GET_R(GET_P(z))){
+          z = GET_P(z);
           left_rotate(z);
         }
 
-        SET_COLOR(z->parent, BLACK);
-        SET_COLOR(z->parent->parent, RED);
-        right_rotate(z->parent->parent);
+        SET_COLOR(GET_P(z), BLACK);
+        SET_COLOR(GET_P(GET_P(z)), RED);
+        right_rotate(GET_P(GET_P(z)));
       }
     }
 
@@ -171,24 +171,24 @@ void red_black_insert_fixup(struct node *z){
     else{
 
       /* z's left uncle or z's grand parent's left child is also RED */
-      if(GET_COLOR(z->parent->parent->left) == RED){
-        SET_COLOR(z->parent, BLACK);
-        SET_COLOR(z->parent->parent->left, BLACK);
-        SET_COLOR(z->parent->parent, RED);
-        z = z->parent->parent;
+      if(GET_COLOR(GET_L(GET_P(GET_P(z)))) == RED){
+        SET_COLOR(GET_P(z), BLACK);
+        SET_COLOR(GET_L(GET_P(GET_P(z))), BLACK);
+        SET_COLOR(GET_P(GET_P(z)), RED);
+        z = GET_P(GET_P(z));
       }
 
       /* z's left uncle is not RED */
       else{
         /* z is z's parents left child */
-        if(z == z->parent->left){
-          z = z->parent;
+        if(z == GET_L(GET_P(z))){
+          z = GET_P(z);
           right_rotate(z);
         }
 
-        SET_COLOR(z->parent, BLACK);
-        SET_COLOR(z->parent->parent, RED);
-        left_rotate(z->parent->parent);
+        SET_COLOR(GET_P(z), BLACK);
+        SET_COLOR(GET_P(GET_P(z)), RED);
+        left_rotate(GET_P(GET_P(z)));
       }
     }
   }
@@ -211,27 +211,27 @@ void left_rotate(struct node *x){
   struct node *y;
 
   /* Make y's left child x's right child */
-  y = x->right;
-  x->right = y->left;
-  if(y->left != NILL){
-    y->left->parent = x;
+  y = GET_R(x);
+  SET_R(x, GET_L(y));
+  if(GET_L(y) != NILL){
+    SET_P(GET_L(y), x);
   }
 
   /* Make x's parent y's parent and y, x's parent's child */
-  y->parent = x->parent;
-  if(y->parent == NILL){
+  SET_P(y, GET_P(x));
+  if(GET_P(y) == NILL){
     ROOT = y;
   }
-  else if(x == x->parent->left){
-    x->parent->left = y;
+  else if(x == GET_L(GET_P(x))){
+    SET_L(GET_P(x), y);
   }
   else{
-    x->parent->right = y;
+    SET_R(GET_P(x), y);
   }
 
   /* Make x, y's left child & y, x's parent */
-  y->left = x;
-  x->parent = y;
+  SET_L(y, x);
+  SET_P(x, y);
 }
 
 /*
@@ -250,27 +250,27 @@ void right_rotate(struct node *x){
   struct node *y;
 
   /* Make y's right child x's left child */
-  y = x->left;
-  x->left = y->right;
-  if(y->right != NILL){
-    y->right->parent = x;
+  y = GET_L(x);
+  SET_L(x, GET_R(y));
+  if(GET_R(y) != NILL){
+    SET_P(GET_R(y), x);
   }
 
   /* Make x's parent y's parent and y, x's parent's child */
-  y->parent = x->parent;
-  if(y->parent == NILL){
+  SET_P(y, GET_P(x));
+  if(GET_P(y) == NILL){
     ROOT = y;
   }
-  else if(x == x->parent->left){
-    x->parent->left = y;
+  else if(x == GET_L(GET_P(x))){
+    SET_L(GET_P(x), y);
   }
   else{
-    x->parent->right = y;
+    SET_R(GET_P(x), y);
   }
-
+  
   /* Make y, x's parent and x, y's child */
-  y->right = x;
-  x->parent = y;
+  SET_R(y, x);
+  SET_P(x, y);
 }
 
 /*
@@ -311,18 +311,18 @@ void red_black_delete(struct node *z){
 
     x = y->right;
 
-    if(y->parent == z){
-      x->parent = y;
+    if(GET_P(y) == z){
+      SET_P(x, y);
     }
     else{
-      red_black_transplant(y, y->right);
-      y->right = z->right;
-      y->right->parent = y;
+      red_black_transplant(y, GET_R(y));
+      SET_R(y, GET_R(z));
+      SET_P(GET_R(y), y);
     }
 
     red_black_transplant(z, y);
-    y->left = z->left;
-    y->left->parent = y;
+    SET_L(y, GET_L(z));
+    SET_P(GET_L(y), y);
     SET_COLOR(y, GET_COLOR(z));
   }
 
@@ -364,67 +364,67 @@ void red_black_delete_fixup(struct node *x){
 
   while(x != ROOT && GET_COLOR(x) == BLACK){
 
-    if(x == x->parent->left){
-      w = x->parent->right;
+    if(x == GET_L(GET_P(x))){
+      w = GET_R(GET_P(x));
 
       if(GET_COLOR(w) == RED){
         SET_COLOR(w, BLACK);
-        SET_COLOR(x->parent, RED);
-        left_rotate(x->parent);
-        w = x->parent->right;
+        SET_COLOR(GET_P(x), RED);
+        left_rotate(GET_P(x));
+        w = GET_R(GET_P(x));
       }
 
-      if(GET_COLOR(w->left) == BLACK && GET_COLOR(w->right) == BLACK){
+      if(GET_COLOR(GET_L(w)) == BLACK && GET_COLOR(GET_R(w)) == BLACK){
         SET_COLOR(w, RED);
-        SET_COLOR(x->parent, BLACK);
-        x = x->parent;
+        SET_COLOR(GET_P(x), BLACK);
+        x = GET_P(x);
       }
       else{
 
-        if(GET_COLOR(w->right) == BLACK){
+        if(GET_COLOR(GET_R(w)) == BLACK){
           SET_COLOR(w, RED);
-          SET_COLOR(w->left, BLACK);
+          SET_COLOR(GET_L(w), BLACK);
           right_rotate(w);
-          w = x->parent->right;
+          w = GET_R(GET_P(x));
         }
 
-        SET_COLOR(w, GET_COLOR(x->parent));
-        SET_COLOR(x->parent, BLACK);
-        SET_COLOR(x->right, BLACK);
-        left_rotate(x->parent);
+        SET_COLOR(w, GET_COLOR(GET_P(x)));
+        SET_COLOR(GET_P(x), BLACK);
+        SET_COLOR(GET_R(x), BLACK);
+        left_rotate(GET_P(x));
         x = ROOT;
 
       }
 
     }
     else{
-      w = x->parent->left;
+      w = GET_L(GET_P(x));
 
       if(GET_COLOR(w) == RED){
         SET_COLOR(w, BLACK);
-        SET_COLOR(x->parent, BLACK);
-        right_rotate(x->parent);
-        w = x->parent->left;
+        SET_COLOR(GET_P(x), BLACK);
+        right_rotate(GET_P(x));
+        w = GET_L(GET_P(x));
       }
       
-      if(GET_COLOR(w->left) == BLACK && GET_COLOR(w->right) == BLACK){
+      if(GET_COLOR(GET_L(w)) == BLACK && GET_COLOR(GET_R(w)) == BLACK){
         SET_COLOR(w, RED);
-        SET_COLOR(x->parent, BLACK);
-        x = x->parent;
+        SET_COLOR(GET_P(x), BLACK);
+        x = GET_P(x);
       }
       else{
         
-        if(GET_COLOR(w->left) == BLACK){
+        if(GET_COLOR(GET_L(w)) == BLACK){
           SET_COLOR(w, RED);
-          SET_COLOR(w->right, BLACK);
+          SET_COLOR(GET_R(w), BLACK);
           left_rotate(w);
-          w = x->parent->left;
+          w = GET_L(GET_P(x));
         }
         
-        SET_COLOR(w, GET_COLOR(x->parent));
-        SET_COLOR(x->parent, BLACK);
-        SET_COLOR(w->left, BLACK);
-        right_rotate(x-> parent);
+        SET_COLOR(w, GET_COLOR(GET_P(x)));
+        SET_COLOR(GET_P(x), BLACK);
+        SET_COLOR(GET_L(w), BLACK);
+        right_rotate(GET_P(x));
         x = ROOT;
 
       }
@@ -440,12 +440,12 @@ void red_black_transplant(struct node *u, struct node *v){
   if(u->parent == NILL){
     ROOT = v;
   }
-  else if(u == u->parent->left){
-    u->parent->left = v;
+  else if(u == GET_L(GET_P(u))){
+    SET_L(GET_P(u), v);
   }
   else{
-    u->parent->right = v;
+    SET_R(GET_P(u), v);
   }
 
-  v->parent = u->parent;
+  SET_P(v, GET_P(u));
 }

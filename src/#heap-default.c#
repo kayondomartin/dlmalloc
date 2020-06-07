@@ -22,7 +22,7 @@ dl_export void *dl_malloc(size_t bytes) {
 }
 
 dl_export void dl_free(void *mem) {
-    if (mem != 0) {
+/    if (mem != 0) {
         struct malloc_chunk *p = mem_to_chunk(mem);
 #if FOOTERS
         struct malloc_state *state = get_state_for(p);
@@ -209,6 +209,6 @@ dl_export void *calloc(size_t num, size_t size) DL_FORWARD_2(dl_calloc, num, siz
 
 dl_export void *realloc(void *p, size_t new_size) DL_FORWARD_2(dl_realloc, p, new_size);
 
-odl_export void free(void *p) DL_FORWARD0_1(dl_free, p);
+dl_export void free(void *p) DL_FORWARD0_1(dl_free, p);
 
 #endif /* OVERRIDE */
