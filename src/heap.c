@@ -297,6 +297,8 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                     }
                 }
                 goto postaction;
+            }else if(next == 0){
+                
             }
         }
         erroraction:
