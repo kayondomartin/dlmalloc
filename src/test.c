@@ -106,7 +106,7 @@ void test_dl() {
     dl_free(x);
     dl_free(y);
     dl_free(p1);
-    dl_free(p2);
+    dl_free(p2);//dead
     dl_free(p3);
     dl_free(p4);
     dl_free(p6);
