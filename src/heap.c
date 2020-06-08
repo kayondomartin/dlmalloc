@@ -77,7 +77,6 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
                     else {
                         set_size_and_prev_inuse_of_inuse_chunk(state, p, nb);
                         struct malloc_chunk *r = chunk_plus_offset(p, nb);
-
                         /* tmte edit: give r p's tag */
                         set_chunk_tag(r, get_chunk_tag(p));
                         /* tmte edit ends */
@@ -116,7 +115,6 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
                 /* tmte edit: give r p's tag */
                 set_chunk_tag(r, get_chunk_tag(p));
                 /* tmte edit end */
-
                 set_size_and_prev_inuse_of_free_chunk(r, rsize);
                 set_size_and_prev_inuse_of_inuse_chunk(state, p, nb);
             }
