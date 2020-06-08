@@ -8,6 +8,7 @@
 #include "segment.h"
 #include "state.h"
 #include "log.h"
+#include "check.h"
 
 /* Initialize top chunk and its size */
 void init_top(struct malloc_state *state, struct malloc_chunk *chunk, size_t size) {
@@ -131,21 +132,43 @@ void add_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t m
 }
 
 int blacklist_chunk(struct malloc_state* state, struct malloc_chunk* chunk){
+    dl_assert(is_exhausted(chunk));
     set_chunk_tag(chunk, TAG_BITS);
-    size_t csize = chunk_size(chunk);
-    struct malloc_chunk *prev = is_prev_exhausted(chunk)? 0: chunk_minus_offset(chunk, (chunk->prev_foot & ~EXHAUSTION_BITS));
-    struct malloc_chunk *next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, csize);
-    if(prev == chunk){
-        abort();
+    size_t size = chunk_size(chunk);
+    mte_color_tag(chunk, size, tag_to_int(TAG_BITS));
+    size_t prev_size = get_prev_size(chunk);
+    if (likely(ok_address(state, chunk) && ok_inuse(chunk))) {
+        struct malloc_chunk* next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, size);
+        struct malloc_chunk* prev = is_prev_exhausted(chunk)? 0: chunk_minus_offset(chunk, prev_size);
+        if(prev !=0 && !is_usable(prev) && prev != chunk){//coalesce backward
+            dl_assert(is_inuse(prev));
+            size += prev_size;
+            chunk = prev;
+        }
+
+        if(next != 0 && likely(ok_next(chunk,next)) && ok_prev_inuse(next)){//coalesce forward
+            if(next != 0 && !is_usable(next)){
+                dl_assert(is_inuse(next));
+                size += chunk_size(next);
+            }
+
+            chunk->head = size|TAG_BITS|chunk->head & FLAG_BITS; 
+            struct malloc_segment* sh = segment_holding(state, chunk);
+            sh->blacklisted_size += chunk_size(chunk);
+            size_t page_size = params.page_size;
+
+            if((sh->size - sh->blacklisted_size - TOP_FOOT_SIZE) < 100/*MIN_CHUNK_SIZE*/){//edited for debugging
+                release_exhausted_segment(state, sh);
+            }
+            else  if(size >= page_size){
+                return release_exhausted_chunk(state,chunk, prev, next, size);
+            }
+
+            return 0;
+        }
+
     }
-    if(prev != 0){
-        prev->prev_foot |= NEXT_EXH_BIT;
-    }
-    if(next !=0){
-        next->prev_foot |= PREV_EXH_BIT;
-    }
-    //return 0;
-    return invalidate_chunk(state, chunk);
+    return -1;
 }
 
 void replace_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t mmapped, struct malloc_segment* pseg, struct malloc_segment* nseg){
