@@ -129,18 +129,23 @@ void add_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t m
     check_top_chunk(state, state->top);
 }
 
-void blacklist_chunk(struct malloc_state* state, struct malloc_chunk* chunk){
-    chunk->head |= BLACKLIST_BIT;
-    struct malloc_segment* sh = segment_holding(state, chunk);
-    sh->blacklisted_size += chunk_size(chunk);
-    if((sh->size - sh->blacklisted_size) < 1000/*MIN_CHUNK_SIZE*/){//edited for debugging
-      release_exhausted_segment(state, sh);
+int blacklist_chunk(struct malloc_state* state, struct malloc_chunk* chunk){
+    set_chunk_tag(chunk, TAG_BITS);
+    size_t csize = chunk_size(chunk);
+    struct malloc_chunk *prev = is_prev_exhausted(chunk)? 0: chunk_minus_offset(chunk, (chunk->prev_foot & ~EXHAUSTION_BITS));
+    struct malloc_chunk *next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, csize);
+    if(prev != 0){
+        prev->prev_foot |= NEXT_EXH_BIT;
     }
+    if(next !=0){
+        next->prev_foot |= PREV_EXH_BIT;
+    }
+    return invalidate_chunk(state, chunk);
 }
 
 void replace_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t mmapped, struct malloc_segment* pseg, struct malloc_segment* nseg){
 
-    init_top(state, (struct malloc_chunk *) tbase, tsize - TOP_FOOT_SIZE);
+    init_top(state, (struct malloc_chunk*) tbase, tsize - TOP_FOOT_SIZE);
     struct malloc_segment *ss;
 
     ss = &state->segment;
@@ -155,5 +160,43 @@ void replace_segment(struct malloc_state *state, char *tbase, size_t tsize, flag
         state->segment.next = ss;
     }else{
         state->segment.next = nseg;
+    }
+}
+
+void split_and_unmap_segment(struct malloc_state* state, struct malloc_segment* segment, struct malloc_chunk* prev, struct malloc_chunk* next, char* split_start, size_t unmap_size){
+    dl_assert(segment_holds(segment, split_start));
+    dl_assert(segment_holds(segment, split_start+unmap_size));
+    dl_assert(segment->base == split_start || segment_holds(segment, prev));
+
+/*
+    char *old_top = (char *) state->top;
+    struct malloc_segment *oldsp = segment_holding(state, old_top);
+    char *old_end = oldsp->base + oldsp->size;
+    size_t ssize = pad_request(sizeof(struct malloc_segment));
+    char *rawsp = old_end - (ssize + sizeof(size_t) * 4 + CHUNK_ALIGN_MASK);
+    size_t offset = align_offset(chunk_to_mem(rawsp));
+    char *asp = rawsp + offset;
+    char *csp = (asp < (old_top + MIN_CHUNK_SIZE)) ? old_top : asp;
+    struct malloc_chunk *sp = (struct malloc_chunk *) csp;
+    struct malloc_segment *ss = (struct malloc_segment *) (chunk_to_mem(sp));
+    struct malloc_chunk *tnext = chunk_plus_offset(sp, ssize);
+    struct malloc_chunk *p = tnext;
+*/
+    char* unmap_end = split_start + unmap_size;
+    //split or coalesce next_chunk
+    if(unmap_end > next){//split_next
+        size_t split_rem = unmap_end - (char*)next;
+        size_t offset = align_offset(chunk_to_mem(++unmap_end));
+        unmap_end--; 
+    }
+    char* prev_char = (char*)prev;
+    char* segment_end = segment->base + segment->size;
+    size_t ssize = pad_request(sizeof(struct malloc_segment));
+    char* rawsp = segment_end - (ssize + sizeof(size_t)*4 + CHUNK_ALIGN_MASK);
+    size_t offset = align_offset(chunk_to_mem(rawsp));
+    char* asp = rawsp + offset;
+    char* csp = (asp < (prev_char + MIN_CHUNK_SIZE))? prev_char: asp;
+    if(segment->base == split_start){
+
     }
 }

@@ -100,7 +100,7 @@ static inline void clear_prev_inuse(void *chunk) {
 }
 
 /* Set size, prev_inuse bit, and foot */
-static inline void set_size_and_prev_inuse_of_free_chunk(void *chunk, size_t size) {
+static inline void set_size_and_prev_inuse_of_free_chunk(void *chunk, size_t size) {//set_foot
     ((struct any_chunk *) chunk)->head = (((struct any_chunk*)chunk)->head & TAG_BITS) | size | PREV_INUSE_BIT;
     set_foot(chunk, size);
 }
