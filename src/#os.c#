@@ -293,6 +293,7 @@ void *sys_alloc(struct malloc_state *state, size_t size) {
             struct malloc_chunk *p = state->top;
             struct malloc_chunk *r = state->top = chunk_plus_offset(p, size);
             r->head = rsize | PREV_INUSE_BIT;
+            r->prev_foot = size;
             set_size_and_prev_inuse_of_inuse_chunk(state, p, size);
             check_top_chunk(state, state->top);
             check_malloced_chunk(state, chunk_to_mem(p), size);
@@ -572,7 +573,7 @@ void release_exhausted_segment(struct malloc_state *state, struct malloc_segment
         if(pseg == 0 && nseg == 0){//only one segment 
             state->top = 0;
             state->top_size = 0;
-            state->top_colored_size = 0;
+            //state->top_colored_size = 0;
             state->least_addr = 0;
         }
         replace_released_segment(state, pseg, nseg);
@@ -593,4 +594,17 @@ void release_exhausted_segment(struct malloc_state *state, struct malloc_segment
 
         call_munmap(segment->base, segment->size);
     }
+}
+
+void release_exhausted_chunk(struct malloc_state *state, struct malloc_segment* segment, struct malloc_chunk* prev, char* base, size_t size){
+    dl_assert(segment_holds(segment, base));
+    dl_assert((segment_holds(segment, prev) || prev == 0));
+    dl_assert((segment_holds(segment, (base+size)) || segment_holds(segment, segment->next)));
+
+    char* curr_end = segment->base+segment->size;
+    struct malloc_segment* ss = 0;
+    struct malloc_segment* pseg = 0;
+    if(prev == 0){
+    }
+
 }

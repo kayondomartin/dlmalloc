@@ -154,7 +154,7 @@ void replace_segment(struct malloc_state *state, char *tbase, size_t tsize, flag
     state->segment.size= tsize;
     state->segment.flags = mmapped;
     state->segment.blacklisted_size = 0;
-    state->top_colored_size = 0;
+    //state->top_colored_size = 0;
 
     if(pseg !=0){
         pseg->next = nseg;

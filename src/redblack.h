@@ -54,18 +54,19 @@
   (n)->head = (n)->head & EXH_MASK | (e<<(64-UNMAP_UNIT_POWER))
 
 /*tag preservation*/
-#define GET_P(n)\
-  (struct node *)((size_t)((n)->parent) & TAG_MASK)
+//#define GET_P(n)                                      \
+//  (struct node *)((size_t)((n)->parent) & TAG_MASK)
 #define SET_P(n, p)\
   (n)->parent = ((size_t)((n)->parent) & TAG_BITS) | ((size_t)p & TAG_MASK)
-#define GET_L(n)\
-  (struct node *)((size_t)((n)->left) & TAG_MASK)
+//#define GET_L(n)                                      \
+//(struct node *)((size_t)((n)->left) & TAG_MASK)
 #define SET_L(n, l)\
   (n)->left = ((size_t)((n)->left) & TAG_BITS) | ((size_t)l & TAG_MASK)
-#define GET_R(n)\
-  (struct node *)((size_t)((n)->right) & TAG_MASK)
+//#define GET_R(n)                                      \
+  //  (struct node *)((size_t)((n)->right) & TAG_MASK)
 #define SET_R(n, r)\
   (n)->right = ((size_t)((n)->right) & TAG_BITS) | ((size_t)r & TAG_MASK)
+
 
 struct node{
   size_t head;//topmost:color_bit / lower 48 key_bit / rest size>>4
@@ -73,6 +74,12 @@ struct node{
   struct node *left;
   struct node *right;
 };
+
+/*iyb: for debug*/
+struct node* GET_P(struct node* n);
+struct node* GET_L(struct node* n);
+struct node* GET_R(struct node* n);
+
 
 /* Global, since all function will access them */
 struct node *ROOT;

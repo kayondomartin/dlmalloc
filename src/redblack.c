@@ -1,5 +1,16 @@
 #include "redblack.h"
 #include "os.h"
+/*iyb: for debug*/
+struct node* GET_P(struct node* n){
+  return (struct node *)((size_t)((n)->parent) & TAG_MASK);
+}
+struct node* GET_L(struct node* n){
+  return (struct node *)((size_t)((n)->left) & TAG_MASK);
+}
+struct node* GET_R(struct node* n){
+  return (struct node *)((size_t)((n)->right) & TAG_MASK);
+}
+
 
 size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
   size_t ret = 0;
@@ -34,9 +45,9 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
 
 void tree_print(struct node *x){
   if(x != NILL){
-    tree_print(x->left);
+    tree_print(GET_L(x));
     printf("%lu %lu\t", GET_KEY(x), GET_EXH(x));
-    tree_print(x->right);
+    tree_print(GET_R(x));
   }
 }
 
@@ -46,10 +57,10 @@ struct node *tree_search(size_t key){
   x = ROOT;
   while(x != NILL && GET_KEY(x) != key){
     if(key < GET_KEY(x)){
-      x = x->left;
+      x = GET_L(x);
     }
     else{
-      x = x->right;
+      x = GET_R(x);
     }
   }
 
@@ -57,8 +68,8 @@ struct node *tree_search(size_t key){
 }
 
 struct node *tree_minimum(struct node *x){
-  while(x->left != NILL){
-    x = x->left;
+  while(GET_L(x) != NILL){
+    SET_L(x, x);
   }
   return x;
 }
@@ -77,8 +88,8 @@ void red_black_insert(size_t key, size_t exh, struct node*z){
   SET_EXH(z, exh);
   SET_KEY(z, key);
   SET_COLOR(z, RED);
-  z->left = NILL;
-  z->right = NILL;
+  SET_L(z, NILL);
+  SET_R(z, NILL);
 
   x = ROOT;
   y = NILL;
@@ -90,10 +101,10 @@ void red_black_insert(size_t key, size_t exh, struct node*z){
   while(x != NILL){
     y = x;
     if(GET_KEY(z) <= GET_KEY(x)){
-      x = x->left;
+      x = GET_L(x);
     }
     else{
-      x = x->right;
+      x = GET_R(x);
     }
   }
 
@@ -101,10 +112,10 @@ void red_black_insert(size_t key, size_t exh, struct node*z){
     ROOT = z;
   }
   else if(GET_KEY(z) <= GET_KEY(y)){
-    y->left = z;
+    SET_L(y, z);
   }
   else{
-    y->right = z;
+    SET_R(y, z);
   }
 
   SET_P(z, y);
@@ -171,7 +182,7 @@ void red_black_insert_fixup(struct node *z){
     else{
 
       /* z's left uncle or z's grand parent's left child is also RED */
-      if(GET_COLOR(GET_L(GET_P(GET_P(z)))) == RED){
+      if(GET_COLOR(GET_L(GET_P(GET_P(z)))) == RED){//bug
         SET_COLOR(GET_P(z), BLACK);
         SET_COLOR(GET_L(GET_P(GET_P(z))), BLACK);
         SET_COLOR(GET_P(GET_P(z)), RED);
@@ -297,19 +308,19 @@ void red_black_delete(struct node *z){
   y = z;
   yOriginalColor = GET_COLOR(y);
 
-  if(z->left == NILL){
-    x = z->right;
-    red_black_transplant(z, z->right);
+  if(GET_L(z) == NILL){
+    x = GET_R(z);
+    red_black_transplant(z, GET_R(z));
   }
-  else if(z->right == NILL){
-    x = z->left;
-    red_black_transplant(z, z->left);
+  else if(GET_R(z) == NILL){
+    x = GET_L(z);
+    red_black_transplant(z, GET_L(z));
   }
   else{
-    y = tree_minimum(z->right);
+    y = tree_minimum(GET_R(z));
     yOriginalColor = GET_COLOR(y);
 
-    x = y->right;
+    x = GET_R(y);
 
     if(GET_P(y) == z){
       SET_P(x, y);
@@ -437,7 +448,7 @@ void red_black_delete_fixup(struct node *x){
 
 /* replace node u with node v */
 void red_black_transplant(struct node *u, struct node *v){
-  if(u->parent == NILL){
+  if(GET_P(u) == NILL){
     ROOT = v;
   }
   else if(u == GET_L(GET_P(u))){

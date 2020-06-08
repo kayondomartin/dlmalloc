@@ -76,8 +76,8 @@ static inline size_t get_foot(void *chunk, size_t size) {
 }
 
 static inline void set_foot(void *chunk, size_t size) {
-    size_t prev_val = ((struct any_chunk *) ((char *) chunk + size))->prev_foot;
-    ((struct any_chunk *) ((char *) chunk + size))->prev_foot = size | (prev_val & EXHAUSTION_BITS);
+  size_t prev_val = ((struct any_chunk *) ((char *) chunk + size))->prev_foot; //iyb: need check
+  ((struct any_chunk *) ((char *) chunk + size))->prev_foot = size | (prev_val & EXHAUSTION_BITS);
 }
 
 static inline int curr_inuse(void *chunk) {
