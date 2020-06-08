@@ -50,7 +50,7 @@ void test_dl() {
     dl_free(p3);
     dl_printf("\n-------------Test 2----------------\n");
     p3 = dl_malloc(8);
-    dl_free(p3);
+    dl_free(p3);//0x404160
     for(int i=0; i<16; ++i){
         x = dl_malloc(8);
         dl_free(x);
