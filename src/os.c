@@ -293,6 +293,7 @@ void *sys_alloc(struct malloc_state *state, size_t size) {
             struct malloc_chunk *p = state->top;
             struct malloc_chunk *r = state->top = chunk_plus_offset(p, size);
             r->head = rsize | PREV_INUSE_BIT;
+            r->prev_foot = size;
             set_size_and_prev_inuse_of_inuse_chunk(state, p, size);
             check_top_chunk(state, state->top);
             check_malloced_chunk(state, chunk_to_mem(p), size);
