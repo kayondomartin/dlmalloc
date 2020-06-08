@@ -146,16 +146,21 @@ int blacklist_chunk(struct malloc_state* state, struct malloc_chunk* chunk){
             chunk = prev;
         }
 
-        if(next != 0 && likely(ok_next(chunk,next)) && ok_prev_inuse(next)){//coalesce forward
+        if(next == 0 || (likely(ok_next(chunk,next)) && ok_prev_inuse(next))){//coalesce forward
             if(next != 0 && !is_usable(next)){
                 dl_assert(is_inuse(next));
                 size += chunk_size(next);
             }
 
-            chunk->head = size|TAG_BITS|chunk->head & FLAG_BITS; 
+            chunk->head = size|TAG_BITS|chunk->head & FLAG_BITS;
+            prev = prev ==0? 0: chunk_minus_offset(chunk, get_prev_size(chunk));
             struct malloc_segment* sh = segment_holding(state, chunk);
             sh->blacklisted_size += chunk_size(chunk);
             size_t page_size = params.page_size;
+            next = next == 0? 0: next_chunk(chunk);
+            if(next && size != get_prev_size(next)){
+                next->prev_foot = (next->prev_foot & EXHAUSTION_BITS)| size;
+            }
 
             if((sh->size - sh->blacklisted_size - TOP_FOOT_SIZE) < 100/*MIN_CHUNK_SIZE*/){//edited for debugging
                 release_exhausted_segment(state, sh);

@@ -130,7 +130,7 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
         }
         else if (nb < state->top_size) { /* Split top */
             size_t rsize = state->top_size -= nb;
-            //            size_t tcsize = state->top_colored_size;
+            size_t tcsize = state->top_colored_size;
             size_t top_foot = state->top->prev_foot;
             state->top_colored_size = 0;
             struct malloc_chunk *p = state->top;
@@ -143,14 +143,14 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
             set_chunk_tag(r,tag);
             mte_color_tag(p,nb, tag_to_int(tag));
             /* tmte edit: tag ops */
-            /*
+            
             if(tcsize > 0 && nb > tcsize){
                 //color the whole chunk before release
                 mte_color_tag((p+tcsize), (nb-tcsize), tag_to_int(tag));
             }else if(nb < tcsize){
                 set_chunk_tag(r, tag);
                 state->top_colored_size = tcsize-nb;
-            }*/
+            }
             p->prev_foot = top_foot;
             /* tmte edit ends */
             mem = chunk_to_mem(p);
@@ -430,6 +430,7 @@ void *tmalloc_small(struct malloc_state *state, size_t nb) {
 
                 set_size_and_prev_inuse_of_free_chunk(r, rsize); //tmte edited to retain tag
                 replace_dv(state, r, rsize);
+                r->prev_foot = nb;
             }
             return chunk_to_mem(v);
         }

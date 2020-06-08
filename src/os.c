@@ -609,7 +609,8 @@ int release_exhausted_chunk(struct malloc_state* state, struct malloc_chunk* chu
     if(unmap_size < page_size){
         return 0;
     }
-
+    //mark prev and next exht
+    //update segment base and blacklist size
     struct malloc_chunk* new_prev = prev;
     struct malloc_chunk* rem_chunk;
     if(remainder_p !=0){
