@@ -7,6 +7,7 @@
 #include "os.h"
 #include "segment.h"
 #include "state.h"
+#include "log.h"
 
 /* Initialize top chunk and its size */
 void init_top(struct malloc_state *state, struct malloc_chunk *chunk, size_t size) {
@@ -134,6 +135,9 @@ int blacklist_chunk(struct malloc_state* state, struct malloc_chunk* chunk){
     size_t csize = chunk_size(chunk);
     struct malloc_chunk *prev = is_prev_exhausted(chunk)? 0: chunk_minus_offset(chunk, (chunk->prev_foot & ~EXHAUSTION_BITS));
     struct malloc_chunk *next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, csize);
+    if(prev == chunk){
+        abort();
+    }
     if(prev != 0){
         prev->prev_foot |= NEXT_EXH_BIT;
     }
