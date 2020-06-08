@@ -133,11 +133,13 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
         else if (nb < state->top_size) { /* Split top */
             size_t rsize = state->top_size -= nb;
             size_t tcsize = state->top_colored_size;
+            size_t top_foot = state->top->prev_foot;
             state->top_colored_size = 0;
             struct malloc_chunk *p = state->top;
             struct malloc_chunk *r = state->top = chunk_plus_offset(p, nb);
             size_t tag = get_chunk_tag(p);
             r->head = rsize | PREV_INUSE_BIT; //tmte edit: retain chunk tag */
+            r->prev_foot = nb;
             set_size_and_prev_inuse_of_inuse_chunk(state, p, nb);
 
             /* tmte edit: tag ops */
@@ -148,6 +150,7 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
                 set_chunk_tag(r, tag);
                 state->top_colored_size = tcsize-nb;
             }
+            p->prev_foot = top_foot;
             /* tmte edit ends */
             mem = chunk_to_mem(p);
             check_top_chunk(state, state->top);
@@ -220,8 +223,8 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                 }
             }
 
-            if (next != 0 && likely(ok_next(p, next) && ok_prev_inuse(next))) {
-                if (!curr_inuse(next)) {  /* consolidate forward */
+            if (next == 0 || (likely(ok_next(p, next) && ok_prev_inuse(next)))) {
+                if ( next !=0 && !curr_inuse(next)) {  /* consolidate forward */
 
                     /* tmte edit: tag computation 2*/
                     size_t next_tag = get_chunk_tag((struct any_chunk*)next);  
@@ -276,10 +279,17 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                 else {
                     if(!curr_inuse(p)){
                         set_chunk_tag(next_chunk(p), new_tag);
+                        if(next == 0){
+                            p->prev_foot |= NEXT_EXH_BIT;
+                        }
+                    }
+                    if(next ==0){
+                        p->head = psize | PREV_INUSE_BIT;
+                    }else{
+                        set_free_with_prev_inuse(p, psize, next);
                     }
                     set_chunk_tag(p, new_tag);//tmte edit: set chunk_tag
                     mte_color_tag(p, psize, tag_to_int(new_tag));
-                    set_free_with_prev_inuse(p, psize, next);
                 }
 
                 if (is_small(psize)) {
