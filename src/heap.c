@@ -79,6 +79,8 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
                         struct malloc_chunk *r = chunk_plus_offset(p, nb);
                         /* tmte edit: give r p's tag */
                         set_chunk_tag(r, get_chunk_tag(p));
+                        r->prev_foot = nb|(p->prev_foot & (NEXT_EXH_BIT)); 
+                        p->prev_foot = p->prev_foot & ~(NEXT_EXH_BIT);
                         /* tmte edit ends */
 
                         set_size_and_prev_inuse_of_free_chunk(r, rsize);
@@ -114,6 +116,8 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
 
                 /* tmte edit: give r p's tag */
                 set_chunk_tag(r, get_chunk_tag(p));
+                r->prev_foot = nb|p->prev_foot & (NEXT_EXH_BIT);
+                p->prev_foot = p->prev_foot & ~(NEXT_EXH_BIT);
                 /* tmte edit end */
                 set_size_and_prev_inuse_of_free_chunk(r, rsize);
                 set_size_and_prev_inuse_of_inuse_chunk(state, p, nb);
@@ -211,9 +215,14 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                         if (p != state->dv) {
                             unlink_chunk(state, p, prev_size);
                         }
-                        else if ((next->head & INUSE_BITS) == INUSE_BITS) {
+                        else if (next == 0 || (next->head & INUSE_BITS) == INUSE_BITS) {
                             state->dv_size = psize;
-                            set_free_with_prev_inuse(p, psize, next);
+                            if(next == 0){
+                                p->head = psize|(p->head & PREV_INUSE_BIT)|new_tag;
+                                p->prev_foot |= NEXT_EXH_BIT;
+                            }else{
+                                set_free_with_prev_inuse(p, psize, next);
+                            }
                             mte_color_tag((char*)p, psize, tag_to_int(new_tag)); //tmte edit: color chunks p and prev with tag
                             goto postaction;
                         }
@@ -258,6 +267,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                     }
                     else if (next == state->dv) {
                         size_t dsize = state->dv_size += psize;
+                        p->prev_foot |= (state->dv->prev_foot & NEXT_EXH_BIT);
                         state->dv = p;
                         set_size_and_prev_inuse_of_free_chunk(p, dsize);
                         set_chunk_tag(p, new_tag); //tmte edit: set new chunk_tag
@@ -268,6 +278,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                         size_t nsize = chunk_size(next);
                         psize += nsize;
                         unlink_chunk(state, next, nsize);
+                        p->prev_foot |= (next->prev_foot & NEXT_EXH_BIT);
                         set_size_and_prev_inuse_of_free_chunk(p, psize);
                         set_chunk_tag((struct any_chunk*)p, new_tag);
                         mte_color_tag(p, psize, tag_to_int(new_tag));
@@ -383,6 +394,8 @@ void *tmalloc_large(struct malloc_state *state, size_t nb) {
                     
                     /*tmte edit: give r v's tag*/
                     set_chunk_tag((struct any_chunk*)r, get_chunk_tag((struct any_chunk*)v));
+                    r->prev_foot = nb| (v->prev_foot & NEXT_EXH_BIT);
+                    v->prev_foot &= ~NEXT_EXH_BIT;
                     /* tmte edit ends */
 
                     set_size_and_prev_inuse_of_free_chunk(r, rsize);
@@ -423,9 +436,11 @@ void *tmalloc_small(struct malloc_state *state, size_t nb) {
             }
             else {
                 set_size_and_prev_inuse_of_inuse_chunk(state, v, nb); //tmte edited to retain tag
-               
+                
                 /* tmte edit: give r v's tag */
                 set_chunk_tag((struct any_chunk*)r, get_chunk_tag((struct any_chunk*)v));
+                r->prev_foot = nb | (v->prev_foot & NEXT_EXH_BIT);
+                v->prev_foot &= ~NEXT_EXH_BIT;
                 /* tmte edit ends */
 
                 set_size_and_prev_inuse_of_free_chunk(r, rsize); //tmte edited to retain tag
