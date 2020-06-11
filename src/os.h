@@ -23,8 +23,15 @@ static inline void *call_sbrk(intptr_t increment) {
     return MFAIL;
 #elif defined(EMULATE_SBRK)
     return emulate_sbrk(increment);
-#elif !defined(__APPLE__)
+#elif !defined(__APPLE__)//iyb: used
+#if DBG
+    void* addr = sbrk(increment);
+    dl_printf("iyb: sbrk returned %llx (previous program break).\n", addr);
+    return addr;
+#else
     return sbrk(increment);
+#endif
+
 #else
     (void) increment; // unused
     return MFAIL;
