@@ -80,7 +80,7 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
                         /* tmte edit: give r p's tag */
                         set_chunk_tag(r, get_chunk_tag(p));
                         r->prev_foot = nb|(p->prev_foot & (NEXT_EXH_BIT)); 
-                        p->prev_foot = p->prev_foot & ~(NEXT_EXH_BIT);
+                        p->prev_foot &= ~(NEXT_EXH_BIT);
                         /* tmte edit ends */
 
                         set_size_and_prev_inuse_of_free_chunk(r, rsize);
@@ -117,7 +117,7 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
                 /* tmte edit: give r p's tag */
                 set_chunk_tag(r, get_chunk_tag(p));
                 r->prev_foot = nb|p->prev_foot & (NEXT_EXH_BIT);
-                p->prev_foot = p->prev_foot & ~(NEXT_EXH_BIT);
+                p->prev_foot &= ~NEXT_EXH_BIT;
                 /* tmte edit end */
                 set_size_and_prev_inuse_of_free_chunk(r, rsize);
                 set_size_and_prev_inuse_of_inuse_chunk(state, p, nb);
@@ -467,6 +467,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
             size_t rsize = old_size - nb;
             if (rsize >= MIN_CHUNK_SIZE) {      /* split off remainder */
                 struct malloc_chunk *r = chunk_plus_offset(chunk, nb);
+                set_chunk_tag(r, get_chunk_tag(chunk));
                 set_inuse(state, chunk, nb);
                 set_inuse(state, r, rsize);
                 dispose_chunk(state, r, rsize);
