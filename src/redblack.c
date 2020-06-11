@@ -27,9 +27,13 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
     }else{
       size_t size_h = GET_EXH(node_t);
       size_t size_n = (((end-start) >> 4) + size_h);
-      if(size_n > (UNMAP_UNIT_POWER-MIN_CHUNK_SIZE)>>4){
-        if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT))
+      if(size_n > (UNMAP_UNIT-MIN_CHUNK_SIZE)>>4){
+#if DBG
+        dl_printf("iyb: mmaped %d times.\n", ++num_mmap);
+#endif
+        if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT)){
           ;
+        }
         else
           ret = -1;
       }else{

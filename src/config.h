@@ -139,5 +139,6 @@
 #define dl_bulk_free            bulk_free
 #endif /* USE_DL_PREFIX */
 
+#define DBG 1
 
 #endif //MALLOC_CONFIG_H

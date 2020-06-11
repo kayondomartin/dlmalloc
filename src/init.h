@@ -22,6 +22,11 @@ struct malloc_params {
 
 extern struct malloc_params params;
 
+#if DBG
+int num_mmap;
+size_t brk_addr;
+#endif
+
 int init_params(void);
 
 int change_param(int param_number, int value);
@@ -29,6 +34,9 @@ int change_param(int param_number, int value);
 /* Ensure params initialized */
 static inline void ensure_initialization() {
     if (params.magic == 0) {
+#if DBG
+      num_mmap = 0;
+#endif
         init_params();
         mte_init();
         init_redblack_tree();
