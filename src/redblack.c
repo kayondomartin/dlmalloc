@@ -19,7 +19,7 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
   for(size_t i = (size_t)chunk >> UNMAP_UNIT_POWER;
       i <= ((size_t)chunk_plus_offset(chunk,size) -1) >> UNMAP_UNIT_POWER;
       i+=1, target = (struct node*)(i<<UNMAP_UNIT_POWER)){
-    size_t start = (i>(size_t)chunk>>UNMAP_UNIT_POWER ? i*UNMAP_UNIT : (size_t)chunk);
+    size_t start = (i>((size_t)chunk>>UNMAP_UNIT_POWER) ? i*UNMAP_UNIT : (size_t)chunk);
     size_t end = ((size_t)chunk + size > (i+1) * UNMAP_UNIT ? (i+1) * UNMAP_UNIT : (size_t)chunk + size);
     struct node * node_t = tree_search(i);
     if(node_t==NILL){
@@ -27,15 +27,14 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
     }else{
       size_t size_h = GET_EXH(node_t);
       size_t size_n = (((end-start) >> 4) + size_h);
-      if(size_n > (UNMAP_UNIT-MIN_CHUNK_SIZE)>>4){
+      if(size_n >= (UNMAP_UNIT>>4)){
+        red_black_delete(node_t);
 #if DBG
         dl_printf("iyb: mmaped %d times.\n", ++num_mmap);
 #endif
-        if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT)){
-          ;
+        if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT) < 0){
+          return -1;
         }
-        else
-          ret = -1;
       }else{
         SET_EXH(node_t, size_n);
       }
@@ -45,9 +44,7 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
   return ret;
 }
 
-
 /* Print tree keys by inorder tree walk */
-
 void tree_print(struct node *x){
   if(x != NILL){
     tree_print(GET_L(x));

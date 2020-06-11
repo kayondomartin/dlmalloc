@@ -3,6 +3,7 @@
 
 #include "state.h"
 #include "tmte.h"
+#include "redblack.h"
 
 /*
   malloc_params holds global properties, including those that can be
