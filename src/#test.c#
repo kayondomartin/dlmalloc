@@ -69,8 +69,8 @@ void test_dl() {
 
 
     //Test 2
-    //    dl_assert((x != p3 && x_tag < p3_tag && p3_tag == TAG_BITS));
-    //dl_assert((y != p4 && y_tag < p4_tag && p4_tag == TAG_BITS));
+    dl_assert((x != p3 && x_tag < p3_tag && p3_tag == TAG_BITS));
+    dl_assert((y != p4 && y_tag < p4_tag && p4_tag == TAG_BITS));
     dl_printf("test 2: Tag exhaustion, chunk Retirement: PASSED\n");
     dl_free(x);
     p3 = dl_malloc(8);
@@ -141,6 +141,9 @@ void test_dl() {
     dl_free(p6);
     dl_printf("\ninspect all\n");
     dl_malloc_inspect_all(&inspector, 0);
+
+    dl_printf("test 5: page frame boundary\n");
+    
     dl_printf("\n\n----------End of Tests-----------\n\n");
 }
 
