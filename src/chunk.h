@@ -357,11 +357,14 @@ static inline void set_inuse(struct malloc_state *state, void *chunk, size_t siz
     ((struct malloc_chunk *) (((char *) chunk) + size))->head |= PREV_INUSE_BIT;
 }
 
+static inline int is_next_exhausted(struct malloc_chunk* p);
+
 /* Set curr_inuse and prev_inuse of this chunk and prev_inuse of next chunk */
 static inline void set_inuse_and_prev_inuse(struct malloc_state *state, void *chunk, size_t size) {
     (void) state; // unused
     ((struct any_chunk *) chunk)->head = (((struct any_chunk*) chunk)->head & TAG_BITS) | size | PREV_INUSE_BIT | CURR_INUSE_BIT;
-    ((struct malloc_chunk *) (((char *) chunk) + size))->head |= PREV_INUSE_BIT;
+    if(!is_next_exhausted(chunk))
+      ((struct malloc_chunk *) (((char *) chunk) + size))->head |= PREV_INUSE_BIT;
 }
 
 /* Set size, curr_inuse and prev_inuse bit of this chunk */

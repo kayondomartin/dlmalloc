@@ -28,45 +28,55 @@
 #define RED 0
 #define BLACK 1
 //64bit architecture
-#define UNMAP_UNIT_POWER (size_t)12
-#define UNMAP_UNIT (size_t)(1<<UNMAP_UNIT_POWER)
+#define UNMAP_UNIT_POWER ((size_t)12)
+#define UNMAP_UNIT (size_t)((size_t)1<<UNMAP_UNIT_POWER)
 
 
-#define COLOR_BIT 1<<63
-#define COLOR_MASK ~((size_t)COLOR_BIT)
-#define KEY_BITS (size_t)-1 >> UNMAP_UNIT_POWER
-#define KEY_MASK ~((size_t)KEY_BITS)
-#define EXH_BITS (size_t)-1 & COLOR_MASK & KEY_MASK
-#define EXH_MASK ~((size_t)EXH_BITS)
+#define ENCODE_BIT ((size_t)1)<<63
+#define ENCODE_MASK (~((size_t)ENCODE_BIT))
+#define COLOR_BIT (((size_t)1)<<62)
+#define COLOR_MASK (~((size_t)COLOR_BIT))
+//#define KEY_BITS (size_t)-1 >> UNMAP_UNIT_POWER
+//#define KEY_MASK ~((size_t)KEY_BITS)
+#define EXH_BITS (((size_t)-1) & ENCODE_MASK & COLOR_MASK)
+#define EXH_MASK (~((size_t)EXH_BITS))
 
 #define GET_COLOR(n)\
-  (int)((n)->head >> 63)
+  (int)(((n)->head & COLOR_BIT) >> 62)
+
 #define SET_COLOR(n, c)\
-  ((struct node*)n)->head = (n)->head & COLOR_MASK | (size_t)c<<63
+  ((struct node*)n)->head = (n)->head & COLOR_MASK | (size_t)c<<62
+
 #define GET_KEY(n)\
-  (size_t)((n)->head & KEY_BITS)
+  ((size_t)n)>>UNMAP_UNIT_POWER
+
 //K >> 12
-#define SET_KEY(n, k)\
-  ((struct node*)n)->head = (((n)->head) & KEY_MASK | k)
+//#define SET_KEY(n, k)                                         \
+//  ((struct node*)n)->head = (((n)->head) & KEY_MASK | k)
 #define GET_EXH(n)\
-  (size_t)(((n)->head & EXH_BITS) >> (64-UNMAP_UNIT_POWER))
+  (size_t)(((n)->head & EXH_BITS))
+//  (size_t)(((n)->head & EXH_BITS) >> (64-UNMAP_UNIT_POWER))
 // E >> 4
+
 #define SET_EXH(n, e)\
-  (n)->head = (n)->head & EXH_MASK | (e<<(64-UNMAP_UNIT_POWER))
+  (n)->head = ((n)->head & EXH_MASK) | (e)
+  //  (n)->head = (n)->head & EXH_MASK | (e<<(64-UNMAP_UNIT_POWER))
 
 /*tag preservation*/
 //#define GET_P(n)                                      \
 //  (struct node *)((size_t)((n)->parent) & TAG_MASK)
 #define SET_P(n, p)\
-  (n)->parent = ((size_t)((n)->parent) & TAG_BITS) | ((size_t)p & TAG_MASK)
+  (n)->parent = (p)//((size_t)((n)->parent)) | ((size_t)p)
+
 //#define GET_L(n)                                      \
 //(struct node *)((size_t)((n)->left) & TAG_MASK)
 #define SET_L(n, l)\
-  (n)->left = ((size_t)((n)->left) & TAG_BITS) | ((size_t)l & TAG_MASK)
+  (n)->left = (l)//((size_t)((n)->left)) | ((size_t)l)
 //#define GET_R(n)                                      \
   //  (struct node *)((size_t)((n)->right) & TAG_MASK)
+
 #define SET_R(n, r)\
-  (n)->right = ((size_t)((n)->right) & TAG_BITS) | ((size_t)r & TAG_MASK)
+  (n)->right = (r)//((size_t)((n)->right)) | ((size_t)r)
 
 
 struct node{

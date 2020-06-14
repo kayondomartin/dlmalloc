@@ -29,7 +29,7 @@ void dl_printf(const char *fmt, ...) {
     vsnprintf(buf, sizeof(buf) - 1, fmt, args);
     va_end(args);
 #if USE_STD_FPUTS
-    setvbuf(stdout, 0, _IONBF, 0); /* Disable buffering to avoid memory allocations. */
+    setvbuf(stderr, 0, _IONBF, 0); /* Disable buffering to avoid memory allocations. */
     fputs(buf, stdout);
 #else
     unbuffered_fputs(stdout, buf);

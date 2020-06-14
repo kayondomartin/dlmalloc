@@ -1,17 +1,18 @@
 #include "redblack.h"
 #include "os.h"
 /*iyb: for debug*/
-struct node* GET_P(struct node* n){
-  return (struct node *)((size_t)((n)->parent) & TAG_MASK);
+struct node* GET_P(struct node* n){//need to add inline at final step
+  return (struct node *)((size_t)((n)->parent));
 }
 struct node* GET_L(struct node* n){
-  return (struct node *)((size_t)((n)->left) & TAG_MASK);
+  return (struct node *)((size_t)((n)->left));
 }
 struct node* GET_R(struct node* n){
-  return (struct node *)((size_t)((n)->right) & TAG_MASK);
+  return (struct node *)((size_t)((n)->right));
 }
-
-
+#if DBG
+static size_t count = 0;
+#endif
 size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
   size_t ret = 0;
   size_t size = chunk_size(chunk);
@@ -22,6 +23,12 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
     size_t start = (i>((size_t)chunk>>UNMAP_UNIT_POWER) ? i*UNMAP_UNIT : (size_t)chunk);
     size_t end = ((size_t)chunk + size > (i+1) * UNMAP_UNIT ? (i+1) * UNMAP_UNIT : (size_t)chunk + size);
     struct node * node_t = tree_search(i);
+#if DBG
+    count++;
+    if(count>=18){
+      dl_printf("");
+    }
+#endif
     if(node_t==NILL){
       red_black_insert(i, (end-start)>>4, (struct node*) target);
     }else{
@@ -88,7 +95,7 @@ void red_black_insert(size_t key, size_t exh, struct node*z){
   //  z = malloc(sizeof(struct node));
 
   SET_EXH(z, exh);
-  SET_KEY(z, key);
+  //  SET_KEY(z, key);
   SET_COLOR(z, RED);
   SET_L(z, NILL);
   SET_R(z, NILL);
