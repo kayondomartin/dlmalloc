@@ -80,12 +80,12 @@
 //(struct node *)((size_t)((n)->left) & TAG_MASK)
 
 #define SET_L(n, l)\
-  (n)->left = (((size_t)(n)->left) & LR_MASK )| ((size_t)l)
+  ((struct node *)n)->left = (((size_t)((struct node *)n)->left) & LR_MASK )| ((size_t)l)
 //((size_t)((n)->left)) | ((size_t)l)
 //#define GET_R(n)                                      \
 //  (struct node *)((size_t)((n)->right) & TAG_MASK)
 #define SET_R(n, r)\
-  (n)->right = (((size_t)(n)->right) & LR_MASK )|((size_t)r)
+  ((struct node *)n)->right = (((size_t)((struct node *)n)->right) & LR_MASK )|((size_t)r)
 //((size_t)((n)->right)) | ((size_t)r)
 
 #define GET_L(n)\
@@ -157,19 +157,19 @@ static inline int init_redblack_tree(){
   return 0;
 }
 
-                 void left_rotate(struct node *x);
-                 void right_rotate(struct node *x);
-                 void tree_print(struct node *x);
-                 void red_black_insert(size_t key, size_t exh, struct node *z);
-                 void red_black_insert_fixup(struct node *z);
-                 struct node *tree_search(size_t key);
-                 struct node *parent_search(size_t key);
-                 struct node *tree_minimum(struct node *x);
-                 void red_black_transplant(struct node *u, struct node *v);
-                 void red_black_delete(struct node *z);
-                 void red_black_delete_fixup(struct node *x);
+void left_rotate(struct node *x);
+void right_rotate(struct node *x);
+void tree_print(struct node *x);
+void red_black_insert(size_t key, size_t exh, size_t enc, struct node *z);
+void red_black_insert_fixup(struct node *z);
+struct node *tree_search(size_t key);
+struct node *parent_search(size_t key);
+struct node *tree_minimum(struct node *x);
+void red_black_transplant(struct node *u, struct node *v);
+void red_black_delete(struct node *z);
+void red_black_delete_fixup(struct node *x);
 
-                 size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk);
+size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk);
 
 #if DBG
 extern int num_mmap;
