@@ -2,13 +2,18 @@
 #include "os.h"
 /*iyb: for debug*/
 struct node* GET_P(struct node* n){//need to add inline at final step
-  return (struct node *)((size_t)((n)->parent));
+  if(GET_ENC(n)){//small_node
+    return parent_search(n);
+  }
+  else
+    return (struct node *)((size_t)((n)->parent));
 }
-struct node* GET_L(struct node* n){
-  return (struct node *)((size_t)((n)->left));
-}
-struct node* GET_R(struct node* n){
-  return (struct node *)((size_t)((n)->right));
+
+void SET_P(struct node* n, struct node* p){
+  if(GET_ENC(n))
+    ;
+  else
+    n->parent = (p);
 }
 #if DBG
 static size_t count = 0;
@@ -75,6 +80,27 @@ struct node *tree_search(size_t key){
 
   return x;
 }
+
+struct node *parent_search(size_t key){//assume that key is alreaedy inserted
+  struct node *x;
+  struct node *p;
+
+  x = ROOT;
+  p = NILL;
+  while(x != NILL && GET_KEY(x) != key){
+    if(key < GET_KEY(x)){
+      p = x;
+      x = GET_L(x);
+    }
+    else{
+      p = x;
+      x = GET_R(x);
+    }
+  }
+
+  return p;
+}
+
 
 struct node *tree_minimum(struct node *x){
   while(GET_L(x) != NILL){
