@@ -164,6 +164,7 @@ void red_black_insert(size_t key, size_t exh, size_t enc, struct node *z);
 void red_black_insert_fixup(struct node *z);
 struct node *tree_search(size_t key);
 struct node *parent_search(size_t key);
+void parent_search_and_migrate(size_t key, struct node *new_node);
 struct node *tree_minimum(struct node *x);
 void red_black_transplant(struct node *u, struct node *v);
 void red_black_delete(struct node *z);

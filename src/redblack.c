@@ -36,14 +36,17 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
     if(node_t==NILL){
       if((end-start)>=sizeof(struct node))
         red_black_insert(i, (end-start)>>4, 0, (struct node*) start);
-      else
+      else{
+        tree_print(ROOT);
         red_black_insert(i, (end-start)>>4, 1, (struct small_node*) start);
+      }
     }else{
       if(GET_ENC(node_t) && (end-start)>=sizeof(struct node)){//need and can migration
         SET_ENC(start, 0);
         SET_COLOR(start, GET_COLOR(node_t));
         SET_L(start, GET_L(node_t));
         SET_R(start, GET_R(node_t));
+        parent_search_and_migrate(i, start);
         node_t = start;//SET_EXH is done later
       }
       size_t size_h = GET_EXH(node_t);
@@ -69,7 +72,7 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
 void tree_print(struct node *x){
   if(x != NILL){
     tree_print(GET_L(x));
-    printf("%lu %lu\t", GET_KEY(x), GET_EXH(x));
+    dl_printf("0x%llx 0x%llx\t", x, GET_EXH(x));
     tree_print(GET_R(x));
   }
 }
@@ -109,6 +112,38 @@ struct node *parent_search(size_t key){//assume that key is alreaedy inserted
 
   return p;
 }
+
+void parent_search_and_migrate(size_t key, struct node *new_node){//assume that key is alreaedy inserted
+  struct node *x;
+  struct node *p;
+  int isLeft;
+
+  x = ROOT;
+  p = NILL;
+
+  while(x != NILL && GET_KEY(x) != key){
+    if(key < GET_KEY(x)){
+      isLeft = 1;
+      p = x;
+      x = GET_L(x);
+    }
+    else{
+      isLeft = 0;
+      p = x;
+      x = GET_R(x);
+    }
+  }
+  //migrate
+  new_node->parent = x;
+  if(isLeft){
+    SET_L(p, new_node);
+  }
+  else
+    SET_R(p, new_node);
+
+  return;
+}
+
 
 
 struct node *tree_minimum(struct node *x){
@@ -227,7 +262,7 @@ void red_black_insert_fixup(struct node *z){
     else{
 
       /* z's left uncle or z's grand parent's left child is also RED */
-      if(GET_COLOR(GET_L(GET_P(GET_P(z)))) == RED){//bug
+      if(GET_COLOR(GET_L(GET_P(GET_P(z)))) == RED){
         SET_COLOR(GET_P(z), BLACK);
         SET_COLOR(GET_L(GET_P(GET_P(z))), BLACK);
         SET_COLOR(GET_P(GET_P(z)), RED);
@@ -256,11 +291,11 @@ void red_black_insert_fixup(struct node *z){
  * Lets say y is x's right child. Left rotate x by making y, x's parent and x, y's
  * left child. y's left child becomes x's right child.
  * 
- * xy
- *   / \                                 / \
- *  STA   y----------->  x   STC
- * /                                            \ / \
- *  STB   STC  STA   STB
+ *    x             y
+ *   / \           / \
+ *  STA y------>  x   STC
+ *  /    \       / \
+ * STB   STC  STA   STB
  */
 
 void left_rotate(struct node *x){
