@@ -127,15 +127,27 @@ void test_dl() {
         dl_printf("here: i=%d p4_tag=0x%016lX\n",i,get_chunk_tag(mem_to_chunk(p4)));
         p4 = dl_malloc(2064);
     }
-    
-    dl_free(p4);
-    int size = 5400;
+
+    int size = 2600;
     p5 = dl_malloc(size);
     for(int i=0; i<15; i++){
         dl_free(p5);
         p5 = dl_malloc(size);
     }
+    p6 = dl_malloc(3000);
+    for(int i=0; i<15; i++){
+        dl_free(p6);
+        p6 = dl_malloc(3000);
+    }
+    void* p7 = dl_malloc(size);
+    for(int i=0; i<15; i++){
+        dl_free(p7);
+        p7 = dl_malloc(size);
+    }
+    dl_free(p4);
     dl_free(p5);
+    dl_free(p6);
+    dl_free(p7);
 
     p6 = dl_malloc(200);
     dl_free(p6);
