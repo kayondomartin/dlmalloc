@@ -418,135 +418,6 @@ size_t release_unused_segments(struct malloc_state *state) {
 }
 
 /* tmte edit: ops definitions */
-void replace_released_segment(struct malloc_state* state, struct malloc_segment* pseg, struct malloc_segment* nseg){
-
-    size_t alloc_size = granularity_align(SYS_ALLOC_PADDING);
-    if (state->footprint_limit != 0) {
-        size_t footprint = state->footprint + alloc_size;
-        if (footprint <= state->footprint || footprint > state->footprint_limit) {
-            return 0;
-        }
-    }
-
-    char *tbase = MFAIL;
-    size_t tsize = 0;
-    flag_t mmap_flag = 0;
-
-    if (MORECORE_CONTIGUOUS && use_noncontiguous(state)) {
-        char *br = MFAIL;
-        size_t ssize = alloc_size; /* sbrk call size */
-        ACQUIRE_MALLOC_GLOBAL_LOCK();
-
-        char *base = (char *) call_sbrk(0);
-        if (base != MFAIL) {
-            /* Adjust to end on a page boundary */
-            if (!is_page_aligned(base)) {
-                ssize += page_align((size_t) base) - (size_t) base;
-            }
-            size_t footprint = state->footprint + ssize;                 /* recheck limits */
-            if (ssize > 0
-                && ssize < HALF_MAX_SIZE_T
-                && (state->footprint_limit == 0 || (footprint > state->footprint && footprint <= state->footprint_limit))
-                && (br = (char *) call_sbrk(ssize)) == base) {
-                tbase = base;
-                tsize = ssize;
-            }
-        }
-
-        if (tbase == MFAIL) {    /* Cope with partial failure */
-            if (br != MFAIL) {    /* Try to use/extend the space we did get */
-                if (ssize < HALF_MAX_SIZE_T && ssize < SYS_ALLOC_PADDING) {
-                    size_t esize = granularity_align(SYS_ALLOC_PADDING - ssize);
-                    if (esize < HALF_MAX_SIZE_T) {
-                        char *end = (char *) call_sbrk(esize);
-                        if (end != MFAIL) {
-                            ssize += esize;
-                        }
-                        else {            /* Can't use; try to release */
-                            (void) call_sbrk(-ssize);
-                            br = MFAIL;
-                        }
-                    }
-                }
-            }
-            if (br != MFAIL) {    /* Use the space we did get */
-                tbase = br;
-                tsize = ssize;
-            }
-            else {
-                disable_contiguous(state); /* Don't try contiguous path in the future */
-            }
-        }
-
-        RELEASE_MALLOC_GLOBAL_LOCK();
-    }
-
-    if (tbase == MFAIL) {  /* Try MMAP */
-        char *mp = (char *) call_mmap(alloc_size);
-        if (mp != MFAIL) {
-            tbase = mp;
-            tsize = alloc_size;
-            mmap_flag = USE_MMAP_BIT;
-        }
-    }
-
-    if (tbase == MFAIL) { /* Try noncontiguous MORECORE */
-        if (alloc_size < HALF_MAX_SIZE_T) {
-            char *br = MFAIL;
-            char *end = MFAIL;
-            ACQUIRE_MALLOC_GLOBAL_LOCK();
-            br = (char *) call_sbrk(alloc_size);
-            end = (char *) call_sbrk(0);
-            RELEASE_MALLOC_GLOBAL_LOCK();
-            if (br != MFAIL && end != MFAIL && br < end) {
-                size_t ssize = end - br;
-                if (ssize > TOP_FOOT_SIZE) {
-                    tbase = br;
-                    tsize = ssize;
-                }
-            }
-        }
-    }
-
-    if (tbase != MFAIL) {
-        if ((state->footprint += tsize) > state->max_footprint) {
-            state->max_footprint = state->footprint;
-        }
-
-        if (!is_initialized(state)) { /* first-time initialization */
-            if (state->least_addr == 0 || tbase < state->least_addr) {
-                state->least_addr = tbase;
-            }
-            state->segment.base = tbase;
-            state->segment.size = tsize;
-            state->segment.blacklisted_size = 0;
-            state->segment.flags = mmap_flag;
-            state->magic = params.magic;
-            state->release_checks = MAX_RELEASE_CHECK_RATE;
-            init_bins(state);
-            if (is_global(state)) {
-                init_top(state, (struct malloc_chunk *) tbase, tsize - TOP_FOOT_SIZE);
-            }
-            else {
-                /* Offset top by embedded malloc_state */
-                struct malloc_chunk *mn = next_chunk(mem_to_chunk(state));
-                init_top(state, mn, (size_t) ((tbase + tsize) - (char *) mn) - TOP_FOOT_SIZE);
-            }
-        }
-        else {
-            
-            if (tbase < state->least_addr) {
-                state->least_addr = tbase;
-            }
-            replace_segment(state, tbase, tsize,mmap_flag,pseg, nseg);
-        }
-        return;
-    }
-    malloc_failure();
-    return 0;
-}
-
-
 void release_exhausted_segment(struct malloc_state *state, struct malloc_segment* segment){
     size_t size  = segment->size;
     size_t base = segment->base;
@@ -576,7 +447,13 @@ void release_exhausted_segment(struct malloc_state *state, struct malloc_segment
             state->top_colored_size = 0;
             state->least_addr = 0;
         }
-        replace_released_segment(state, pseg, nseg);
+        void *p = sys_alloc(state, 0);
+        struct malloc_segment* sh = segment_holding(state, p);
+        if(sh == segment){
+            try_chunk_unmap(state, sh, (struct malloc_chunk*)segment->base, sh->blacklisted_size);
+        }else{
+            release_exhausted_segment(state, segment);
+        }
     }else{
 
         if(segment_holds(segment, state->dv)){
