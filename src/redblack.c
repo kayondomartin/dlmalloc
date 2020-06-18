@@ -3,7 +3,7 @@
 /*iyb: for debug*/
 struct node* GET_P(struct node* n){//need to add inline at final step
   if(GET_ENC(n)){//small_node
-    return parent_search(n);
+    return parent_search((size_t)n >> UNMAP_UNIT_POWER);
   }
   else
     return (struct node *)((size_t)((n)->parent));
@@ -37,18 +37,12 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
       if((end-start)>=sizeof(struct node))
         red_black_insert(i, (end-start)>>4, 0, (struct node*) start);
       else{
-        tree_print(ROOT);
+#if DBG
+        tree_print(ROOT, 0);
+#endif
         red_black_insert(i, (end-start)>>4, 1, (struct small_node*) start);
       }
     }else{
-      if(GET_ENC(node_t) && (end-start)>=sizeof(struct node)){//need and can migration
-        SET_ENC(start, 0);
-        SET_COLOR(start, GET_COLOR(node_t));
-        SET_L(start, GET_L(node_t));
-        SET_R(start, GET_R(node_t));
-        parent_search_and_migrate(i, start);
-        node_t = start;//SET_EXH is done later
-      }
       size_t size_h = GET_EXH(node_t);
       size_t size_n = (((end-start) >> 4) + size_h);
       if(size_n >= (UNMAP_UNIT>>4)){
@@ -60,6 +54,15 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
           return -1;
         }
       }else{
+        if(GET_ENC(node_t) && (end-start)>=sizeof(struct node)){//need and can migration
+          SET_ENC(start, 0);
+          SET_COLOR(start, GET_COLOR(node_t));
+          SET_L(start, GET_L(node_t));
+          SET_R(start, GET_R(node_t));
+          parent_search_and_migrate(i, start);
+          node_t = start;//SET_EXH is done later
+        }
+
         SET_EXH(node_t, size_n);
       }
     }
@@ -69,11 +72,25 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
 }
 
 /* Print tree keys by inorder tree walk */
-void tree_print(struct node *x){
+void tree_print(struct node *x, int space){
+  int isRoot = 0;
+  if (space ==0)
+    isRoot = 1;
   if(x != NILL){
-    tree_print(GET_L(x));
-    dl_printf("0x%llx 0x%llx\t", x, GET_EXH(x));
-    tree_print(GET_R(x));
+    int count = 1;
+    space+=count;
+    tree_print(GET_L(x), space);
+    //dl_printf("\n");
+    //    dl_printf("0x%llx 0x%llx\t", x, GET_EXH(x));
+    for(int i = count; i<space; i++)
+      dl_printf(" ");
+    if(isRoot)
+      dl_printf("R:");
+    dl_printf("0x%llx", x);
+    for(int i = count; i<space; i++)
+      dl_printf(" ");
+
+    tree_print(GET_R(x), space);
   }
 }
 
@@ -134,7 +151,7 @@ void parent_search_and_migrate(size_t key, struct node *new_node){//assume that 
     }
   }
   //migrate
-  new_node->parent = x;
+  new_node->parent = p;
   if(isLeft){
     SET_L(p, new_node);
   }

@@ -159,7 +159,7 @@ static inline int init_redblack_tree(){
 
 void left_rotate(struct node *x);
 void right_rotate(struct node *x);
-void tree_print(struct node *x);
+void tree_print(struct node *x, int space);
 void red_black_insert(size_t key, size_t exh, size_t enc, struct node *z);
 void red_black_insert_fixup(struct node *z);
 struct node *tree_search(size_t key);
