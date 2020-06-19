@@ -69,6 +69,4 @@ void release_exhausted_segment(struct malloc_state *state, struct malloc_segment
 
 void replace_released_segment(struct malloc_state *state, struct malloc_segment* pseg, struct malloc_segment* nseg);
 
-int release_exhausted_chunk(struct malloc_state* state, struct malloc_chunk* chunk, struct malloc_chunk* prev, struct malloc_chunk* next, size_t size);
-
 #endif //MALLOC_ALLOC_H

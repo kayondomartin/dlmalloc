@@ -192,9 +192,9 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
 
         if (likely(ok_address(state, p) && ok_inuse(p))) {
             size_t psize = chunk_size(p);
-            struct malloc_chunk *next = is_next_exhausted(p)? 0: chunk_plus_offset(p, psize);
-            if (!is_prev_exhausted(p) && !prev_inuse(p)) {
-                size_t prev_size = get_prev_size(p);
+            struct malloc_chunk *next = chunk_plus_offset(p, psize);
+            if (!prev_inuse(p)) {
+                size_t prev_size = p->prev_foot;
                 if (is_mmapped(p)) {
                     psize += prev_size + MMAP_FOOT_PAD;
                     if (call_munmap((char *) p - prev_size, psize) == 0) {
@@ -224,20 +224,20 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                 }
             }
 
-            if (next == 0 || (likely(ok_next(p, next) && ok_prev_inuse(next)))) {
-                if ( next !=0 && !curr_inuse(next)) {  /* consolidate forward */
+            if (likely(ok_next(p, next) && ok_prev_inuse(next))) {
+                if (!curr_inuse(next)) {  /* consolidate forward */
 
                     /* tmte edit: tag computation 2*/
                     size_t next_tag = get_chunk_tag((struct any_chunk*)next);  
                     if(next_tag > new_tag){
                         new_tag = next_tag;
-                        if(!curr_inuse(p)){
-                            set_chunk_tag(next_chunk(p), new_tag);
-                        }else{
-                            set_chunk_tag(p, new_tag);
-                        }
                     }else if(next_tag != 0){
                         set_chunk_tag(next, new_tag);
+                    }
+                    if(!curr_inuse(p)){
+                        set_chunk_tag(next_chunk(p), new_tag);
+                    }else{
+                        set_chunk_tag(p, new_tag);
                     }
                     /* tmte edit ends */
 
@@ -280,15 +280,8 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                 else {
                     if(!curr_inuse(p)){
                         set_chunk_tag(next_chunk(p), new_tag);
-                        if(next == 0){
-                            p->prev_foot |= NEXT_EXH_BIT;
-                        }
                     }
-                    if(next ==0){
-                        p->head = psize | PREV_INUSE_BIT;
-                    }else{
-                        set_free_with_prev_inuse(p, psize, next);
-                    }
+                    set_free_with_prev_inuse(p, psize, next);
                     set_chunk_tag(p, new_tag);//tmte edit: set chunk_tag
                     mte_color_tag(p, psize, tag_to_int(new_tag));
                 }
@@ -306,8 +299,6 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                     }
                 }
                 goto postaction;
-            }else if(next == 0){
-                
             }
         }
         erroraction:
@@ -444,8 +435,8 @@ void *tmalloc_small(struct malloc_state *state, size_t nb) {
 struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size_t nb, int can_move) {
     struct malloc_chunk *new_p = 0;
     size_t old_size = chunk_size(chunk);
-    struct malloc_chunk *next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, old_size);
-    if (likely(ok_address(state, chunk) && ok_inuse(chunk) && next != 0 && ok_next(chunk, next) && ok_prev_inuse(next))) {
+    struct malloc_chunk *next = chunk_plus_offset(chunk, old_size);
+    if (likely(ok_address(state, chunk) && ok_inuse(chunk) && ok_next(chunk, next) && ok_prev_inuse(next))) {
         if (is_mmapped(chunk)) {
             new_p = mmap_resize(state, chunk, nb, can_move);
         }
@@ -562,7 +553,7 @@ void *internal_memalign(struct malloc_state *state, size_t alignment, size_t byt
                 size_t new_size = chunk_size(p) - lead_size;
 
                 if (is_mmapped(p)) { /* For mmapped chunks, just adjust offset */
-                    new_p->prev_foot = get_prev_size(p) + lead_size;
+                    new_p->prev_foot = p->prev_foot + lead_size;
                     new_p->head = new_size;
                 }
                 else { /* Otherwise, give back leader, use the rest */

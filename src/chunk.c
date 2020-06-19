@@ -263,10 +263,10 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
             corruption_error(state);
         }
     }
-    struct malloc_chunk *next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, size);
+    struct malloc_chunk *next = chunk_plus_offset(chunk, size);
     size_t new_tag = get_chunk_tag(chunk) + TAG_OFFSET; //tmte edit
     if (!prev_inuse(chunk)) {
-        size_t prev_size = get_prev_size(chunk);
+        size_t prev_size = chunk->prev_foot;
         if (is_mmapped(chunk)) {
             size += prev_size + MMAP_FOOT_PAD;
             if (call_munmap((char *) chunk - prev_size, size) == 0) {
@@ -283,7 +283,7 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
                 size += prev_size;
                 chunk = prev;
             }
-            else if (next && (next->head & INUSE_BITS) == INUSE_BITS) {
+            else if ((next->head & INUSE_BITS) == INUSE_BITS) {
 
                 if(new_tag == prev_tag){//need only clr chunk t dispose
                     mte_color_tag(chunk, size, tag_to_int(new_tag));

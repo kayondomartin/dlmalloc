@@ -56,7 +56,7 @@ void check_inuse_chunk(struct malloc_state *state, struct malloc_chunk *chunk) {
     /* tmte edit ends */
 
     dl_assert(is_inuse(chunk));
-    dl_assert(is_next_exhausted(chunk) || next_prev_inuse((struct any_chunk *) chunk));
+    dl_assert(next_prev_inuse((struct any_chunk *) chunk));
     /* If not prev_inuse and not mmapped, previous chunk has OK offset */
     dl_assert(is_mmapped(chunk) || prev_inuse(chunk) || next_chunk(prev_chunk(chunk)) == chunk);
     if (is_mmapped(chunk)) {
@@ -84,15 +84,15 @@ void check_free_chunk(struct malloc_state *state, struct malloc_chunk *chunk) {
     struct malloc_chunk *next = chunk_plus_offset(chunk, sz);
     check_any_chunk(state, chunk);
     dl_assert(!is_inuse(chunk));
-    dl_assert(is_next_exhausted(chunk) || !next_prev_inuse(chunk));
+    dl_assert(!next_prev_inuse(chunk));
     dl_assert (!is_mmapped(chunk));
     if (chunk != state->dv && chunk != state->top) {
         if (sz >= MIN_CHUNK_SIZE) {
             dl_assert((sz & CHUNK_ALIGN_MASK) == 0);
             dl_assert(is_aligned(chunk_to_mem(chunk)));
-            dl_assert(is_next_exhausted(chunk) || get_prev_size(next) == sz);
+            dl_assert(next->prev_foot == sz);
             dl_assert(prev_inuse(chunk));
-            dl_assert (next == state->top || is_inuse(next) || is_next_exhausted(chunk));
+            dl_assert (next == state->top || is_inuse(next));
             dl_assert(chunk->fd->bk == chunk);
             dl_assert(chunk->bk->fd == chunk);
         }
