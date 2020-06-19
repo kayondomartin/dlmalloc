@@ -56,7 +56,7 @@
   (*(size_t*)(n)) = (*(size_t*)(n) & COLOR_MASK) | ((size_t)c<<62)
 
 #define GET_KEY(n)\
-  ((size_t)n)>>UNMAP_UNIT_POWER
+  (((size_t)n)>>UNMAP_UNIT_POWER)
 
 //K >> 12
 //#define SET_KEY(n, k)                                         \

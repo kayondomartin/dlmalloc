@@ -1,9 +1,16 @@
 #include "redblack.h"
 #include "os.h"
+#if DBG
+#include "assert.h"
+#endif
 /*iyb: for debug*/
 struct node* GET_P(struct node* n){//need to add inline at final step
   if(GET_ENC(n)){//small_node
-    return parent_search((size_t)n >> UNMAP_UNIT_POWER);
+    struct node* p = parent_search((size_t)n >> UNMAP_UNIT_POWER);
+#if DBG
+    dl_assert(p!=NILL);
+#endif
+    return p;
   }
   else
     return (struct node *)((size_t)((n)->parent));
@@ -54,11 +61,15 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
           return -1;
         }
       }else{
-        if(GET_ENC(node_t) && (end-start)>=sizeof(struct node)){//need and can migration
+        if(GET_ENC(node_t) && (end-start)>=sizeof(struct node)){//need and can migrate small node
           SET_ENC(start, 0);
           SET_COLOR(start, GET_COLOR(node_t));
-          SET_L(start, GET_L(node_t));
-          SET_R(start, GET_R(node_t));
+          struct node* left = GET_L(node_t);
+          struct node* right = GET_R(node_t);
+          SET_L(start, left);
+          SET_R(start, right);
+          SET_P(left, start);
+          SET_P(right, start);
           parent_search_and_migrate(i, start);
           node_t = start;//SET_EXH is done later
         }
@@ -81,14 +92,14 @@ void tree_print(struct node *x, int space){
     space+=count;
     tree_print(GET_L(x), space);
     //dl_printf("\n");
-    //    dl_printf("0x%llx 0x%llx\t", x, GET_EXH(x));
-    for(int i = count; i<space; i++)
-      dl_printf(" ");
-    if(isRoot)
-      dl_printf("R:");
-    dl_printf("0x%llx", x);
-    for(int i = count; i<space; i++)
-      dl_printf(" ");
+    dl_printf("0x%llx 0x%llx\t", x, GET_EXH(x));
+    /* for(int i = count; i<space; i++) */
+    /*   dl_printf(" "); */
+    /* if(isRoot) */
+    /*   dl_printf("R:"); */
+    /* dl_printf("0x%llx 0x%llx", x, GET_EXH(x)); */
+    /* for(int i = count; i<space; i++) */
+    /*   dl_printf(" "); */
 
     tree_print(GET_R(x), space);
   }
@@ -126,6 +137,7 @@ struct node *parent_search(size_t key){//assume that key is alreaedy inserted
       x = GET_R(x);
     }
   }
+  dl_assert(GET_KEY(x) == key);
 
   return p;
 }
@@ -165,7 +177,8 @@ void parent_search_and_migrate(size_t key, struct node *new_node){//assume that 
 
 struct node *tree_minimum(struct node *x){
   while(GET_L(x) != NILL){
-    SET_L(x, x);
+    //SET_L(x, x);
+    x = GET_L(x);
   }
   return x;
 }
@@ -198,6 +211,7 @@ void red_black_insert(size_t key, size_t exh, size_t enc, struct node*z){
   while(x != NILL){
     y = x;
     if(GET_KEY(z) <= GET_KEY(x)){
+      dl_assert(GET_KEY(z)!=GET_KEY(x));
       x = GET_L(x);
     }
     else{
@@ -326,8 +340,10 @@ void left_rotate(struct node *x){
   }
 
   /* Make x's parent y's parent and y, x's parent's child */
+  struct node* temp = GET_P(x);
   SET_P(y, GET_P(x));
-  if(GET_P(y) == NILL){
+  if(temp == NILL){
+  /* if(GET_P(y) == NILL){ */
     ROOT = y;
   }
   else if(x == GET_L(GET_P(x))){
@@ -365,8 +381,10 @@ void right_rotate(struct node *x){
   }
 
   /* Make x's parent y's parent and y, x's parent's child */
+  struct node *temp = GET_P(x);
   SET_P(y, GET_P(x));
-  if(GET_P(y) == NILL){
+  if(temp == NILL){
+  /* if(GET_P(y) == NILL){ */
     ROOT = y;
   }
   else if(x == GET_L(GET_P(x))){
@@ -419,7 +437,7 @@ void red_black_delete(struct node *z){
 
     x = GET_R(y);
 
-    if(GET_P(y) == z){
+    if(GET_P(y) == z){//y is the minimum -> has no left
       SET_P(x, y);
     }
     else{
@@ -469,7 +487,6 @@ void red_black_delete(struct node *z){
 
 void red_black_delete_fixup(struct node *x){
   struct node *w;
-
   while(x != ROOT && GET_COLOR(x) == BLACK){
 
     if(x == GET_L(GET_P(x))){
@@ -514,21 +531,21 @@ void red_black_delete_fixup(struct node *x){
         right_rotate(GET_P(x));
         w = GET_L(GET_P(x));
       }
-      
+
       if(GET_COLOR(GET_L(w)) == BLACK && GET_COLOR(GET_R(w)) == BLACK){
         SET_COLOR(w, RED);
         SET_COLOR(GET_P(x), BLACK);
         x = GET_P(x);
       }
       else{
-        
+
         if(GET_COLOR(GET_L(w)) == BLACK){
           SET_COLOR(w, RED);
           SET_COLOR(GET_R(w), BLACK);
           left_rotate(w);
           w = GET_L(GET_P(x));
         }
-        
+
         SET_COLOR(w, GET_COLOR(GET_P(x)));
         SET_COLOR(GET_P(x), BLACK);
         SET_COLOR(GET_L(w), BLACK);
