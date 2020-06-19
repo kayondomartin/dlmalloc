@@ -183,7 +183,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
     if (!PREACTION(state)) {
         /* tmte edit: chunk exhaustion */
         if(is_exhausted(p)){
-            blacklist_chunk(state, p);
+            blacklist_chunk2(state, p);
             goto postaction;
         }else if(!is_usable(p)){
             goto postaction;

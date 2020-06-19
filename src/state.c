@@ -167,7 +167,7 @@ void replace_segment(struct malloc_state *state, char *tbase, size_t tsize, flag
         state->segment.next = nseg;
     }
 }
-/*
+
 int blacklist_chunk2(struct malloc_state* state, struct malloc_chunk* chunk){
     dl_assert(is_exhausted(chunk));
     size_t size = chunk_size(chunk);
@@ -333,5 +333,3 @@ int try_chunk_unmap(struct malloc_state* state, struct malloc_segment* sh, struc
     }
     return 0;
 }
-
-*/
