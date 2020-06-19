@@ -288,6 +288,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                     }
                     else {
                         size_t nsize = chunk_size(next);
+                        size_t nnhead = next_chunk(next)->head; //debugging
                         psize += nsize;
                         unlink_chunk(state, next, nsize);
                         p->prev_foot |= (next->prev_foot & NEXT_EXH_BIT);
