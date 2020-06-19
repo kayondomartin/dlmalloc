@@ -255,6 +255,13 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                         set_chunk_tag(next_chunk(p), new_tag);
                     }
                     /* tmte edit ends */
+                    if((next_chunk(next)->prev_foot & PREV_INUSE_BIT) == PREV_INUSE_BIT){
+                        //
+                        //
+                        //
+                        int i=0;
+                        i++;
+                    }
 
                     if (next == state->top) {
                         size_t tsize = state->top_size += psize;
