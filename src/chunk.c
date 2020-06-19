@@ -304,8 +304,8 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
             return;
         }
     }
-    if (next && likely(ok_address(state, next))) {
-        if (!curr_inuse(next)) {  /* consolidate forward */
+    if (next == 0 || likely(ok_address(state, next))) {
+        if (next !=0 && !curr_inuse(next)) {  /* consolidate forward */
             size_t next_tag = get_chunk_tag(next);
             if(next_tag > new_tag){
                 new_tag = next_tag;
