@@ -52,16 +52,7 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
     }else{
       size_t size_h = GET_EXH(node_t);
       size_t size_n = (((end-start) >> 4) + size_h);
-      if(size_n >= (UNMAP_UNIT>>4)){
-        red_black_delete(node_t);
-#if DBG
-        dl_printf("iyb: munmaped %d times.\n", ++num_mmap);
-#endif
-        if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT) < 0){
-          return -1;
-        }
-      }else{
-        if(GET_ENC(node_t) && (end-start)>=sizeof(struct node)){//need and can migrate small node
+      if(GET_ENC(node_t) && (end-start)>=sizeof(struct node)){//need and can migrate small node
           SET_ENC(start, 0);
           SET_COLOR(start, GET_COLOR(node_t));
           struct node* left = GET_L(node_t);
@@ -72,7 +63,17 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
           SET_P(right, start);
           parent_search_and_migrate(i, start);
           node_t = start;//SET_EXH is done later
+      }
+
+      if(size_n >= (UNMAP_UNIT>>4)){
+        red_black_delete(node_t);
+#if DBG
+        dl_printf("iyb: munmaped %d times.\n", ++num_mmap);
+#endif
+        if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT) < 0){
+          return -1;
         }
+      }else{
 
         SET_EXH(node_t, size_n);
       }
@@ -210,7 +211,7 @@ void red_black_insert(size_t key, size_t exh, size_t enc, struct node*z){
    */
   while(x != NILL){
     y = x;
-    if(GET_KEY(z) <= GET_KEY(x)){
+    if(GET_KEY(z) < GET_KEY(x)){//<= -> <
       dl_assert(GET_KEY(z)!=GET_KEY(x));
       x = GET_L(x);
     }
@@ -387,11 +388,11 @@ void right_rotate(struct node *x){
   /* if(GET_P(y) == NILL){ */
     ROOT = y;
   }
-  else if(x == GET_L(GET_P(x))){
-    SET_L(GET_P(x), y);
+  else if(x == GET_R(GET_P(x))){
+    SET_R(GET_P(x), y);
   }
   else{
-    SET_R(GET_P(x), y);
+    SET_L(GET_P(x), y);
   }
   
   /* Make y, x's parent and x, y's child */
@@ -450,6 +451,8 @@ void red_black_delete(struct node *z){
     SET_L(y, GET_L(z));
     SET_P(GET_L(y), y);
     SET_COLOR(y, GET_COLOR(z));
+    if(GET_L(y)==GET_R(y))//added
+      SET_R(y, NILL);
   }
 
   if(yOriginalColor == BLACK){
@@ -501,7 +504,7 @@ void red_black_delete_fixup(struct node *x){
 
       if(GET_COLOR(GET_L(w)) == BLACK && GET_COLOR(GET_R(w)) == BLACK){
         SET_COLOR(w, RED);
-        SET_COLOR(GET_P(x), BLACK);
+        //SET_COLOR(GET_P(x), BLACK); //deleted
         x = GET_P(x);
       }
       else{
@@ -515,7 +518,7 @@ void red_black_delete_fixup(struct node *x){
 
         SET_COLOR(w, GET_COLOR(GET_P(x)));
         SET_COLOR(GET_P(x), BLACK);
-        SET_COLOR(GET_R(w), BLACK);//bug
+        SET_COLOR(GET_R(w), BLACK);//bug : x -> w
         left_rotate(GET_P(x));
         x = ROOT;
 
@@ -527,14 +530,14 @@ void red_black_delete_fixup(struct node *x){
 
       if(GET_COLOR(w) == RED){
         SET_COLOR(w, BLACK);
-        SET_COLOR(GET_P(x), BLACK);
+        SET_COLOR(GET_P(x), RED);
         right_rotate(GET_P(x));
         w = GET_L(GET_P(x));
       }
 
       if(GET_COLOR(GET_L(w)) == BLACK && GET_COLOR(GET_R(w)) == BLACK){
         SET_COLOR(w, RED);
-        SET_COLOR(GET_P(x), BLACK);
+        //SET_COLOR(GET_P(x), BLACK); //deleted
         x = GET_P(x);
       }
       else{
@@ -548,7 +551,7 @@ void red_black_delete_fixup(struct node *x){
 
         SET_COLOR(w, GET_COLOR(GET_P(x)));
         SET_COLOR(GET_P(x), BLACK);
-        SET_COLOR(GET_L(w), BLACK);
+        SET_COLOR(GET_L(w), BLACK);//bug : x -> w
         right_rotate(GET_P(x));
         x = ROOT;
 
