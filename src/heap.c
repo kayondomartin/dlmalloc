@@ -255,6 +255,14 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                         set_chunk_tag(next_chunk(p), new_tag);
                     }
                     /* tmte edit ends */
+                    if(((next_chunk(next)->head & PREV_INUSE_BIT) == PREV_INUSE_BIT)){
+                        //
+                        //
+                        //
+                        int i=0;
+                        i++;
+                    }
+                    size_t nnhead1 = next_chunk(next)->head;
 
                     if (next == state->top) {
                         size_t tsize = state->top_size += psize;
@@ -281,6 +289,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                     }
                     else {
                         size_t nsize = chunk_size(next);
+                        size_t nnhead = next_chunk(next)->head; //debugging
                         psize += nsize;
                         unlink_chunk(state, next, nsize);
                         p->prev_foot |= (next->prev_foot & NEXT_EXH_BIT);
