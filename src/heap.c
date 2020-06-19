@@ -291,6 +291,13 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                             state->dv_size = psize;
                             goto postaction;
                         }
+                        if(!is_next_exhausted(p) && ((next_chunk(p)->head & PREV_INUSE_BIT) == PREV_INUSE_BIT)){
+                            //
+                            //
+                            //
+                            int i=0;
+                            i++;
+                        }
                     }
                 }
                 else {
