@@ -302,6 +302,13 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                     mte_color_tag(p, psize, tag_to_int(new_tag));
                 }
 
+                if(!(is_next_exhausted(p) || (next->head & PREV_INUSE_BIT == PREV_INUSE_BIT))){
+                    //
+                    //
+                    //
+                    int i=0;
+                    i++;
+                }
                 if (is_small(psize)) {
                     insert_small_chunk(state, p, psize);
                     check_free_chunk(state, p);
