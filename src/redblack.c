@@ -450,6 +450,8 @@ void red_black_delete(struct node *z){
     SET_L(y, GET_L(z));
     SET_P(GET_L(y), y);
     SET_COLOR(y, GET_COLOR(z));
+    if(GET_L(y)==GET_R(y))//added
+      SET_R(y, NILL);
   }
 
   if(yOriginalColor == BLACK){
@@ -501,7 +503,7 @@ void red_black_delete_fixup(struct node *x){
 
       if(GET_COLOR(GET_L(w)) == BLACK && GET_COLOR(GET_R(w)) == BLACK){
         SET_COLOR(w, RED);
-        SET_COLOR(GET_P(x), BLACK);
+        //SET_COLOR(GET_P(x), BLACK); //deleted
         x = GET_P(x);
       }
       else{
@@ -515,7 +517,7 @@ void red_black_delete_fixup(struct node *x){
 
         SET_COLOR(w, GET_COLOR(GET_P(x)));
         SET_COLOR(GET_P(x), BLACK);
-        SET_COLOR(GET_R(w), BLACK);//bug
+        SET_COLOR(GET_R(w), BLACK);//bug : x -> w
         left_rotate(GET_P(x));
         x = ROOT;
 
@@ -527,14 +529,14 @@ void red_black_delete_fixup(struct node *x){
 
       if(GET_COLOR(w) == RED){
         SET_COLOR(w, BLACK);
-        SET_COLOR(GET_P(x), BLACK);
+        SET_COLOR(GET_P(x), RED);
         right_rotate(GET_P(x));
         w = GET_L(GET_P(x));
       }
 
       if(GET_COLOR(GET_L(w)) == BLACK && GET_COLOR(GET_R(w)) == BLACK){
         SET_COLOR(w, RED);
-        SET_COLOR(GET_P(x), BLACK);
+        //SET_COLOR(GET_P(x), BLACK); //deleted
         x = GET_P(x);
       }
       else{
@@ -548,7 +550,7 @@ void red_black_delete_fixup(struct node *x){
 
         SET_COLOR(w, GET_COLOR(GET_P(x)));
         SET_COLOR(GET_P(x), BLACK);
-        SET_COLOR(GET_L(w), BLACK);
+        SET_COLOR(GET_L(w), BLACK);//bug : x -> w
         right_rotate(GET_P(x));
         x = ROOT;
 
