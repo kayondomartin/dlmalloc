@@ -224,6 +224,13 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                                 set_free_with_prev_inuse(p, psize, next);
                                 set_chunk_tag(p, new_tag);
                             }
+                            if(!is_next_exhausted(p) && ((next_chunk(p)->head & PREV_INUSE_BIT) == PREV_INUSE_BIT)){
+                                //
+                                //
+                                //
+                                int i=0;
+                                i++;
+                            }
                             mte_color_tag((char*)p, psize, tag_to_int(new_tag)); //tmte edit: color chunks p and prev with tag
                             goto postaction;
                         }
@@ -241,13 +248,11 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                     size_t next_tag = get_chunk_tag((struct any_chunk*)next);  
                     if(next_tag > new_tag){
                         new_tag = next_tag;
-                        if(!curr_inuse(p)){
-                            set_chunk_tag(next_chunk(p), new_tag);
-                        }else{
-                            set_chunk_tag(p, new_tag);
-                        }
                     }else if(next_tag != 0){
                         set_chunk_tag(next, new_tag);
+                    }
+                    if(!curr_inuse(p)){
+                        set_chunk_tag(next_chunk(p), new_tag);
                     }
                     /* tmte edit ends */
 
@@ -267,7 +272,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                     }
                     else if (next == state->dv) {
                         size_t dsize = state->dv_size += psize;
-                        p->prev_foot |= (state->dv->prev_foot & NEXT_EXH_BIT);
+                        p->prev_foot |= (next->prev_foot & NEXT_EXH_BIT);
                         state->dv = p;
                         set_size_and_prev_inuse_of_free_chunk(p, dsize);
                         set_chunk_tag(p, new_tag); //tmte edit: set new chunk_tag
@@ -286,6 +291,13 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                             state->dv_size = psize;
                             goto postaction;
                         }
+                        if(!is_next_exhausted(p) && ((next_chunk(p)->head & PREV_INUSE_BIT) == PREV_INUSE_BIT)){
+                            //
+                            //
+                            //
+                            int i=0;
+                            i++;
+                        }
                     }
                 }
                 else {
@@ -300,10 +312,24 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                     }else{
                         set_free_with_prev_inuse(p, psize, next);
                     }
+                    if(!is_next_exhausted(p) && ((next_chunk(p)->head & PREV_INUSE_BIT) == PREV_INUSE_BIT)){
+                    //
+                    //
+                    //
+                    int i=0;
+                    i++;
+                }
                     set_chunk_tag(p, new_tag);//tmte edit: set chunk_tag
                     mte_color_tag(p, psize, tag_to_int(new_tag));
                 }
 
+                if(!is_next_exhausted(p) && ((next_chunk(p)->head & PREV_INUSE_BIT) == PREV_INUSE_BIT)){
+                    //
+                    //
+                    //
+                    int i=0;
+                    i++;
+                }
                 if (is_small(psize)) {
                     insert_small_chunk(state, p, psize);
                     check_free_chunk(state, p);
@@ -317,8 +343,6 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                     }
                 }
                 goto postaction;
-            }else if(next == 0){
-                
             }
         }
         erroraction:
