@@ -185,7 +185,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
             // }else{
             //     goto erroraction;
             // }
-            return;
+            goto postaction;
         }
         check_inuse_chunk(state, p);
         /* tmte edit: tag ops */
