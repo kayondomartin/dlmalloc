@@ -41,8 +41,9 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
     }
 #endif
     if(node_t==NILL){
-      if((end-start)>=sizeof(struct node))
+      if((end-start)>=sizeof(struct node)){
         red_black_insert(i, (end-start)>>4, 0, (struct node*) start);
+      }
       else{
 #if DBG
         //        tree_print(ROOT, 0);
@@ -66,6 +67,7 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
       }
 
       if(size_n >= (UNMAP_UNIT>>4)){
+        return ret;
         red_black_delete(node_t);
 #if DBG
         dl_printf("iyb: munmaped %d times.\n", ++num_mmap);
@@ -138,8 +140,9 @@ struct node *parent_search(size_t key){//assume that key is alreaedy inserted
       x = GET_R(x);
     }
   }
+#if DBG
   dl_assert(GET_KEY(x) == key);
-
+#endif
   return p;
 }
 
@@ -165,10 +168,10 @@ void parent_search_and_migrate(size_t key, struct node *new_node){//assume that 
   }
   //migrate
   new_node->parent = p;
-  if(isLeft){
+  if(p!= NILL && isLeft){
     SET_L(p, new_node);
   }
-  else
+  else if(p!= NILL && !isLeft)
     SET_R(p, new_node);
 
   return;
@@ -212,7 +215,9 @@ void red_black_insert(size_t key, size_t exh, size_t enc, struct node*z){
   while(x != NILL){
     y = x;
     if(GET_KEY(z) < GET_KEY(x)){//<= -> <
+#if DBG
       dl_assert(GET_KEY(z)!=GET_KEY(x));
+#endif
       x = GET_L(x);
     }
     else{
