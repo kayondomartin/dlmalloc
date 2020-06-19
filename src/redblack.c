@@ -179,24 +179,24 @@ void parent_search_and_migrate(size_t key, struct node *new_node){//assume that 
 
 
 struct node *tree_minimum(struct node *x){
-  if(GET_R(x) != NILL){
-    x = GET_R(x);
-    while(GET_L(x) != NILL){
-        //SET_L(x, x);
-        x = GET_L(x);
-    }
-  }
-  else{
-    x = GET_L(x);
-    while(GET_R(x) != NILL){
-        //SET_L(x, x);
-        x = GET_R(x);
-    }
-  }
-  /* while(GET_L(x) != NILL){ */
-  /*   //SET_L(x, x); */
-  /*   x = GET_L(x); */
+  /* if(GET_R(x) != NILL){ */
+  /*   x = GET_R(x); */
+  /*   while(GET_L(x) != NILL){ */
+  /*       //SET_L(x, x); */
+  /*       x = GET_L(x); */
+  /*   } */
   /* } */
+  /* else{ */
+  /*   x = GET_L(x); */
+  /*   while(GET_R(x) != NILL){ */
+  /*       //SET_L(x, x); */
+  /*       x = GET_R(x); */
+  /*   } */
+  /* } */
+  while(GET_L(x) != NILL){
+    //SET_L(x, x);
+    x = GET_L(x);
+  }
 
 
   return x;
@@ -296,14 +296,11 @@ void red_black_insert_fixup(struct node *z){
       }
 
       /* z's grand parent's right child is not RED */
+      else if(z == GET_R(GET_P(z))){        /* z is z's parent's right child */
+        z = GET_P(z);
+        left_rotate(z);
+      }
       else{
-
-        /* z is z's parent's right child */
-        if(z == GET_R(GET_P(z))){
-          z = GET_P(z);
-          left_rotate(z);
-        }
-
         SET_COLOR(GET_P(z), BLACK);
         SET_COLOR(GET_P(GET_P(z)), RED);
         right_rotate(GET_P(GET_P(z)));
@@ -322,13 +319,11 @@ void red_black_insert_fixup(struct node *z){
       }
 
       /* z's left uncle is not RED */
+      else if(z == GET_L(GET_P(z))){        /* z is z's parents left child */
+        z = GET_P(z);
+        right_rotate(z);
+      }
       else{
-        /* z is z's parents left child */
-        if(z == GET_L(GET_P(z))){
-          z = GET_P(z);
-          right_rotate(z);
-        }
-
         SET_COLOR(GET_P(z), BLACK);
         SET_COLOR(GET_P(GET_P(z)), RED);
         left_rotate(GET_P(GET_P(z)));
@@ -441,6 +436,20 @@ void red_black_delete(struct node *z){
   struct node *y, *x;
   int yOriginalColor;
 
+
+  /* if(GET_L(z)==NILL || GET_R(z)==NILL) */
+  /*   y = z; */
+  /* else */
+  /*   y = tree_minimum(z); */
+
+  /* if(GET_L(y)!=NILL) */
+  /*   x = GET_L(y); */
+  /* else */
+  /*   x = GET_R(y); */
+
+  /* SET_P(x, GET_P(y)); */
+
+
   y = z;
   yOriginalColor = GET_COLOR(y);
 
@@ -453,8 +462,8 @@ void red_black_delete(struct node *z){
     red_black_transplant(z, GET_L(z));
   }
   else{
-    //y = tree_minimum(GET_R(z));
-    y = tree_minimum(z);
+    y = tree_minimum(GET_R(z));
+    //y = tree_minimum(z);
     yOriginalColor = GET_COLOR(y);
 
     x = GET_R(y);
