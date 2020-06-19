@@ -515,7 +515,7 @@ void red_black_delete_fixup(struct node *x){
 
         SET_COLOR(w, GET_COLOR(GET_P(x)));
         SET_COLOR(GET_P(x), BLACK);
-        SET_COLOR(GET_R(x), BLACK);
+        SET_COLOR(GET_R(w), BLACK);//bug
         left_rotate(GET_P(x));
         x = ROOT;
 
