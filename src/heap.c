@@ -222,6 +222,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                                 p->prev_foot |= NEXT_EXH_BIT;
                             }else{
                                 set_free_with_prev_inuse(p, psize, next);
+                                set_chunk_tag(p, new_tag);
                             }
                             mte_color_tag((char*)p, psize, tag_to_int(new_tag)); //tmte edit: color chunks p and prev with tag
                             goto postaction;
