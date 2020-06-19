@@ -38,6 +38,7 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
 
        The ugly goto's here ensure that postaction occurs along all paths.
     */
+   bytes += 32;
 
     if (!PREACTION(state)) {
         void *mem;
