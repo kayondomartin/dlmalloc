@@ -17,6 +17,10 @@
 /* MORECORE and MMAP must return MFAIL on failure */
 #define MFAIL                   ((void*) -1)
 
+#if DBG
+extern size_t brk_addr;
+#endif
+
 static inline void *call_sbrk(intptr_t increment) {
 #if defined(DISABLE_SBRK)
     (void) increment; // unused
@@ -25,8 +29,10 @@ static inline void *call_sbrk(intptr_t increment) {
     return emulate_sbrk(increment);
 #elif !defined(__APPLE__)//iyb: used
 #if DBG
-    void* addr = sbrk(increment);
-    dl_printf("iyb: sbrk returned %llx (previous program break).\n", addr);
+    size_t addr = sbrk(increment);
+    if(brk_addr == 0 )
+      brk_addr = addr;
+    dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
     return addr;
 #else
     return sbrk(increment);

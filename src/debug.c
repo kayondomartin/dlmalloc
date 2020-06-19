@@ -79,7 +79,7 @@ void check_malloced_chunk(struct malloc_state *state, void *mem, size_t size) {
 }
 
 /* Check properties of free chunks */
-void check_free_chunk(struct malloc_state *state, struct malloc_chunk *chunk) {
+void check_free_chunk(struct malloc_state *state, struct malloc_chunk *chunk) {//iyb : need check
     size_t sz = chunk_size(chunk);
     struct malloc_chunk *next = chunk_plus_offset(chunk, sz);
     check_any_chunk(state, chunk);
@@ -90,9 +90,11 @@ void check_free_chunk(struct malloc_state *state, struct malloc_chunk *chunk) {
         if (sz >= MIN_CHUNK_SIZE) {
             dl_assert((sz & CHUNK_ALIGN_MASK) == 0);
             dl_assert(is_aligned(chunk_to_mem(chunk)));
-            dl_assert(is_next_exhausted(chunk) || get_prev_size(next) == sz);
             dl_assert(prev_inuse(chunk));
-            dl_assert (next == state->top || is_inuse(next) || is_next_exhausted(chunk));
+#if DBG
+            dl_assert(is_next_exhausted(chunk) || get_prev_size(next) == sz);
+            dl_assert (next == state->top || is_next_exhausted(chunk) || is_inuse(next));
+#endif 
             dl_assert(chunk->fd->bk == chunk);
             dl_assert(chunk->bk->fd == chunk);
         }

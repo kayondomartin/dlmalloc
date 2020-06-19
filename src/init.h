@@ -37,6 +37,7 @@ static inline void ensure_initialization() {
     if (params.magic == 0) {
 #if DBG
       num_mmap = 0;
+      brk_addr = 0;
 #endif
         init_params();
         mte_init();
