@@ -38,10 +38,7 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
 #if DBG
         dl_printf("iyb: munmaped %d times.\n", ++num_mmap);
 #endif
-        if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT) < 0){
-          ret= -1;
-        }
-        continue;
+        ret = call_munmap(i*UNMAP_UNIT, UNMAP_UNIT);
       }
       struct node * node_t = tree_search(i);
 #if DBG

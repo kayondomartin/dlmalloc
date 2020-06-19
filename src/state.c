@@ -8,6 +8,7 @@
 #include "segment.h"
 #include "state.h"
 #include "log.h"
+#include "check.h"
 
 /* Initialize top chunk and its size */
 void init_top(struct malloc_state *state, struct malloc_chunk *chunk, size_t size) {
@@ -166,41 +167,171 @@ void replace_segment(struct malloc_state *state, char *tbase, size_t tsize, flag
         state->segment.next = nseg;
     }
 }
-
-void split_and_unmap_segment(struct malloc_state* state, struct malloc_segment* segment, struct malloc_chunk* prev, struct malloc_chunk* next, char* split_start, size_t unmap_size){
-    dl_assert(segment_holds(segment, split_start));
-    dl_assert(segment_holds(segment, split_start+unmap_size));
-    dl_assert(segment->base == split_start || segment_holds(segment, prev));
-
 /*
-    char *old_top = (char *) state->top;
-    struct malloc_segment *oldsp = segment_holding(state, old_top);
-    char *old_end = oldsp->base + oldsp->size;
-    size_t ssize = pad_request(sizeof(struct malloc_segment));
-    char *rawsp = old_end - (ssize + sizeof(size_t) * 4 + CHUNK_ALIGN_MASK);
-    size_t offset = align_offset(chunk_to_mem(rawsp));
-    char *asp = rawsp + offset;
-    char *csp = (asp < (old_top + MIN_CHUNK_SIZE)) ? old_top : asp;
-    struct malloc_chunk *sp = (struct malloc_chunk *) csp;
-    struct malloc_segment *ss = (struct malloc_segment *) (chunk_to_mem(sp));
-    struct malloc_chunk *tnext = chunk_plus_offset(sp, ssize);
-    struct malloc_chunk *p = tnext;
-*/
-    char* unmap_end = split_start + unmap_size;
-    //split or coalesce next_chunk
-    if(unmap_end > next){//split_next
-        size_t split_rem = unmap_end - (char*)next;
-        size_t offset = align_offset(chunk_to_mem(++unmap_end));
-        unmap_end--; 
-    }
-    char* prev_char = (char*)prev;
-    char* segment_end = segment->base + segment->size;
-    size_t ssize = pad_request(sizeof(struct malloc_segment));
-    char* rawsp = segment_end - (ssize + sizeof(size_t)*4 + CHUNK_ALIGN_MASK);
-    size_t offset = align_offset(chunk_to_mem(rawsp));
-    char* asp = rawsp + offset;
-    char* csp = (asp < (prev_char + MIN_CHUNK_SIZE))? prev_char: asp;
-    if(segment->base == split_start){
+int blacklist_chunk2(struct malloc_state* state, struct malloc_chunk* chunk){
+    dl_assert(is_exhausted(chunk));
+    size_t size = chunk_size(chunk);
+    struct malloc_segment* sh = segment_holding(state, chunk);
+    sh->blacklisted_size += size;
+    mte_color_tag(chunk, size, tag_to_int(TAG_BITS));
+    size_t prev_size = chunk->prev_foot;
+    if (ok_address(state, chunk) && ok_inuse(chunk)) {
+        struct malloc_chunk* next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, size);
+        struct malloc_chunk* prev = is_prev_exhausted(chunk)? 0: chunk_minus_offset(chunk, prev_size);
+        if(prev != 0 && prev != chunk && !is_usable(prev) && prev != chunk){//coalesce backward
+            dl_assert(is_inuse(prev));
+            size += prev_size;
+            chunk = prev;
+            prev = chunk_minus_offset(chunk, chunk->prev_foot);
+        }
+
+        if(next == 0 || (ok_next(chunk,next) && ok_prev_inuse(next))){//coalesce forward
+            if(next !=0 && !is_usable(next)){
+                dl_assert(is_inuse(next));
+                size += chunk_size(next);
+                next = chunk_plus_offset(chunk, size);
+            }
+
+            chunk->head = size|TAG_BITS|chunk->head & FLAG_BITS;
+
+            if((sh->size - sh->blacklisted_size - TOP_FOOT_SIZE) <= MIN_CHUNK_SIZE){//edited for debugging
+                if(segment_holds(sh, state->dv)){
+                    state->dv = 0;
+                    state->dv_size = 0;
+                }
+
+                if(segment_holds(sh, state->top)){
+                    struct malloc_chunk* nc = mem_to_chunk(sys_alloc(state, 0));
+                    if(segment_holds(sh, nc)){
+                        size_t page_size = params.page_size, page_offest = page_size-1;
+                        char* unmap_begin = sh->base;
+                        char* unmap_end = sh->base + (sh->size - page_size);
+                        size_t unmap_size = (size_t)(unmap_end - unmap_size);
+                        sh->base = unmap_end;
+                        sh->size = page_size;
+                        sh->blacklisted_size = 0;
+                        if(state->least_addr == sh->base){
+                            state->least_addr = unmap_end;
+                        }
+                        init_top(state, unmap_end, page_size-TOP_FOOT_SIZE);
+                        return call_munmap(unmap_begin,unmap_size);
+                    }else{
+                        init_top(state, nc, nc->head);
+                    }
+                }
+                unlink_segment(state, sh);
+                return call_munmap(sh->base, sh->size);
+                
+            }
+
+            if(size >= params.page_size){
+                return try_chunk_unmap(state, sh, chunk, size);
+            }
+            
+            finish:
+            return 0;
+        }
 
     }
+    return -1;
 }
+
+int try_chunk_unmap(struct malloc_state* state, struct malloc_segment* sh, struct malloc_chunk* chunk, size_t size){
+    dl_assert(!is_usable(chunk));
+    size_t page_size = params.page_size;
+    if(size >= page_size){
+        size_t page_offset = page_size-1;
+        char* unmap_base = (size_t)chunk & ~page_offset;
+
+        if(unmap_base < (char*)chunk){
+            unmap_base += page_size;
+        }
+
+        char* unmap_end = ((size_t)chunk+size) & ~page_offset;
+        size_t unmap_size = unmap_end-unmap_base;
+       
+        if(unmap_size >= page_size){
+            size_t prev_size = get_prev_size(chunk);
+            struct malloc_chunk* next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, size);
+            struct malloc_chunk* prev = is_prev_exhausted(chunk)? 0: chunk_minus_offset(chunk, prev_size);
+            size_t rem_prev = unmap_base-(char*)chunk;
+            if(rem_prev == 0  || rem_prev >= MIN_CHUNK_SIZE || (prev !=0 && !prev_inuse(chunk) && ((prev_size+rem_prev) >= MIN_CHUNK_SIZE))){
+                size_t rem_next = next == 0? 0: (char*)next-unmap_end;
+                if(rem_next != 0){
+                    if(rem_next < MIN_CHUNK_SIZE){
+                        if(curr_inuse(next)){
+                            return 0;
+                        }else{//recall to check next==top
+                            size_t nsize = chunk_size(next);
+                            unlink_chunk(state,next,nsize);
+                            size_t bsize = MIN_CHUNK_SIZE-rem_next;
+                            if(nsize-bsize < MIN_CHUNK_SIZE){//consume next
+                                nsize += rem_next;
+                                next = align_as_chunk(unmap_end);
+                                next->prev_foot = PREV_EXH_BIT;
+                                next->head = TAG_BITS|INUSE_BITS|nsize;
+                                mte_color_tag(next, nsize, tag_to_int(TAG_BITS));
+                            }else{//consume part of next
+                                size_t ntag = get_chunk_tag(next);
+                                nsize -= bsize;
+                                next = align_as_chunk(unmap_end);
+                                next->head = TAG_BITS|INUSE_BITS|MIN_CHUNK_SIZE;
+                                mte_color_tag(next, MIN_CHUNK_SIZE, tag_to_int(TAG_BITS));
+                                next->prev_foot = PREV_EXH_BIT;
+                                next = chunk_plus_offset(next, MIN_CHUNK_SIZE);
+                                next->head = nsize|ntag|PREV_INUSE_BIT;
+                                next->prev_foot = MIN_CHUNK_SIZE;
+                                insert_chunk(state, next, nsize);
+                                next = chunk_minus_offset(next,MIN_CHUNK_SIZE);
+                            }
+                        }
+                    }else{
+                        next->prev_foot = rem_next;
+                        next = align_as_chunk(unmap_end);
+                        next->head = rem_next|TAG_BITS|INUSE_BITS;
+                        next->prev_foot = PREV_EXH_BIT;
+                    }
+                }
+                
+                if(rem_prev !=0){
+                    if(rem_prev < MIN_CHUNK_SIZE){
+                        size_t rqsize = MIN_CHUNK_SIZE-rem_prev;
+                        unlink_chunk(state, prev, prev_size);
+                        if(prev_size-rqsize < MIN_CHUNK_SIZE){//consume prev
+                            prev_size += rem_prev;
+                            prev->prev_foot |= NEXT_EXH_BIT;
+                            prev->head = prev_size|TAG_BITS|INUSE_BITS;
+                            mte_color_tag(prev, prev_size, tag_to_int(TAG_BITS));
+                        }else{//consume part of prev
+                            size_t ptag_and_flags = prev->head & ~SIZE_BITS;
+                            prev_size -= rqsize;
+                            prev->head = prev_size|ptag_and_flags;
+                            insert_chunk(state,prev,prev_size);
+                            prev = chunk_plus_offset(prev, prev_size);
+                            prev->head = MIN_CHUNK_SIZE|TAG_BITS|CURR_INUSE_BIT;
+                            prev->prev_foot = prev_size|NEXT_EXH_BIT;
+                            mte_color_tag(prev,MIN_CHUNK_SIZE,tag_to_int(TAG_BITS));
+                        }
+                    }else{
+                        prev = chunk;
+                        prev->head = rem_prev|TAG_BITS|(chunk->head & FLAG_BITS);
+                        mte_color_tag(prev, rem_prev, tag_to_int(TAG_BITS));
+                    }
+                }
+
+                if(unmap_base == sh->base){
+                    sh->base = unmap_end;
+                    sh->size -= unmap_size;
+                    if(state->least_addr == unmap_base){
+                        state->least_addr = unmap_end;
+                    }
+                }
+                sh->blacklisted_size -= unmap_size;
+                return call_munmap(unmap_base, unmap_size);
+            }
+        }
+    }
+    return 0;
+}
+
+*/

@@ -39,3 +39,31 @@ struct malloc_segment* prev_segment(struct malloc_state* state, struct malloc_se
         }
     }
 }
+
+void unlink_segment(struct malloc_state* state, struct malloc_segment* sh){
+    struct malloc_segment* ss = &state->segment;
+    struct malloc_segment* ps = 0;
+    while(ss != 0){
+        if(ss == sh){
+            ps = 0;
+            ss = ss->next;
+            continue;
+        }
+        if(ss->base < state->least_addr){
+            state->least_addr = ss->base;
+        }
+        if(ss->next == sh){
+            ps = ss;
+        }
+        ss = ss->next;
+    }
+    if(ps == 0){
+        state->segment.base = ss->base;
+        state->segment.size = ss->size;
+        state->segment.blacklisted_size = ss->blacklisted_size;
+        state->segment.flags = ss->blacklisted_size;
+        state->segment.next = ss->next;
+    }else{
+        ps->next = ps->next->next;
+    }
+}
