@@ -80,6 +80,7 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
                         struct malloc_chunk *r = chunk_plus_offset(p, nb);
                         /* tmte edit: give r p's tag */
                         set_chunk_tag(r, get_chunk_tag(p));
+                        r->prev_foot = nb;
                         /* tmte edit ends */
 
                         set_size_and_prev_inuse_of_free_chunk(r, rsize);
@@ -115,6 +116,7 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
 
                 /* tmte edit: give r p's tag */
                 set_chunk_tag(r, get_chunk_tag(p));
+                r->prev_foot = nb;
                 /* tmte edit end */
                 set_size_and_prev_inuse_of_free_chunk(r, rsize);
                 set_size_and_prev_inuse_of_inuse_chunk(state, p, nb);
@@ -180,6 +182,14 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
     if (!PREACTION(state)) {
         /* tmte edit: chunk exhaustion */
         if(is_exhausted(p)){
+            if(!prev_inuse(p) && is_mmapped(p)){
+                size_t psize = chunk_size(p), prev_size = p->prev_foot;
+                psize += prev_size + MMAP_FOOT_PAD;
+                if (call_munmap((char *) p - prev_size, psize) == 0) {
+                    state->footprint -= psize;
+                }
+                goto postaction;
+            }
             if(blacklist_chunk(state, p) == 0){
                 goto postaction;
             }else{
