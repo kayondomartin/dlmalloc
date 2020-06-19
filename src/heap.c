@@ -38,7 +38,7 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
 
        The ugly goto's here ensure that postaction occurs along all paths.
     */
-   bytes += 32;
+   bytes += 64;
 
     if (!PREACTION(state)) {
         void *mem;
@@ -180,12 +180,11 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
     if (!PREACTION(state)) {
         /* tmte edit: chunk exhaustion */
         if(is_exhausted(p)){
-            // if(blacklist_chunk(state, p) == 0){
-            //     goto postaction;
-            // }else{
-            //     goto erroraction;
-            // }
-            goto postaction;
+            if(blacklist_chunk(state, p) == 0){
+                goto postaction;
+            }else{
+                goto erroraction;
+            }
         }
         check_inuse_chunk(state, p);
         /* tmte edit: tag ops */
