@@ -291,6 +291,8 @@ int try_chunk_unmap(struct malloc_state* state, struct malloc_segment* sh, struc
                         next->head = rem_next|TAG_BITS|INUSE_BITS;
                         next->prev_foot = PREV_EXH_BIT;
                     }
+                }else{
+                    return 0;
                 }
                 
                 if(rem_prev !=0){
