@@ -8,7 +8,7 @@ struct node* GET_P(struct node* n){//need to add inline at final step
   if(GET_ENC(n)){//small_node
     struct node* p = parent_search((size_t)n >> UNMAP_UNIT_POWER);
 #if DBG
-    dl_assert(p!=NILL);
+    dl_assert(p==ROOT || p!=NILL);
 #endif
     return p;
   }
@@ -67,7 +67,6 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
       }
 
       if(size_n >= (UNMAP_UNIT>>4)){
-        return ret;
         red_black_delete(node_t);
 #if DBG
         dl_printf("iyb: munmaped %d times.\n", ++num_mmap);
@@ -180,10 +179,26 @@ void parent_search_and_migrate(size_t key, struct node *new_node){//assume that 
 
 
 struct node *tree_minimum(struct node *x){
-  while(GET_L(x) != NILL){
-    //SET_L(x, x);
-    x = GET_L(x);
+  if(GET_R(x) != NILL){
+    x = GET_R(x);
+    while(GET_L(x) != NILL){
+        //SET_L(x, x);
+        x = GET_L(x);
+    }
   }
+  else{
+    x = GET_L(x);
+    while(GET_R(x) != NILL){
+        //SET_L(x, x);
+        x = GET_R(x);
+    }
+  }
+  /* while(GET_L(x) != NILL){ */
+  /*   //SET_L(x, x); */
+  /*   x = GET_L(x); */
+  /* } */
+
+
   return x;
 }
 
@@ -438,7 +453,8 @@ void red_black_delete(struct node *z){
     red_black_transplant(z, GET_L(z));
   }
   else{
-    y = tree_minimum(GET_R(z));
+    //y = tree_minimum(GET_R(z));
+    y = tree_minimum(z);
     yOriginalColor = GET_COLOR(y);
 
     x = GET_R(y);
@@ -512,24 +528,21 @@ void red_black_delete_fixup(struct node *x){
         //SET_COLOR(GET_P(x), BLACK); //deleted
         x = GET_P(x);
       }
+      else if(GET_COLOR(GET_R(w)) == BLACK){
+        SET_COLOR(w, RED);
+        SET_COLOR(GET_L(w), BLACK);
+        right_rotate(w);
+        w = GET_R(GET_P(x));
+      }
       else{
-
-        if(GET_COLOR(GET_R(w)) == BLACK){
-          SET_COLOR(w, RED);
-          SET_COLOR(GET_L(w), BLACK);
-          right_rotate(w);
-          w = GET_R(GET_P(x));
-        }
-
         SET_COLOR(w, GET_COLOR(GET_P(x)));
         SET_COLOR(GET_P(x), BLACK);
         SET_COLOR(GET_R(w), BLACK);//bug : x -> w
         left_rotate(GET_P(x));
         x = ROOT;
-
       }
-
     }
+
     else{
       w = GET_L(GET_P(x));
 
@@ -545,21 +558,18 @@ void red_black_delete_fixup(struct node *x){
         //SET_COLOR(GET_P(x), BLACK); //deleted
         x = GET_P(x);
       }
+      else if(GET_COLOR(GET_L(w)) == BLACK){
+        SET_COLOR(w, RED);
+        SET_COLOR(GET_R(w), BLACK);
+        left_rotate(w);
+        w = GET_L(GET_P(x));
+      }
       else{
-
-        if(GET_COLOR(GET_L(w)) == BLACK){
-          SET_COLOR(w, RED);
-          SET_COLOR(GET_R(w), BLACK);
-          left_rotate(w);
-          w = GET_L(GET_P(x));
-        }
-
         SET_COLOR(w, GET_COLOR(GET_P(x)));
         SET_COLOR(GET_P(x), BLACK);
         SET_COLOR(GET_L(w), BLACK);//bug : x -> w
         right_rotate(GET_P(x));
         x = ROOT;
-
       }
     }
 
