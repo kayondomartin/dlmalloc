@@ -224,6 +224,13 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                                 set_free_with_prev_inuse(p, psize, next);
                                 set_chunk_tag(p, new_tag);
                             }
+                            if(!is_next_exhausted(p) && ((next_chunk(p)->head & PREV_INUSE_BIT) == PREV_INUSE_BIT)){
+                                //
+                                //
+                                //
+                                int i=0;
+                                i++;
+                            }
                             mte_color_tag((char*)p, psize, tag_to_int(new_tag)); //tmte edit: color chunks p and prev with tag
                             goto postaction;
                         }
@@ -298,6 +305,13 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                     }else{
                         set_free_with_prev_inuse(p, psize, next);
                     }
+                    if(!is_next_exhausted(p) && ((next_chunk(p)->head & PREV_INUSE_BIT) == PREV_INUSE_BIT)){
+                    //
+                    //
+                    //
+                    int i=0;
+                    i++;
+                }
                     set_chunk_tag(p, new_tag);//tmte edit: set chunk_tag
                     mte_color_tag(p, psize, tag_to_int(new_tag));
                 }
