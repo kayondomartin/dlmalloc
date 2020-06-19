@@ -317,6 +317,7 @@ int try_chunk_unmap(struct malloc_state* state, struct malloc_segment* sh, struc
                     }else{
                         prev = chunk;
                         prev->head = rem_prev|TAG_BITS|(chunk->head & FLAG_BITS);
+                        prev->prev_foot |= NEXT_EXH_BIT;
                         mte_color_tag(prev, rem_prev, tag_to_int(TAG_BITS));
                     }
                 }
