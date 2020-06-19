@@ -262,6 +262,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                         int i=0;
                         i++;
                     }
+                    size_t nnhead1 = next_chunk(next)->head;
 
                     if (next == state->top) {
                         size_t tsize = state->top_size += psize;
