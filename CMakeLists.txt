@@ -29,7 +29,7 @@ endif ()
 
 if (CMAKE_BUILD_TYPE MATCHES "(D|d)ebug")
   list(APPEND dlalloc_defines DEBUG)
-  list(APPEND dlalloc_flags -Wall -Wextra -D DBG)
+  list(APPEND dlalloc_flags -Wall -Wextra -D DBG INTEL)
 else()
   list(APPEND dlalloc_flags -D INTEL)
 endif ()
