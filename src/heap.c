@@ -502,6 +502,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                 set_chunk_tag(r, get_chunk_tag(chunk));
                 set_inuse(state, chunk, nb);
                 set_inuse(state, r, rsize);
+                
                 dispose_chunk(state, r, rsize);
             }
             new_p = chunk;
