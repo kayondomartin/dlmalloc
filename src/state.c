@@ -144,6 +144,7 @@ int blacklist_chunk(struct malloc_state* state, struct malloc_chunk* chunk){
     if(next !=0){
         next->prev_foot |= PREV_EXH_BIT;
     }
+    /* return 0; */
     return invalidate_chunk(state, chunk);
 }
 
