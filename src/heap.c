@@ -118,7 +118,7 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
 
                 /* tmte edit: give r p's tag */
                 set_chunk_tag(r, get_chunk_tag(p));
-                r->prev_foot = nb|p->prev_foot & (NEXT_EXH_BIT);
+                r->prev_foot = nb|(p->prev_foot & NEXT_EXH_BIT);
                 p->prev_foot &= ~NEXT_EXH_BIT;
                 /* tmte edit end */
                 set_size_and_prev_inuse_of_free_chunk(r, rsize);
