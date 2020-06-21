@@ -291,8 +291,8 @@ int try_chunk_unmap(struct malloc_state* state, struct malloc_segment* sh, struc
                         next->head = rem_next|TAG_BITS|INUSE_BITS;
                         next->prev_foot = PREV_EXH_BIT;
                     }
-                }else{
-                    return 0;
+                }else if(next!= 0){
+                    next->prev_foot = PREV_EXH_BIT;
                 }
                 
                 if(rem_prev !=0){
@@ -320,6 +320,8 @@ int try_chunk_unmap(struct malloc_state* state, struct malloc_segment* sh, struc
                         prev->prev_foot |= NEXT_EXH_BIT;
                         mte_color_tag(prev, rem_prev, tag_to_int(TAG_BITS));
                     }
+                }else if(prev != 0){
+                    prev->prev_foot |= NEXT_EXH_BIT;
                 }
 
                 if(unmap_base == sh->base){
