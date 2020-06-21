@@ -181,6 +181,7 @@ int blacklist_chunk2(struct malloc_state* state, struct malloc_chunk* chunk){
         if(prev != 0 && prev != chunk && !is_usable(prev) && prev != chunk){//coalesce backward
             dl_assert(is_inuse(prev));
             size += prev_size;
+            prev->prev_foot |= (chunk->prev_foot & NEXT_EXH_BIT);
             chunk = prev;
             prev = chunk_minus_offset(chunk, chunk->prev_foot);
         }
@@ -189,6 +190,7 @@ int blacklist_chunk2(struct malloc_state* state, struct malloc_chunk* chunk){
             if(next !=0 && !is_usable(next)){
                 dl_assert(is_inuse(next));
                 size += chunk_size(next);
+                chunk->prev_foot |= (next->prev_foot & NEXT_EXH_BIT);
                 next = chunk_plus_offset(chunk, size);
             }
 
