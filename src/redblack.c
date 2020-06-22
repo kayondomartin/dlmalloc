@@ -81,7 +81,7 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
         if(size_n >= (UNMAP_UNIT>>4)){
           red_black_delete(node_t);
 #if DBG
-          dl_printf("iyb: munmaped %d times.\n", ++num_mmap);
+          //dl_printf("iyb: munmaped %d times.\n", ++num_mmap);
 #endif
           if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT) < 0){
             ret= -1;
