@@ -78,7 +78,7 @@ static inline size_t get_foot(void *chunk, size_t size) {
 static inline void set_foot(void *chunk, size_t size) {
     if((((struct any_chunk*)chunk)->prev_foot & NEXT_EXH_BIT) != NEXT_EXH_BIT){
         struct any_chunk* next = (struct any_chunk*)((char*)chunk + size);
-        next->prev_foot = next->prev_foot & EXHAUSTION_BITS | size;
+        next->prev_foot = (next->prev_foot & EXHAUSTION_BITS) | size;
     }
 }
 

@@ -546,6 +546,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                 else { /* exhaust dv */
                     size_t new_size = old_size + dvs;
                     set_inuse(state, chunk, new_size);
+                    set_chunk_tag(chunk, tag);
                     set_foot(chunk,new_size);
                     state->dv_size = 0;
                     state->dv = 0;
@@ -560,12 +561,24 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                 unlink_chunk(state, next, next_size);
                 if (rsize < MIN_CHUNK_SIZE) {
                     size_t new_size = old_size + next_size;
-                    set_inuse(state, chunk, new_size);
+                    if(is_next_exhausted(next)){
+                        chunk->head = (chunk->head & ~SIZE_BITS) | new_size;
+                        chunk->prev_foot |= NEXT_EXH_BIT;
+                    }else{
+                        set_inuse(state, chunk, new_size);
+                        set_foot(chunk, new_size);
+                    } 
                 }
                 else {
                     struct malloc_chunk *r = chunk_plus_offset(chunk, nb);
                     set_inuse(state, chunk, nb);
-                    set_inuse(state, r, rsize);
+                    if(is_next_exhausted(next)){
+                        r->prev_foot = nb|NEXT_EXH_BIT;
+                        r->head = get_chunk_tag(next) | rsize | INUSE_BITS;
+                    }else{
+                        r->prev_foot = nb;
+                        set_inuse(state, r, rsize);
+                    }
                     dispose_chunk(state, r, rsize);
                 }
                 new_p = chunk;
