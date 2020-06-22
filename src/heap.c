@@ -507,7 +507,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                 set_inuse(state, r, rsize);
                 r->head |= tag;
                 chunk->head |= tag;
-                r->prev_foot |= (chunk->prev_foot & NEXT_EXH_BIT);
+                r->prev_foot = nb | (chunk->prev_foot & NEXT_EXH_BIT);
                 chunk->prev_foot &= ~NEXT_EXH_BIT;
                 dispose_chunk(state, r, rsize);
             }
