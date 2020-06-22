@@ -550,6 +550,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
             }
         }
         else if (next != 0 && !curr_inuse(next)) { /* extend into next free chunk */
+            nb += 16; //debugging
             size_t next_size = chunk_size(next);
             if (old_size + next_size >= nb) {
                 size_t rsize = old_size + next_size - nb;
