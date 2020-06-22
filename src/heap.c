@@ -520,6 +520,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                 size_t new_top_size = new_size - nb;
                 struct malloc_chunk *new_top = chunk_plus_offset(chunk, nb);
                 set_inuse(state, chunk, nb);
+                set_chunk_tag(chunk, tag);
                 new_top->head = new_top_size | PREV_INUSE_BIT;
                 state->top = new_top;
                 state->top_size = new_top_size;
@@ -536,13 +537,16 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                     struct malloc_chunk *n = chunk_plus_offset(r, dsize);
                     set_inuse(state, chunk, nb);
                     set_size_and_prev_inuse_of_free_chunk(r, dsize);
+                    r->prev_foot = nb;
                     clear_prev_inuse(n);
+                    n->prev_foot = dsize | (n->prev_foot & EXH_BITS);
                     state->dv_size = dsize;
                     state->dv = r;
                 }
                 else { /* exhaust dv */
                     size_t new_size = old_size + dvs;
                     set_inuse(state, chunk, new_size);
+                    set_foot(chunk,new_size);
                     state->dv_size = 0;
                     state->dv = 0;
                 }
