@@ -510,6 +510,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                 chunk->prev_foot &= ~NEXT_EXH_BIT;
                 dispose_chunk(state, r, rsize);
             }
+            check_inuse_chunk(state,chunk);
             new_p = chunk;
         }
         else if (next == state->top) {  /* extend into top */
@@ -522,6 +523,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                 state->top = new_top;
                 state->top_size = new_top_size;
                 state->top->prev_foot = nb;
+                check_inuse_chunk(state,chunk);
                 new_p = chunk;
             }
         }
@@ -544,6 +546,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                     state->dv_size = 0;
                     state->dv = 0;
                 }
+                check_inuse_chunk(state,chunk);
                 new_p = chunk;
             }
         }
@@ -562,6 +565,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                     set_inuse(state, r, rsize);
                     dispose_chunk(state, r, rsize);
                 }
+                check_inuse_chunk(state,chunk);
                 new_p = chunk;
             }
         }
