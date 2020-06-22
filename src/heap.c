@@ -513,6 +513,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
             new_p = chunk;
         }
         else if (next == state->top) {  /* extend into top */
+            nb+=16; //debugging
             if (old_size + state->top_size > nb) {
                 size_t new_size = old_size + state->top_size;
                 size_t new_top_size = new_size - nb;
@@ -521,11 +522,13 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                 new_top->head = new_top_size | PREV_INUSE_BIT;
                 state->top = new_top;
                 state->top_size = new_top_size;
+                state->top->prev_foot = nb;
                 new_p = chunk;
             }
         }
         else if (next == state->dv) { /* extend into dv */
             size_t dvs = state->dv_size;
+            nb += 16; //debugging
             if (old_size + dvs >= nb) {
                 size_t dsize = old_size + dvs - nb;
                 if (dsize >= MIN_CHUNK_SIZE) {
