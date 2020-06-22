@@ -489,7 +489,7 @@ void *tmalloc_small(struct malloc_state *state, size_t nb) {
 
 /* Try to realloc; only in-place unless can_move true */
 struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size_t nb, int can_move) {
-    
+    nb+=16;
     struct malloc_chunk *new_p = 0;
     size_t old_size = chunk_size(chunk);
     size_t tag = get_chunk_tag(chunk);
@@ -513,7 +513,6 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
             new_p = chunk;
         }
         else if (next == state->top) {  /* extend into top */
-            nb+=16; //debugging
             if (old_size + state->top_size > nb) {
                 size_t new_size = old_size + state->top_size;
                 size_t new_top_size = new_size - nb;
@@ -528,7 +527,6 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
         }
         else if (next == state->dv) { /* extend into dv */
             size_t dvs = state->dv_size;
-            nb += 16; //debugging
             if (old_size + dvs >= nb) {
                 size_t dsize = old_size + dvs - nb;
                 if (dsize >= MIN_CHUNK_SIZE) {
@@ -550,7 +548,6 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
             }
         }
         else if (next != 0 && !curr_inuse(next)) { /* extend into next free chunk */
-            nb += 16; //debugging
             size_t next_size = chunk_size(next);
             if (old_size + next_size >= nb) {
                 size_t rsize = old_size + next_size - nb;
