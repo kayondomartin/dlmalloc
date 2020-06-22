@@ -118,7 +118,7 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
 
                 /* tmte edit: give r p's tag */
                 set_chunk_tag(r, get_chunk_tag(p));
-                r->prev_foot = nb|p->prev_foot & (NEXT_EXH_BIT);
+                r->prev_foot = nb|(p->prev_foot & (NEXT_EXH_BIT));
                 p->prev_foot &= ~NEXT_EXH_BIT;
                 /* tmte edit end */
                 set_size_and_prev_inuse_of_free_chunk(r, rsize);
@@ -489,8 +489,10 @@ void *tmalloc_small(struct malloc_state *state, size_t nb) {
 
 /* Try to realloc; only in-place unless can_move true */
 struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size_t nb, int can_move) {
+    
     struct malloc_chunk *new_p = 0;
     size_t old_size = chunk_size(chunk);
+    size_t tag = get_chunk_tag(chunk);
     struct malloc_chunk *next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, old_size);
     if (likely(ok_address(state, chunk) && ok_inuse(chunk) && (next == 0 || (ok_next(chunk, next) && ok_prev_inuse(next))))) {
         if (is_mmapped(chunk)) {
@@ -500,9 +502,12 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
             size_t rsize = old_size - nb;
             if (rsize >= MIN_CHUNK_SIZE) {      /* split off remainder */
                 struct malloc_chunk *r = chunk_plus_offset(chunk, nb);
-                set_chunk_tag(r, get_chunk_tag(chunk));
                 set_inuse(state, chunk, nb);
                 set_inuse(state, r, rsize);
+                r->head |= tag;
+                chunk->head |= tag;
+                r->prev_foot |= (chunk->prev_foot & NEXT_EXH_BIT);
+                chunk->prev_foot &= ~NEXT_EXH_BIT;
                 dispose_chunk(state, r, rsize);
             }
             new_p = chunk;
