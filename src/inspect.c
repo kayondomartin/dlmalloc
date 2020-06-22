@@ -350,7 +350,7 @@ dl_export void dl_heap_print_allocations(dl_heap_t heap) {
 __attribute__((destructor))
 #endif
 void on_exit() {
-    dl_malloc_stats();
+    //dl_malloc_stats();
 }
 
 #endif
