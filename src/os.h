@@ -44,7 +44,7 @@ static inline void *call_sbrk(intptr_t increment) {
 #if DBG
   if(brk_addr == 0 )
     brk_addr = addr;
-  dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
+  //dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
   return addr;
 
 #endif
@@ -54,7 +54,7 @@ static inline void *call_sbrk(intptr_t increment) {
   size_t addr = sbrk(increment);
   if(brk_addr == 0 )
     brk_addr = addr;
-  dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
+  //dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
   return addr;
 #else
   return sbrk(increment);
