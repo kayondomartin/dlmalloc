@@ -566,7 +566,6 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                         chunk->prev_foot |= NEXT_EXH_BIT;
                     }else{
                         set_inuse(state, chunk, new_size);
-                        set_chunk_tag(chunk, tag);
                         set_foot(chunk, new_size);
                     } 
                 }
@@ -582,9 +581,9 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                         next = chunk_plus_offset(r, rsize);
                         next->prev_foot = (next->prev_foot & EXH_BITS)|rsize;
                     }
-                    set_chunk_tag(chunk, tag);
                     dispose_chunk(state, r, rsize);
                 }
+                set_chunk_tag(chunk, tag);
                 new_p = chunk;
             }
         }
