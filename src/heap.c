@@ -578,6 +578,8 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                     }else{
                         r->prev_foot = nb;
                         set_inuse(state, r, rsize);
+                        next = chunk_plus_offset(r, rsize);
+                        next->prev_foot = (next->prev_foot & EXH_BITS)|rsize;
                     }
                     dispose_chunk(state, r, rsize);
                 }
