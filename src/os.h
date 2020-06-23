@@ -13,6 +13,7 @@
 
 #include "config.h"
 #include "sbrk.h"
+#include "redblack.h"
 
 /* MORECORE and MMAP must return MFAIL on failure */
 #define MFAIL                   ((void*) -1)
@@ -20,28 +21,40 @@
 #if DBG
 extern size_t brk_addr;
 #endif
+size_t watermark;
 
 static inline void *call_sbrk(intptr_t increment) {
 #if defined(DISABLE_SBRK)
-    (void) increment; // unused
-    return MFAIL;
+  (void) increment; // unused
+  return MFAIL;
 #elif defined(EMULATE_SBRK)
-    return emulate_sbrk(increment);
+  return emulate_sbrk(increment);
 #elif !defined(__APPLE__)//iyb: used
 #if DBG
-    size_t addr = sbrk(increment);
-    if(brk_addr == 0 )
-      brk_addr = addr;
-    //dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
-    return addr;
+  size_t addr;
+  if(!increment) increment = 3*UNMAP_UNIT;
+  if (!watermark){
+    addr = sbrk(increment);
+    watermark = addr+increment;
+  }
+  else{
+    addr = watermark;
+    int res = mmap(watermark, increment, PROT_READ | PROT_WRITE | MAP_FIXED, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    watermark += increment;
+  }
+//    size_t addr = sbrk(increment);
+  if(brk_addr == 0 )
+    brk_addr = addr;
+  dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
+return addr;
 #else
-    return sbrk(increment);
-#endif
+return sbrk(increment);
+#endif//DBG
 
 #else
-    (void) increment; // unused
-    return MFAIL;
-#endif
+(void) increment; // unused
+return MFAIL;
+#endif//DISABLE_SBRK
 }
 
 static inline void *call_mmap(size_t size) {

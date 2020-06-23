@@ -27,6 +27,7 @@ extern struct malloc_params params;
 int num_mmap;
 size_t brk_addr;
 #endif
+extern size_t watermark;
 
 int init_params(void);
 
@@ -36,6 +37,7 @@ int change_param(int param_number, int value);
 static inline void ensure_initialization() {
     if (params.magic == 0) {
 #if DBG
+      watermark = 0;
       num_mmap = 0;
       brk_addr = 0;
 #endif

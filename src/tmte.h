@@ -42,7 +42,7 @@ static inline u_int8_t mte_color_tag(char *base, long size, u_int8_t tag_num) {
   
   //tag_memset(cur,0,size);
   
-#elif defined( INTEL)
+#else
   char *tag_start = __mte_tag_mem + ((long)base >> 4);
   char *tag_end = __mte_tag_mem + ((long)(base + size - 1) >> 4);
   for (char *cur = tag_start; cur <= tag_end; cur++)
