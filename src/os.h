@@ -28,29 +28,36 @@ static inline void *call_sbrk(intptr_t increment) {
   (void) increment; // unused
   return MFAIL;
 #elif defined(EMULATE_SBRK)
-  return emulate_sbrk(increment);
+  size_t addr;
+  if(!increment) increment = 3*UNMAP_UNIT;
+  else
+    increment = increment % UNMAP_UNIT ? increment / UNMAP_UNIT * UNMAP_UNIT + UNMAP_UNIT : increment;
+  if (!watermark){
+    addr = sbrk(increment);
+    watermark = addr+increment;
+  }
+  else{
+    addr = watermark;
+    int res = mmap(watermark, increment, PROT_READ | PROT_WRITE | MAP_FIXED, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    watermark += increment;
+  }
+#if DBG
+  if(brk_addr == 0 )
+    brk_addr = addr;
+  dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
+  return addr;
+
+#endif
+  //return emulate_sbrk(increment);
 #elif !defined(__APPLE__)//iyb: used
 #if DBG
-  /* size_t addr; */
-  /* if(!increment) increment = 3*UNMAP_UNIT; */
-  /* else */
-  /*   increment = increment % UNMAP_UNIT ? increment / UNMAP_UNIT * UNMAP_UNIT + UNMAP_UNIT : increment; */
-  /* if (!watermark){ */
-  /*   addr = sbrk(increment); */
-  /*   watermark = addr+increment; */
-  /* } */
-  /* else{ */
-  /*   addr = watermark; */
-  /*   int res = mmap(watermark, increment, PROT_READ | PROT_WRITE | MAP_FIXED, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0); */
-  /*   watermark += increment; */
-  /* } */
   size_t addr = sbrk(increment);
   if(brk_addr == 0 )
     brk_addr = addr;
   dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
-return addr;
+  return addr;
 #else
-return sbrk(increment);
+  return sbrk(increment);
 #endif//DBG
 
 #else

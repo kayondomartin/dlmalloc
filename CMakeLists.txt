@@ -11,6 +11,12 @@ set(CMAKE_BUILD_TYPE "Debug")
 option(LOCKS "LOCKS" OFF)
 option(FOOTERS "FOOTERS" OFF)
 
+option(DEFINE_MACRO "Option description" ON)
+IF(EMULATE_SBRK)
+  ADD_DEFINITIONS(-DEMULATE_SBRK)
+ENDIF(EMULATE_SBRK)
+
+
 if (NOT CMAKE_BUILD_TYPE)
     if ("${CMAKE_BINARY_DIR}" MATCHES ".*(D|d)ebug$")
         message(STATUS "No build type selected, default to *** Debug ***")
