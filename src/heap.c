@@ -490,7 +490,6 @@ void *tmalloc_small(struct malloc_state *state, size_t nb) {
 /* Try to realloc; only in-place unless can_move true */
 struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size_t nb, int can_move) {
     nb+=16;
-
     struct malloc_chunk *new_p = 0;
     size_t old_size = chunk_size(chunk);
     size_t tag = get_chunk_tag(chunk);
@@ -536,6 +535,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                     struct malloc_chunk *r = chunk_plus_offset(chunk, nb);
                     struct malloc_chunk *n = chunk_plus_offset(r, dsize);
                     set_inuse(state, chunk, nb);
+                    set_chunk_tag(chunk, tag);
                     set_size_and_prev_inuse_of_free_chunk(r, dsize);
                     r->prev_foot = nb;
                     clear_prev_inuse(n);
@@ -566,6 +566,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                         chunk->prev_foot |= NEXT_EXH_BIT;
                     }else{
                         set_inuse(state, chunk, new_size);
+                        set_chunk_tag(chunk, tag);
                         set_foot(chunk, new_size);
                     } 
                 }
