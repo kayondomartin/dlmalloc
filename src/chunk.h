@@ -370,7 +370,7 @@ static inline void set_inuse_and_prev_inuse(struct malloc_state *state, void *ch
 /* Set size, curr_inuse and prev_inuse bit of this chunk */
 static inline void set_size_and_prev_inuse_of_inuse_chunk(struct malloc_state *state, void *chunk, size_t size) {
     (void) state; // unused
-    ((struct any_chunk *) chunk)->head = (((struct any_chunk*)chunk)->head & TAG_BITS) | size | PREV_INUSE_BIT | CURR_INUSE_BIT;
+    ((struct any_chunk *) chunk)->head = (((struct any_chunk*)chunk)->head & TAG_BITS) | size | INUSE_BITS;
 }
 
 #else /* FOOTERS */

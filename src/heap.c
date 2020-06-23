@@ -571,7 +571,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                 if (rsize < MIN_CHUNK_SIZE) {//exhaust next chunk, debug review done
                     size_t new_size = old_size + next_size;
                     if(is_next_exhausted(next)){
-                        chunk->head = new_size;
+                        chunk->head = (chunk->head & INUSE_BITS) | new_size;
                         chunk->prev_foot |= NEXT_EXH_BIT;
                     }else{
                         set_inuse(state, chunk, new_size);
