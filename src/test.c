@@ -139,6 +139,14 @@ void test_dl() {
 
     p6 = dl_malloc(200);
     dl_free(p6);
+
+    dl_printf("\n-----------------Testing realloc-------------------\n");
+    p4 = dl_malloc(10);
+    p5 = dl_realloc(p4,15);
+    dl_assert(p5 == p4);
+    dl_free(p5);
+    p4 = dl_realloc(p5,40);
+    dl_free(p4);
     dl_printf("\ninspect all\n");
     dl_malloc_inspect_all(&inspector, 0);
     dl_printf("\n\n----------End of Tests-----------\n\n");

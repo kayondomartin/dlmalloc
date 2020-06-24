@@ -489,7 +489,12 @@ void *tmalloc_small(struct malloc_state *state, size_t nb) {
 
 /* Try to realloc; only in-place unless can_move true */
 void dl_free_impl2(struct malloc_state* state, struct malloc_chunk* p){
-    check_inuse_chunk(state, p);
+
+        check_inuse_chunk(state, p);
+        if(is_exhausted(p)){
+            blacklist_chunk(state, p);
+            return;
+        }
         /* tmte edit: tag ops */
         size_t new_tag = get_chunk_tag(p) + TAG_OFFSET;
         /* tmte edit ends */
@@ -673,7 +678,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
             size_t rsize = old_size - nb;
             if (rsize >= MIN_CHUNK_SIZE) {      /* split off remainder :debug review done*/
                 struct malloc_chunk *r = chunk_plus_offset(chunk, nb);
-                chunk->head = (chunk->head & INUSE_BITS)|tag|nb;
+                chunk->head = (chunk->head & PREV_INUSE_BIT)|tag|nb|CURR_INUSE_BIT;
                 r->head = tag|rsize|INUSE_BITS;
                 if(next == 0){
                     r->prev_foot = nb | NEXT_EXH_BIT;
@@ -697,7 +702,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                 struct malloc_chunk *new_top = chunk_plus_offset(chunk, nb);
                 set_inuse(state, chunk, nb);
                 set_chunk_tag(chunk, tag);
-                new_top->head = new_top_size | PREV_INUSE_BIT | tag;
+                new_top->head = new_top_size | PREV_INUSE_BIT | top_tag;
                 state->top = new_top;
                 state->top_size = new_top_size;
                 state->top->prev_foot = nb;
@@ -714,7 +719,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                 if (dsize >= MIN_CHUNK_SIZE) { //debug review done
                     struct malloc_chunk *r = chunk_plus_offset(chunk, nb);
                     struct malloc_chunk *n = is_next_exhausted(state->dv)? 0: chunk_plus_offset(r, dsize);
-                    chunk->head = tag | nb | (chunk->head & FLAG_BITS);
+                    chunk->head = tag | nb | (chunk->head & PREV_INUSE_BIT)|CURR_INUSE_BIT;
                     r->head = new_tag | dsize | PREV_INUSE_BIT;
                     //set_inuse(state, chunk, nb); : debugging
                     //set_chunk_tag(chunk, tag); : debugging
