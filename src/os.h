@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 #define __USE_GNU 1
-
+#define __GNU_SOURCE
 #include <sys/mman.h>
 
 #undef __USE_GNU
