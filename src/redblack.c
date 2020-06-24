@@ -44,15 +44,7 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
         continue;
       }
       struct node * node_t = tree_search(i);
-#if DBG
-      count++;
-      if(count>=18){
-      dl_printf("");
-      }
-#endif
       if(node_t==NILL){
-        
-        
         if((end-start)>=sizeof(struct node)){
           red_black_insert(i, (end-start)>>4, 0, (struct node*) start);
         }
