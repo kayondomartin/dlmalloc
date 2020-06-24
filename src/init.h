@@ -37,13 +37,13 @@ int change_param(int param_number, int value);
 static inline void ensure_initialization() {
     if (params.magic == 0) {
 #if DBG
-      watermark = 0;
       num_mmap = 0;
       brk_addr = 0;
 #endif
-        init_params();
-        mte_init();
-        init_redblack_tree();
+      watermark = 0;//iyb:
+      init_params();
+      mte_init();
+      init_redblack_tree();
     }
 }
 
