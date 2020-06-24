@@ -508,8 +508,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                 chunk->head |= tag;
                 r->prev_foot = nb | (chunk->prev_foot & NEXT_EXH_BIT);
                 chunk->prev_foot &= ~NEXT_EXH_BIT;
-                //dispose_chunk(state, r, rsize);
-                dl_free_impl(state, r); //debugging
+                dispose_chunk(state, r, rsize);
             }
             check_inuse_chunk(state, chunk);
             new_p = chunk;
