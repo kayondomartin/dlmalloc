@@ -36,7 +36,7 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
       size_t end = ((size_t)chunk + size > (i+1) * UNMAP_UNIT ? (i+1) * UNMAP_UNIT : (size_t)chunk + size);
       if((end-start) == (UNMAP_UNIT)){
 #if DBG
-        dl_printf("iyb: munmaped %d times.\n", ++num_mmap);
+        //dl_printf("iyb: munmaped %d times.\n", ++num_mmap);
 #endif
         if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT) < 0){
           ret= -1;
