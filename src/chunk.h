@@ -78,7 +78,7 @@ static inline size_t get_foot(void *chunk, size_t size) {
 static inline void set_foot(void *chunk, size_t size) {
     if((((struct any_chunk*)chunk)->prev_foot & NEXT_EXH_BIT) != NEXT_EXH_BIT){
         struct any_chunk* next = (struct any_chunk*)((char*)chunk + size);
-        next->prev_foot = next->prev_foot & EXHAUSTION_BITS | size;
+        next->prev_foot = (next->prev_foot & EXHAUSTION_BITS) | size;
     }
 }
 
@@ -370,7 +370,7 @@ static inline void set_inuse_and_prev_inuse(struct malloc_state *state, void *ch
 /* Set size, curr_inuse and prev_inuse bit of this chunk */
 static inline void set_size_and_prev_inuse_of_inuse_chunk(struct malloc_state *state, void *chunk, size_t size) {
     (void) state; // unused
-    ((struct any_chunk *) chunk)->head = (((struct any_chunk*)chunk)->head & TAG_BITS) | size | PREV_INUSE_BIT | CURR_INUSE_BIT;
+    ((struct any_chunk *) chunk)->head = (((struct any_chunk*)chunk)->head & TAG_BITS) | size | INUSE_BITS;
 }
 
 #else /* FOOTERS */

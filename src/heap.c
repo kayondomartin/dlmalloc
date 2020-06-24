@@ -38,9 +38,9 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
 
        The ugly goto's here ensure that postaction occurs along all paths.
     */
-  #if DBG
-  bytes+=32;//iyb: only when dbg
-  #endif
+  //  #if DBG
+  bytes+=16;//iyb: only when dbg
+  //#endif
     if (!PREACTION(state)) {
         void *mem;
         size_t nb;
@@ -118,7 +118,7 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
 
                 /* tmte edit: give r p's tag */
                 set_chunk_tag(r, get_chunk_tag(p));
-                r->prev_foot = nb|p->prev_foot & (NEXT_EXH_BIT);
+                r->prev_foot = nb|(p->prev_foot & (NEXT_EXH_BIT));
                 p->prev_foot &= ~NEXT_EXH_BIT;
                 /* tmte edit end */
                 set_size_and_prev_inuse_of_free_chunk(r, rsize);
@@ -255,6 +255,14 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                         set_chunk_tag(next_chunk(p), new_tag);
                     }
                     /* tmte edit ends */
+                    if(((next_chunk(next)->head & PREV_INUSE_BIT) == PREV_INUSE_BIT)){
+                        //
+                        //
+                        //
+                        int i=0;
+                        i++;
+                    }
+                    size_t nnhead1 = next_chunk(next)->head;
 
                     if (next == state->top) {
                         size_t tsize = state->top_size += psize;
@@ -281,6 +289,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                     }
                     else {
                         size_t nsize = chunk_size(next);
+                        size_t nnhead = next_chunk(next)->head; //debugging
                         psize += nsize;
                         unlink_chunk(state, next, nsize);
                         p->prev_foot |= (next->prev_foot & NEXT_EXH_BIT);
@@ -480,8 +489,10 @@ void *tmalloc_small(struct malloc_state *state, size_t nb) {
 
 /* Try to realloc; only in-place unless can_move true */
 struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size_t nb, int can_move) {
+    nb+=16;
     struct malloc_chunk *new_p = 0;
     size_t old_size = chunk_size(chunk);
+    size_t tag = get_chunk_tag(chunk);
     struct malloc_chunk *next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, old_size);
     if (likely(ok_address(state, chunk) && ok_inuse(chunk) && (next == 0 || (ok_next(chunk, next) && ok_prev_inuse(next))))) {
         if (is_mmapped(chunk)) {
@@ -489,24 +500,32 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
         }
         else if (old_size >= nb) {             /* already big enough */
             size_t rsize = old_size - nb;
-            if (rsize >= MIN_CHUNK_SIZE) {      /* split off remainder */
+            if (rsize >= MIN_CHUNK_SIZE) {      /* split off remainder :debug review done*/
                 struct malloc_chunk *r = chunk_plus_offset(chunk, nb);
-                set_chunk_tag(r, get_chunk_tag(chunk));
                 set_inuse(state, chunk, nb);
                 set_inuse(state, r, rsize);
+                r->head |= tag;
+                chunk->head |= tag;
+                r->prev_foot = nb | (chunk->prev_foot & NEXT_EXH_BIT);
+                chunk->prev_foot &= ~NEXT_EXH_BIT;
                 dispose_chunk(state, r, rsize);
             }
+            check_inuse_chunk(state, chunk);
             new_p = chunk;
         }
         else if (next == state->top) {  /* extend into top */
-            if (old_size + state->top_size > nb) {
+            if (old_size + state->top_size > nb) { //debug rview done
                 size_t new_size = old_size + state->top_size;
                 size_t new_top_size = new_size - nb;
+                size_t top_tag = get_chunk_tag(state->top);
+                tag = max(tag, top_tag);
                 struct malloc_chunk *new_top = chunk_plus_offset(chunk, nb);
                 set_inuse(state, chunk, nb);
-                new_top->head = new_top_size | PREV_INUSE_BIT;
+                set_chunk_tag(chunk, tag);
+                new_top->head = new_top_size | PREV_INUSE_BIT | tag;
                 state->top = new_top;
                 state->top_size = new_top_size;
+                state->top->prev_foot = nb;
                 new_p = chunk;
             }
         }
@@ -514,18 +533,27 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
             size_t dvs = state->dv_size;
             if (old_size + dvs >= nb) {
                 size_t dsize = old_size + dvs - nb;
-                if (dsize >= MIN_CHUNK_SIZE) {
+                size_t new_tag = get_chunk_tag(state->dv);
+                tag = max(tag, new_tag);
+
+                if (dsize >= MIN_CHUNK_SIZE) { //debug review done
                     struct malloc_chunk *r = chunk_plus_offset(chunk, nb);
                     struct malloc_chunk *n = chunk_plus_offset(r, dsize);
                     set_inuse(state, chunk, nb);
+                    set_chunk_tag(chunk, tag);
+                    set_chunk_tag(r, tag);
                     set_size_and_prev_inuse_of_free_chunk(r, dsize);
+                    r->prev_foot = nb;
                     clear_prev_inuse(n);
                     state->dv_size = dsize;
                     state->dv = r;
                 }
-                else { /* exhaust dv */
+                else { /* exhaust dv */ //debug review done
                     size_t new_size = old_size + dvs;
+                    chunk->prev_foot |= (state->dv->prev_foot & NEXT_EXH_BIT);
                     set_inuse(state, chunk, new_size);
+                    set_chunk_tag(chunk, tag);
+                    set_foot(chunk,new_size);
                     state->dv_size = 0;
                     state->dv = 0;
                 }
@@ -534,19 +562,40 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
         }
         else if (next != 0 && !curr_inuse(next)) { /* extend into next free chunk */
             size_t next_size = chunk_size(next);
+            size_t next_tag = get_chunk_tag(next);
+            tag = max(tag, next_tag);
+
             if (old_size + next_size >= nb) {
                 size_t rsize = old_size + next_size - nb;
                 unlink_chunk(state, next, next_size);
-                if (rsize < MIN_CHUNK_SIZE) {
+                if (rsize < MIN_CHUNK_SIZE) {//exhaust next chunk, debug review done
                     size_t new_size = old_size + next_size;
-                    set_inuse(state, chunk, new_size);
+                    if(is_next_exhausted(next)){
+                        chunk->head = (chunk->head & INUSE_BITS) | new_size;
+                        chunk->prev_foot |= NEXT_EXH_BIT;
+                    }else{
+                        set_inuse(state, chunk, new_size);
+                        set_foot(chunk, new_size);
+                    } 
                 }
-                else {
+                else {//chop next chunk
                     struct malloc_chunk *r = chunk_plus_offset(chunk, nb);
                     set_inuse(state, chunk, nb);
-                    set_inuse(state, r, rsize);
+                    if(is_next_exhausted(next)){
+                        r->prev_foot = nb|NEXT_EXH_BIT;
+                        r->head = tag | rsize | INUSE_BITS;
+                    }else{
+                        r->prev_foot = nb;
+                        set_inuse(state, r, rsize);
+                        next = chunk_plus_offset(r, rsize);
+                        next->prev_foot = (next->prev_foot & NEXT_EXH_BIT)|rsize;
+                    }
+
+                    set_chunk_tag(r, next_tag);
                     dispose_chunk(state, r, rsize);
                 }
+
+                set_chunk_tag(chunk, tag);
                 new_p = chunk;
             }
         }

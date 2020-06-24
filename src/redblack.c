@@ -8,7 +8,7 @@ struct node* GET_P(struct node* n){//need to add inline at final step
   if(GET_ENC(n)){//small_node
     struct node* p = parent_search((size_t)n >> UNMAP_UNIT_POWER);
 #if DBG
-    dl_assert(p!=NILL);
+    dl_assert(p==ROOT || p!=NILL);
 #endif
     return p;
   }
@@ -30,29 +30,42 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
   size_t size = chunk_size(chunk);
   for(size_t i = (size_t)chunk >> UNMAP_UNIT_POWER;
       i <= ((size_t)chunk_plus_offset(chunk,size) -1) >> UNMAP_UNIT_POWER;
-      i+=1){
-    size_t start = (i>((size_t)chunk>>UNMAP_UNIT_POWER) ? i*UNMAP_UNIT : (size_t)chunk);
-    size_t end = ((size_t)chunk + size > (i+1) * UNMAP_UNIT ? (i+1) * UNMAP_UNIT : (size_t)chunk + size);
-    struct node * node_t = tree_search(i);
+      i+=1)
+    {
+      size_t start = (i>((size_t)chunk>>UNMAP_UNIT_POWER) ? i*UNMAP_UNIT : (size_t)chunk);
+      size_t end = ((size_t)chunk + size > (i+1) * UNMAP_UNIT ? (i+1) * UNMAP_UNIT : (size_t)chunk + size);
+      if((end-start) == (UNMAP_UNIT)){
 #if DBG
-    count++;
-    if(count>=18){
-      dl_printf("");
-    }
+        //dl_printf("iyb: munmaped %d times.\n", ++num_mmap);
 #endif
-    if(node_t==NILL){
-      if((end-start)>=sizeof(struct node))
-        red_black_insert(i, (end-start)>>4, 0, (struct node*) start);
-      else{
+        if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT) < 0){
+          ret= -1;
+        }
+        continue;
+      }
+      struct node * node_t = tree_search(i);
+#if DBG
+      count++;
+      if(count>=18){
+      dl_printf("");
+      }
+#endif
+      if(node_t==NILL){
+        
+        
+        if((end-start)>=sizeof(struct node)){
+          red_black_insert(i, (end-start)>>4, 0, (struct node*) start);
+        }
+        else{
 #if DBG
         //        tree_print(ROOT, 0);
 #endif
-        red_black_insert(i, (end-start)>>4, 1, (struct small_node*) start);
-      }
-    }else{
-      size_t size_h = GET_EXH(node_t);
-      size_t size_n = (((end-start) >> 4) + size_h);
-      if(GET_ENC(node_t) && (end-start)>=sizeof(struct node)){//need and can migrate small node
+          red_black_insert(i, (end-start)>>4, 1, (struct small_node*) start);
+        }
+      }else{
+        size_t size_h = GET_EXH(node_t);
+        size_t size_n = (((end-start) >> 4) + size_h);
+        if(GET_ENC(node_t) && (end-start)>=sizeof(struct node)){//need and can migrate small node
           SET_ENC(start, 0);
           SET_COLOR(start, GET_COLOR(node_t));
           struct node* left = GET_L(node_t);
@@ -63,22 +76,22 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
           SET_P(right, start);
           parent_search_and_migrate(i, start);
           node_t = start;//SET_EXH is done later
-      }
-
-      if(size_n >= (UNMAP_UNIT>>4)){
-        red_black_delete(node_t);
-#if DBG
-        dl_printf("iyb: munmaped %d times.\n", ++num_mmap);
-#endif
-        if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT) < 0){
-          return -1;
         }
-      }else{
-
-        SET_EXH(node_t, size_n);
-      }
+        
+        if(size_n >= (UNMAP_UNIT>>4)){
+          red_black_delete(node_t);
+#if DBG
+          //dl_printf("iyb: munmaped %d times.\n", ++num_mmap);
+#endif
+          if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT) < 0){
+            ret= -1;
+          }
+        }else{
+          
+          SET_EXH(node_t, size_n);
+        }
     }
-  }
+    }
   //TOP_FOOT_SIZE;
   return ret;
 }
@@ -138,8 +151,9 @@ struct node *parent_search(size_t key){//assume that key is alreaedy inserted
       x = GET_R(x);
     }
   }
+#if DBG
   dl_assert(GET_KEY(x) == key);
-
+#endif
   return p;
 }
 
@@ -165,10 +179,10 @@ void parent_search_and_migrate(size_t key, struct node *new_node){//assume that 
   }
   //migrate
   new_node->parent = p;
-  if(isLeft){
+  if(p!= NILL && isLeft){
     SET_L(p, new_node);
   }
-  else
+  else if(p!= NILL && !isLeft)
     SET_R(p, new_node);
 
   return;
@@ -177,10 +191,26 @@ void parent_search_and_migrate(size_t key, struct node *new_node){//assume that 
 
 
 struct node *tree_minimum(struct node *x){
+  /* if(GET_R(x) != NILL){ */
+  /*   x = GET_R(x); */
+  /*   while(GET_L(x) != NILL){ */
+  /*       //SET_L(x, x); */
+  /*       x = GET_L(x); */
+  /*   } */
+  /* } */
+  /* else{ */
+  /*   x = GET_L(x); */
+  /*   while(GET_R(x) != NILL){ */
+  /*       //SET_L(x, x); */
+  /*       x = GET_R(x); */
+  /*   } */
+  /* } */
   while(GET_L(x) != NILL){
     //SET_L(x, x);
     x = GET_L(x);
   }
+
+
   return x;
 }
 
@@ -212,7 +242,9 @@ void red_black_insert(size_t key, size_t exh, size_t enc, struct node*z){
   while(x != NILL){
     y = x;
     if(GET_KEY(z) < GET_KEY(x)){//<= -> <
+#if DBG
       dl_assert(GET_KEY(z)!=GET_KEY(x));
+#endif
       x = GET_L(x);
     }
     else{
@@ -277,13 +309,10 @@ void red_black_insert_fixup(struct node *z){
 
       /* z's grand parent's right child is not RED */
       else{
-
-        /* z is z's parent's right child */
-        if(z == GET_R(GET_P(z))){
+        if(z == GET_R(GET_P(z))){        /* z is z's parent's right child */
           z = GET_P(z);
           left_rotate(z);
         }
-
         SET_COLOR(GET_P(z), BLACK);
         SET_COLOR(GET_P(GET_P(z)), RED);
         right_rotate(GET_P(GET_P(z)));
@@ -303,12 +332,10 @@ void red_black_insert_fixup(struct node *z){
 
       /* z's left uncle is not RED */
       else{
-        /* z is z's parents left child */
-        if(z == GET_L(GET_P(z))){
+        if(z == GET_L(GET_P(z))){        /* z is z's parents left child */
           z = GET_P(z);
           right_rotate(z);
         }
-
         SET_COLOR(GET_P(z), BLACK);
         SET_COLOR(GET_P(GET_P(z)), RED);
         left_rotate(GET_P(GET_P(z)));
@@ -333,6 +360,18 @@ void red_black_insert_fixup(struct node *z){
 void left_rotate(struct node *x){
   struct node *y;
 
+  /* y = GET_R(x); */
+  /* SET_R(x, GET_L(y)); */
+  /* SET_P(y, GET_P(x)); */
+  /* if(GET_P(x) ==NILL){ */
+  /*   ROOT = y; */
+  /* } */
+  /* else{ */
+  /*   if(x == GET_L(GET_P(x))) */
+  /*     SET_L(GET_P(x), y); */
+  /*   else */
+  /*     SET_R(GET_P(x), y); */
+  /* } */
   /* Make y's left child x's right child */
   y = GET_R(x);
   SET_R(x, GET_L(y));
@@ -374,6 +413,17 @@ void left_rotate(struct node *x){
 void right_rotate(struct node *x){
   struct node *y;
 
+  /* y = GET_L(x); */
+  /* SET_L(x, GET_R(y)); */
+  /* SET_P(GET_R(y), x); */
+  /* SET_P(y, GET_P(x)); */
+  /* if(GET_P(x) == NILL){ */
+  /*   ROOT = y; */
+  /*   if(x == GET_R(GET_P(x))) */
+  /*     SET_R(GET_P(x), y); */
+  /*   else */
+  /*     SET_L(GET_P(x), y); */
+  /* } */
   /* Make y's right child x's left child */
   y = GET_L(x);
   SET_L(x, GET_R(y));
@@ -394,7 +444,7 @@ void right_rotate(struct node *x){
   else{
     SET_L(GET_P(x), y);
   }
-  
+
   /* Make y, x's parent and x, y's child */
   SET_R(y, x);
   SET_P(x, y);
@@ -421,6 +471,32 @@ void red_black_delete(struct node *z){
   struct node *y, *x;
   int yOriginalColor;
 
+
+  /* if(GET_L(z)==NILL || GET_R(z)==NILL) */
+  /*   y = z; */
+  /* else */
+  /*   y = tree_minimum(z); */
+
+  /* if(GET_L(y)!=NILL) */
+  /*   x = GET_L(y); */
+  /* else */
+  /*   x = GET_R(y); */
+
+  /* SET_P(x, GET_P(y)); */
+
+  /* if(GET_P(y) == NILL) */
+  /*   ROOT = x; */
+  /* else if( y = GET_L(GET_P(y))) */
+  /*   SET_L(GET_P(y), x); */
+  /* else */
+  /*   SET_R(GET_P(y), x); */
+
+  /* if( y!=z) */
+  /*   ;//copy data */
+
+  /* if(GET_COLOR(y) == BLACK) */
+  /*   red_black_delete_fixup(x); */
+
   y = z;
   yOriginalColor = GET_COLOR(y);
 
@@ -434,6 +510,7 @@ void red_black_delete(struct node *z){
   }
   else{
     y = tree_minimum(GET_R(z));
+    /* y = tree_minimum(z); */
     yOriginalColor = GET_COLOR(y);
 
     x = GET_R(y);
@@ -508,23 +585,20 @@ void red_black_delete_fixup(struct node *x){
         x = GET_P(x);
       }
       else{
-
         if(GET_COLOR(GET_R(w)) == BLACK){
           SET_COLOR(w, RED);
           SET_COLOR(GET_L(w), BLACK);
           right_rotate(w);
           w = GET_R(GET_P(x));
         }
-
         SET_COLOR(w, GET_COLOR(GET_P(x)));
         SET_COLOR(GET_P(x), BLACK);
         SET_COLOR(GET_R(w), BLACK);//bug : x -> w
         left_rotate(GET_P(x));
         x = ROOT;
-
       }
-
     }
+
     else{
       w = GET_L(GET_P(x));
 
@@ -541,20 +615,17 @@ void red_black_delete_fixup(struct node *x){
         x = GET_P(x);
       }
       else{
-
         if(GET_COLOR(GET_L(w)) == BLACK){
           SET_COLOR(w, RED);
           SET_COLOR(GET_R(w), BLACK);
           left_rotate(w);
           w = GET_L(GET_P(x));
-        }
-
+          }
         SET_COLOR(w, GET_COLOR(GET_P(x)));
         SET_COLOR(GET_P(x), BLACK);
         SET_COLOR(GET_L(w), BLACK);//bug : x -> w
         right_rotate(GET_P(x));
         x = ROOT;
-
       }
     }
 
@@ -565,15 +636,28 @@ void red_black_delete_fixup(struct node *x){
 
 /* replace node u with node v */
 void red_black_transplant(struct node *u, struct node *v){
-  if(GET_P(u) == NILL){
+  /* if(GET_P(u) == NILL){ */
+  /*   ROOT = v; */
+  /* } */
+  /* else if(u == GET_L(GET_P(u))){ */
+  /*   SET_L(GET_P(u), v); */
+  /* } */
+  /* else{ */
+  /*   SET_R(GET_P(u), v); */
+  /* } */
+
+  /* SET_P(v, GET_P(u)); */
+
+  struct node * temp = GET_P(u);
+  if(temp == NILL){
     ROOT = v;
   }
-  else if(u == GET_L(GET_P(u))){
-    SET_L(GET_P(u), v);
+  else if(u == GET_L(temp)){
+    SET_L(temp, v);
   }
   else{
-    SET_R(GET_P(u), v);
+    SET_R(temp, v);
   }
 
-  SET_P(v, GET_P(u));
+  SET_P(v, temp);
 }

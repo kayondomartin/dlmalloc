@@ -35,7 +35,7 @@ static inline void mte_init(void){
 
 static inline u_int8_t mte_color_tag(char *base, long size, u_int8_t tag_num) {
   long length  = (long)size / 2;//unit of size : byte, 4bit tag per 16 bit
-#ifdef RISCV
+#if defined( RISCV)
   char *cur = (unsigned)base & 0xFFFFFFF0;
   if((int)base & 0x0F)
     length += 1;
