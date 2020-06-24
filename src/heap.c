@@ -511,8 +511,8 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                     r->prev_foot = nb;
                     next->prev_foot = (next->prev_foot & NEXT_EXH_BIT) | rsize;
                 }
-                //dispose_chunk(state, r, rsize);: debugging
-                dl_free_impl(state, r);
+                dispose_chunk(state, r, rsize);
+                //dl_free_impl(state, r);
             }
             check_inuse_chunk(state, chunk);
             new_p = chunk;
@@ -605,8 +605,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                         n->head |= PREV_INUSE_BIT;
                         n->prev_foot = (n->prev_foot & NEXT_EXH_BIT)|rsize;
                     }
-                    dl_free_impl(state, r);
-                    //dispose_chunk(state, r, rsize);: debugging
+                    dispose_chunk(state, r, rsize);
                 }
                 new_p = chunk;
             }
