@@ -597,8 +597,8 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                         r->head = next_tag | rsize | INUSE_BITS;
                     }else{
                         r->prev_foot = nb;
-                        set_inuse(state, r, rsize);
-                        set_chunk_tag(r, next_tag);
+                        r->head = next_tag | rsize | INUSE_BITS;
+                        n->head |= PREV_INUSE_BIT;
                         n->prev_foot = (n->prev_foot & NEXT_EXH_BIT)|rsize;
                     }
                     dispose_chunk(state, r, rsize);
