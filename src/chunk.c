@@ -309,13 +309,12 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
             size_t next_tag = get_chunk_tag(next);
             if(next_tag > new_tag){
                 new_tag = next_tag;
-                if(!curr_inuse(chunk)){
-                    set_chunk_tag(next_chunk(chunk), new_tag);
-                }else{
-                    set_chunk_tag(chunk, new_tag);
-                }
             }else if(new_tag != next_tag){
                 set_chunk_tag(next, new_tag);
+            }
+            
+            if(!curr_inuse(chunk)){
+                set_chunk_tag(next_chunk(chunk), new_tag);
             }
 
             if (next == state->top) {
