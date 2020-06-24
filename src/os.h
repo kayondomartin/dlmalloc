@@ -44,12 +44,7 @@ static inline void *call_sbrk(intptr_t increment) {
 #if DBG
   if(brk_addr == 0 )
     brk_addr = addr;
-<<<<<<< HEAD
-  dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
-#endif//DBG
-=======
   //dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
->>>>>>> 41b4bca564cce5a9a8b8da4e9d5859292dd90bca
   return addr;
   //return emulate_sbrk(increment);
 #elif !defined(__APPLE__)//iyb: used
