@@ -488,6 +488,182 @@ void *tmalloc_small(struct malloc_state *state, size_t nb) {
 }
 
 /* Try to realloc; only in-place unless can_move true */
+void dl_free_impl2(struct malloc_state* state, struct malloc_chunk* p){
+
+        check_inuse_chunk(state, p);
+        if(is_exhausted(p)){
+            blacklist_chunk(state, p);
+            return;
+        }
+        /* tmte edit: tag ops */
+        size_t new_tag = get_chunk_tag(p) + TAG_OFFSET;
+        /* tmte edit ends */
+
+        if (likely(ok_address(state, p) && ok_inuse(p))) {
+            size_t psize = chunk_size(p);
+            struct malloc_chunk *next = is_next_exhausted(p)? 0: chunk_plus_offset(p, psize);
+            if (!is_prev_exhausted(p) && !prev_inuse(p)) {
+                size_t prev_size = get_prev_size(p);
+                if (is_mmapped(p)) {
+                    psize += prev_size + MMAP_FOOT_PAD;
+                    if (call_munmap((char *) p - prev_size, psize) == 0) {
+                        state->footprint -= psize;
+                    }
+                    goto postaction;
+                }
+                else {
+                    struct malloc_chunk *prev = chunk_minus_offset(p, prev_size);
+                    new_tag = max(new_tag,get_chunk_tag(prev)); //tmte edit: get prev tag
+                    psize += prev_size;
+                    p = prev;
+                    if (likely(ok_address(state, prev))) { /* consolidate backward */
+                        if (p != state->dv) {
+                            unlink_chunk(state, p, prev_size);
+                        }
+                        else if (next == 0 || (next->head & INUSE_BITS) == INUSE_BITS) {
+                            state->dv_size = psize;
+                            if(next == 0){
+                                p->head = psize|(p->head & PREV_INUSE_BIT)|new_tag;
+                                p->prev_foot |= NEXT_EXH_BIT;
+                            }else{
+                                set_free_with_prev_inuse(p, psize, next);
+                                set_chunk_tag(p, new_tag);
+                            }
+                            if(!is_next_exhausted(p) && ((next_chunk(p)->head & PREV_INUSE_BIT) == PREV_INUSE_BIT)){
+                                //
+                                //
+                                //
+                                int i=0;
+                                i++;
+                            }
+                            mte_color_tag((char*)p, psize, tag_to_int(new_tag)); //tmte edit: color chunks p and prev with tag
+                            goto postaction;
+                        }
+                    }
+                    else {
+                        goto erroraction;
+                    }
+                }
+            }
+
+            if (next == 0 || (likely(ok_next(p, next) && ok_prev_inuse(next)))) {
+                if ( next !=0 && !curr_inuse(next)) {  /* consolidate forward */
+
+                    /* tmte edit: tag computation 2*/
+                    size_t next_tag = get_chunk_tag((struct any_chunk*)next);  
+                    if(next_tag > new_tag){
+                        new_tag = next_tag;
+                    }else if(next_tag != 0){
+                        set_chunk_tag(next, new_tag);
+                    }
+                    if(!curr_inuse(p)){
+                        set_chunk_tag(next_chunk(p), new_tag);
+                    }
+                    /* tmte edit ends */
+                    if(((next_chunk(next)->head & PREV_INUSE_BIT) == PREV_INUSE_BIT)){
+                        //
+                        //
+                        //
+                        int i=0;
+                        i++;
+                    }
+                    size_t nnhead1 = next_chunk(next)->head;
+
+                    if (next == state->top) {
+                        size_t tsize = state->top_size += psize;
+                        state->top = p;
+                        p->head = tsize | PREV_INUSE_BIT | new_tag; //tmte edit: include new tag
+                        mte_color_tag((char*)p, tsize, tag_to_int(new_tag)); //tmte edit: color whole block from p to next with new tag
+                        if (p == state->dv) {
+                            state->dv = 0;
+                            state->dv_size = 0;
+                        }
+                        if (should_trim(state, tsize)) {
+                            sys_trim(state, 0);
+                        }
+                        goto postaction;
+                    }
+                    else if (next == state->dv) {
+                        size_t dsize = state->dv_size += psize;
+                        p->prev_foot |= (next->prev_foot & NEXT_EXH_BIT);
+                        state->dv = p;
+                        set_size_and_prev_inuse_of_free_chunk(p, dsize);
+                        set_chunk_tag(p, new_tag); //tmte edit: set new chunk_tag
+                        mte_color_tag((char*)p, dsize, tag_to_int(new_tag)); //tmte edit: color whole block from p to next with new tag
+                        goto postaction;
+                    }
+                    else {
+                        size_t nsize = chunk_size(next);
+                        size_t nnhead = next_chunk(next)->head; //debugging
+                        psize += nsize;
+                        unlink_chunk(state, next, nsize);
+                        p->prev_foot |= (next->prev_foot & NEXT_EXH_BIT);
+                        set_size_and_prev_inuse_of_free_chunk(p, psize);
+                        set_chunk_tag((struct any_chunk*)p, new_tag);
+                        mte_color_tag(p, psize, tag_to_int(new_tag));
+                        if (p == state->dv) {
+                            state->dv_size = psize;
+                            goto postaction;
+                        }
+                        if(!is_next_exhausted(p) && ((next_chunk(p)->head & PREV_INUSE_BIT) == PREV_INUSE_BIT)){
+                            //
+                            //
+                            //
+                            int i=0;
+                            i++;
+                        }
+                    }
+                }
+                else {
+                    if(!curr_inuse(p)){
+                        set_chunk_tag(next_chunk(p), new_tag);
+                        if(next == 0){
+                            p->prev_foot |= NEXT_EXH_BIT;
+                        }
+                    }
+                    if(next ==0){
+                        p->head = psize | PREV_INUSE_BIT;
+                    }else{
+                        set_free_with_prev_inuse(p, psize, next);
+                    }
+                    if(!is_next_exhausted(p) && ((next_chunk(p)->head & PREV_INUSE_BIT) == PREV_INUSE_BIT)){
+                    //
+                    //
+                    //
+                    int i=0;
+                    i++;
+                }
+                    set_chunk_tag(p, new_tag);//tmte edit: set chunk_tag
+                    mte_color_tag(p, psize, tag_to_int(new_tag));
+                }
+
+                if(!is_next_exhausted(p) && ((next_chunk(p)->head & PREV_INUSE_BIT) == PREV_INUSE_BIT)){
+                    //
+                    //
+                    //
+                    int i=0;
+                    i++;
+                }
+                if (is_small(psize)) {
+                    insert_small_chunk(state, p, psize);
+                    check_free_chunk(state, p);
+                }
+                else {
+                    struct malloc_tree_chunk *tp = (struct malloc_tree_chunk *) p;
+                    insert_large_chunk(state, tp, psize);
+                    check_free_chunk(state, p);
+                    if (--state->release_checks == 0) {
+                        release_unused_segments(state);
+                    }
+                }
+                goto postaction;
+            }
+        }
+        erroraction:
+        usage_error(state, p);
+        postaction:
+        POSTACTION(state)
+}
 struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size_t nb, int can_move) {
     nb+=16;
     struct malloc_chunk *new_p = 0;
@@ -502,13 +678,17 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
             size_t rsize = old_size - nb;
             if (rsize >= MIN_CHUNK_SIZE) {      /* split off remainder :debug review done*/
                 struct malloc_chunk *r = chunk_plus_offset(chunk, nb);
-                set_inuse(state, chunk, nb);
-                set_inuse(state, r, rsize);
-                r->head |= tag;
-                chunk->head |= tag;
-                r->prev_foot = nb | (chunk->prev_foot & NEXT_EXH_BIT);
-                chunk->prev_foot &= ~NEXT_EXH_BIT;
-                dispose_chunk(state, r, rsize);
+                chunk->head = (chunk->head & PREV_INUSE_BIT)|tag|nb|CURR_INUSE_BIT;
+                r->head = tag|rsize|INUSE_BITS;
+                if(next == 0){
+                    r->prev_foot = nb | NEXT_EXH_BIT;
+                    chunk->prev_foot &= ~NEXT_EXH_BIT;
+                }else{
+                    r->prev_foot = nb;
+                    next->prev_foot = (next->prev_foot & NEXT_EXH_BIT) | rsize;
+                }
+                //dispose_chunk(state, r, rsize);
+                dl_free_impl2(state, r);
             }
             check_inuse_chunk(state, chunk);
             new_p = chunk;
@@ -522,7 +702,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                 struct malloc_chunk *new_top = chunk_plus_offset(chunk, nb);
                 set_inuse(state, chunk, nb);
                 set_chunk_tag(chunk, tag);
-                new_top->head = new_top_size | PREV_INUSE_BIT | tag;
+                new_top->head = new_top_size | PREV_INUSE_BIT | top_tag;
                 state->top = new_top;
                 state->top_size = new_top_size;
                 state->top->prev_foot = nb;
@@ -539,7 +719,7 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                 if (dsize >= MIN_CHUNK_SIZE) { //debug review done
                     struct malloc_chunk *r = chunk_plus_offset(chunk, nb);
                     struct malloc_chunk *n = is_next_exhausted(state->dv)? 0: chunk_plus_offset(r, dsize);
-                    chunk->head = tag | nb | (chunk->head & FLAG_BITS);
+                    chunk->head = tag | nb | (chunk->head & PREV_INUSE_BIT)|CURR_INUSE_BIT;
                     r->head = new_tag | dsize | PREV_INUSE_BIT;
                     //set_inuse(state, chunk, nb); : debugging
                     //set_chunk_tag(chunk, tag); : debugging
@@ -601,7 +781,8 @@ struct malloc_chunk *try_realloc_chunk(struct malloc_state *state, struct malloc
                         n->head |= PREV_INUSE_BIT;
                         n->prev_foot = (n->prev_foot & NEXT_EXH_BIT)|rsize;
                     }
-                    dispose_chunk(state, r, rsize);
+                    //dispose_chunk(state, r, rsize);
+                    dl_free_impl2(state, r);
                 }
                 new_p = chunk;
             }
