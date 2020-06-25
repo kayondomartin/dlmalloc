@@ -5,15 +5,16 @@ set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
-set(CMAKE_BUILD_TYPE "Release")
-#set(CMAKE_BUILD_TYPE "Debug")
+#set(CMAKE_BUILD_TYPE "Release")
+set(CMAKE_BUILD_TYPE "Debug")
 
 option(LOCKS "LOCKS" OFF)
 option(FOOTERS "FOOTERS" OFF)
 
 option(DEFINE_MACRO "Option description" ON)
-IF(EMULATE_SBRK) #cmake -DEMULATE_SBRK=1 ..
-  ADD_DEFINITIONS(-DEMULATE_SBRK=1)
+
+IF(EMULATE_SBRK)
+  ADD_DEFINITIONS(-DEMULATE_SBRK=1) #cmake -DEMULATE_SBRK=1 ..
 ELSE()
   ADD_DEFINITIONS(-DEMULATE_SBRK=0)
 ENDIF(EMULATE_SBRK)
@@ -37,7 +38,7 @@ endif ()
 
 if (CMAKE_BUILD_TYPE MATCHES "(D|d)ebug")
   list(APPEND dlalloc_defines DEBUG)
-  list(APPEND dlalloc_flags -Wall -Wextra -D DBG)
+  list(APPEND dlalloc_flags -Wall -Wextra -DDBG2)
 else()
   #list(APPEND dlalloc_flags -D INTEL)
 endif ()

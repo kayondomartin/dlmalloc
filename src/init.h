@@ -28,6 +28,7 @@ int num_mmap;
 size_t brk_addr;
 #endif
 extern size_t watermark;
+extern size_t mmap_watermark;
 
 int init_params(void);
 
@@ -41,6 +42,7 @@ static inline void ensure_initialization() {
       brk_addr = 0;
 #endif
       watermark = 0;//iyb:
+      mmap_watermark = 0;
       init_params();
       mte_init();
       init_redblack_tree();

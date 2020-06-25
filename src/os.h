@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 #define __USE_GNU 1
-
+#define __GNU_SOURCE
 #include <sys/mman.h>
 
 #undef __USE_GNU
@@ -22,6 +22,7 @@
 extern size_t brk_addr;
 #endif
 size_t watermark;
+size_t mmap_watermark;
 
 static inline void *call_sbrk(intptr_t increment) {
 #if defined(DISABLE_SBRK)
@@ -44,7 +45,8 @@ static inline void *call_sbrk(intptr_t increment) {
 #if DBG
   if(brk_addr == 0 )
     brk_addr = addr;
-  //dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
+  dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
+#endif //DBG
   return addr;
   //return emulate_sbrk(increment);
 #elif !defined(__APPLE__)//iyb: used
@@ -52,7 +54,7 @@ static inline void *call_sbrk(intptr_t increment) {
   size_t addr = sbrk(increment);
   if(brk_addr == 0 )
     brk_addr = addr;
-  //dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
+  dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
   return addr;
 #else
   return sbrk(increment);
@@ -65,8 +67,23 @@ static inline void *call_sbrk(intptr_t increment) {
 }
 
 static inline void *call_mmap(size_t size) {
-    return mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-}
+#if WATERMARK
+  size_t res;
+  if(mmap_watermark){
+    res = mmap(mmap_watermark, increment, PROT_READ | PROT_WRITE | MAP_FIXED, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    mmap_watermark += size;
+  }else{
+    res = mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    mmap_watermark = res + size;
+  }
+#if DBG2
+    dl_printf("iyb: big chunk mmaped 0x%012llx - 0x%012llx.\n", res, res+size);
+#endif
+    return res;
+#else
+      return mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+#endif
+  }
 
 static inline int call_munmap(void *p, size_t size) {
     return munmap(p, size);
