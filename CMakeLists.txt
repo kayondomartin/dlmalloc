@@ -13,7 +13,7 @@ option(FOOTERS "FOOTERS" OFF)
 
 option(DEFINE_MACRO "Option description" ON)
 IF(EMULATE_SBRK)
-  ADD_DEFINITIONS(-DEMULATE_SBRK=1)
+  ADD_DEFINITIONS(-DEMULATE_SBRK=1)#cmake -DEMULATE_SBRK=1 ..
 ELSE()
   ADD_DEFINITIONS(-DEMULATE_SBRK=0)
 ENDIF(EMULATE_SBRK)
@@ -37,7 +37,7 @@ endif ()
 
 if (CMAKE_BUILD_TYPE MATCHES "(D|d)ebug")
   list(APPEND dlalloc_defines DEBUG)
-  list(APPEND dlalloc_flags -Wall -Wextra -D DBG)
+  list(APPEND dlalloc_flags -Wall -Wextra -DDBG2)
 else()
   #list(APPEND dlalloc_flags -D INTEL)
 endif ()
