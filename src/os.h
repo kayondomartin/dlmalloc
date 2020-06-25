@@ -3,10 +3,11 @@
 
 #include <sys/types.h>
 #include <fcntl.h>
+#include <stdio.h>
+#define __GNU_SOURCE
 #include <unistd.h>
 
 #define __USE_GNU 1
-#define __GNU_SOURCE
 #include <sys/mman.h>
 
 #undef __USE_GNU
@@ -91,7 +92,10 @@ static inline int call_munmap(void *p, size_t size) {
 
 static inline void *call_mremap(void *old_address, size_t old_size, size_t new_size, int flags) {
 #if !defined(__APPLE__)
-    return mremap(old_address, old_size, new_size, flags);
+    char* new_map = call_mmap(new_size);
+    memcpy(new_map,old_address,old_size);
+    call_munmap(old_address, old_size);
+    return new_map;    
 #else
     (void) old_address; // unused
     (void) old_size; // unused

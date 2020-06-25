@@ -269,7 +269,7 @@ typedef unsigned int flag_t;           /* The type of various bit flag sets */
 #if FOOTERS
 #define CHUNK_OVERHEAD      (sizeof(size_t) * 2)
 #else /* FOOTERS */
-#define CHUNK_OVERHEAD      (sizeof(size_t))
+#define CHUNK_OVERHEAD      (sizeof(size_t) * 2)
 #endif /* FOOTERS */
 
 /* MMapped chunks need a second word of overhead ... */
