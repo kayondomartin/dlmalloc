@@ -3,7 +3,10 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#define __USE_GNU
 #include <sys/mman.h>
+#undef __USE_GNU
+
 #define SOFTBOUNDCETS_MMAP_FLAGS (MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE)
 #ifndef RISCV
 extern char* __mte_tag_mem;

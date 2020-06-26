@@ -33,11 +33,11 @@ else ()
 endif ()
 
 if (CMAKE_C_COMPILER_ID MATCHES "AppleClang|Clang|GNU")
-    list(APPEND dlalloc_flags -Wall -Wextra)
+  list(APPEND dlalloc_flags -Wall -Wextra)
 endif ()
 
 if (CMAKE_BUILD_TYPE MATCHES "(D|d)ebug")
-  list(APPEND dlalloc_defines DEBUG)
+  list(APPEND dlalloc_defines DEBUG=1)
   list(APPEND dlalloc_flags -Wall -Wextra -DDBG2)
 else()
   #list(APPEND dlalloc_flags -D INTEL)

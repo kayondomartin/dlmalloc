@@ -93,6 +93,7 @@ void add_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t m
 
     /* reset top to new space */
     init_top(state, (struct malloc_chunk *) tbase, tsize - TOP_FOOT_SIZE);
+    ((struct malloc_chunk*)tbase)->prev_foot = 0;//iyb: need check
 
     /* Set up segment record */
     dl_assert(is_aligned(ss));

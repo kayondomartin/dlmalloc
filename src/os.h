@@ -4,10 +4,10 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <stdio.h>
-#define __GNU_SOURCE
+//#define __GNU_SOURCE
 #include <unistd.h>
 
-#define __USE_GNU 1
+#define __USE_GNU
 #include <sys/mman.h>
 
 #undef __USE_GNU
@@ -40,7 +40,7 @@ static inline void *call_sbrk(intptr_t increment) {
   }
   else{
     addr = watermark;
-    int res = mmap(watermark, increment, PROT_READ | PROT_WRITE | MAP_FIXED, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    size_t res = mmap(watermark, increment, PROT_READ | PROT_WRITE | MAP_FIXED, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     watermark += increment;
   }
 #if DBG
@@ -92,10 +92,7 @@ static inline int call_munmap(void *p, size_t size) {
 
 static inline void *call_mremap(void *old_address, size_t old_size, size_t new_size, int flags) {
 #if !defined(__APPLE__)
-    char* new_map = call_mmap(new_size);
-    memcpy(new_map,old_address,old_size);
-    call_munmap(old_address, old_size);
-    return new_map;    
+  return mremap(old_address, old_size, new_size, flags);
 #else
     (void) old_address; // unused
     (void) old_size; // unused
