@@ -2,6 +2,7 @@
 #define MALLOC_STATE_H
 
 #include "config.h"
+#include "check.h"
 #include "chunk.h"
 #include "segment.h"
 #include "lock.h"
@@ -245,7 +246,8 @@ void add_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t m
 
 /* tmte edit operations */
 int blacklist_chunk(struct malloc_state *state, struct malloc_chunk* chunk);
-
+int blacklist_chunk2(struct malloc_state* state, struct malloc_chunk* chunk);
+int try_chunk_unmap(struct malloc_state* state, struct malloc_segment* sh, struct malloc_chunk* chunk, size_t size);
 /* tmte edit end */
 
 #endif //MALLOC_STATE_H

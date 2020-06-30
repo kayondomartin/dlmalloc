@@ -86,6 +86,6 @@ struct malloc_segment *prev_segment(struct malloc_state *state, struct malloc_se
 
 int has_segment_link(struct malloc_state *state, struct malloc_segment *segment);
 
-void unlink_segment(struct malloc_state* state, struct malloc_segment* segment_holding);
+void unlink_segment(struct malloc_state* state, struct malloc_segment* sh);
 
 #endif //MALLOC_SEGMENT_H
