@@ -149,6 +149,35 @@ int blacklist_chunk(struct malloc_state* state, struct malloc_chunk* chunk){
     return invalidate_chunk(state, chunk);
 }
 
+int exhaust_segment(struct malloc_state* state, struct malloc_segment* sh){
+    if(segment_holds(sh, state->dv)){
+        state->dv = 0;
+        state->dv_size = 0;
+    }
+
+    if(segment_holds(sh, state->top)){
+        struct malloc_chunk* nc = mem_to_chunk(sys_alloc(state, 0));
+        if(segment_holds(sh, nc)){
+            size_t page_size = params.page_size, page_offest = page_size-1;
+            char* unmap_begin = sh->base;
+            char* unmap_end = sh->base + (sh->size - page_size);
+            size_t unmap_size = (size_t)(unmap_end - unmap_size);
+            sh->base = unmap_end;
+            sh->size = page_size;
+            sh->blacklisted_size = 0;
+            if(state->least_addr == sh->base){
+                state->least_addr = unmap_end;
+            }
+            init_top(state,(struct malloc_chunk*)unmap_end, page_size-TOP_FOOT_SIZE);
+            return call_munmap(unmap_begin,unmap_size);
+        }else{
+            init_top(state, nc, nc->head);
+        }
+    }
+    unlink_segment(state, sh);
+    return call_munmap(sh->base, sh->size);
+}
+
 int blacklist_chunk2(struct malloc_state* state, struct malloc_chunk* chunk){
     dl_assert(is_exhausted(chunk));
     size_t size = chunk_size(chunk);
@@ -178,33 +207,7 @@ int blacklist_chunk2(struct malloc_state* state, struct malloc_chunk* chunk){
             chunk->head = size|TAG_BITS|chunk->head & FLAG_BITS;
 
             if((sh->size - sh->blacklisted_size - TOP_FOOT_SIZE) <= MIN_CHUNK_SIZE){//edited for debugging
-                if(segment_holds(sh, state->dv)){
-                    state->dv = 0;
-                    state->dv_size = 0;
-                }
-
-                if(segment_holds(sh, state->top)){
-                    struct malloc_chunk* nc = mem_to_chunk(sys_alloc(state, 0));
-                    if(segment_holds(sh, nc)){
-                        size_t page_size = params.page_size, page_offest = page_size-1;
-                        char* unmap_begin = sh->base;
-                        char* unmap_end = sh->base + (sh->size - page_size);
-                        size_t unmap_size = (size_t)(unmap_end - unmap_size);
-                        sh->base = unmap_end;
-                        sh->size = page_size;
-                        sh->blacklisted_size = 0;
-                        if(state->least_addr == sh->base){
-                            state->least_addr = unmap_end;
-                        }
-                        init_top(state, unmap_end, page_size-TOP_FOOT_SIZE);
-                        return call_munmap(unmap_begin,unmap_size);
-                    }else{
-                        init_top(state, nc, nc->head);
-                    }
-                }
-                unlink_segment(state, sh);
-                return call_munmap(sh->base, sh->size);
-                
+                return exhaust_segment(state, sh);
             }
 
             if(size >= params.page_size){
@@ -232,6 +235,14 @@ int try_chunk_unmap(struct malloc_state* state, struct malloc_segment* sh, struc
 
         char* unmap_end = (char*)(((size_t)chunk+size) & ~page_offset);
         size_t unmap_size = unmap_end-unmap_base;
+
+        if(unmap_end >= (sh->base+(sh->size-TOP_FOOT_SIZE))){
+            if(sh->size-sh->blacklisted_size > page_size){
+                return 0;
+            }else{
+                return exhaust_segment(state, sh);
+            }
+        }
        
         if(unmap_size >= page_size){
             size_t prev_size = get_prev_size(chunk);
@@ -314,7 +325,6 @@ int try_chunk_unmap(struct malloc_state* state, struct malloc_segment* sh, struc
                         state->least_addr = unmap_end;
                     }
                 }
-                sh->blacklisted_size -= unmap_size;
                 return call_munmap(unmap_base, unmap_size);
             }
         }

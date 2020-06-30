@@ -248,6 +248,7 @@ void add_segment(struct malloc_state *state, char *tbase, size_t tsize, flag_t m
 int blacklist_chunk(struct malloc_state *state, struct malloc_chunk* chunk);
 int blacklist_chunk2(struct malloc_state* state, struct malloc_chunk* chunk);
 int try_chunk_unmap(struct malloc_state* state, struct malloc_segment* sh, struct malloc_chunk* chunk, size_t size);
+int exhaust_segment(struct malloc_state* state, struct malloc_segment* sh);
 /* tmte edit end */
 
 #endif //MALLOC_STATE_H
