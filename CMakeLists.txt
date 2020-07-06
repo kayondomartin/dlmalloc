@@ -5,8 +5,8 @@ set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
-#set(CMAKE_BUILD_TYPE "Release")
-set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE "Release")
+#set(CMAKE_BUILD_TYPE "Debug")
 
 option(LOCKS "LOCKS" OFF)
 option(FOOTERS "FOOTERS" OFF)
@@ -53,6 +53,7 @@ endif ()
 
 set(dlalloc_sources
         src/redblack.c
+        src/avl_tree.c
         src/chunk.c
         src/debug.c
         src/error.c
