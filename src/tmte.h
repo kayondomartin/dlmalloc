@@ -34,7 +34,7 @@ static inline void store_tag(void *addr, int tag) {
 
 static inline void mte_init(void){
   __mte_tag_mem = (char*) mmap(0, 0x0000100000000000 /* 8TB */, PROT_READ | PROT_WRITE, SOFTBOUNDCETS_MMAP_FLAGS, -1, 0);
-  init_avl_tree();
+  //init_avl_tree();
 }
 
 static inline u_int8_t mte_color_tag(char *base, long size, u_int8_t tag_num) {
@@ -47,14 +47,14 @@ static inline u_int8_t mte_color_tag(char *base, long size, u_int8_t tag_num) {
   //tag_memset(cur,0,size);
   
 #else
-  if(size > 0x1000){
-    tag_num = avl_tree_insert(base, size, tag_num);
-  }else{
+ // if(size > 0x1000){
+   // tag_num = avl_tree_insert(base, size, tag_num);
+ // }else{
     char *tag_start = __mte_tag_mem + ((long)base >> 4);
     char *tag_end = __mte_tag_mem + ((long)(base + size - 1) >> 4);
     for (char *cur = tag_start; cur <= tag_end; cur++)
       *cur = tag_num;
-  }
+  //}
 #endif
 
   return tag_num;
