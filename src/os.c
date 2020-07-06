@@ -290,11 +290,19 @@ void *sys_alloc(struct malloc_state *state, size_t size) {
 
         if (size < state->top_size) { /* Allocate from new or extended top space */
             size_t rsize = state->top_size -= size;
+            size_t tc_size = state->top_colored_size;
+            state->top_colored_size = 0;
             struct malloc_chunk *p = state->top;
             struct malloc_chunk *r = state->top = chunk_plus_offset(p, size);
             r->head = rsize | PREV_INUSE_BIT;
             r->prev_foot = size;
             set_size_and_prev_inuse_of_inuse_chunk(state, p, size);
+            if(tc_size > size){
+                state->top_colored_size = tc_size-size;
+                set_chunk_tag(r, get_chunk_tag(p));
+            }else if(tc_size != 0){
+                mte_color_tag(p, size, tag_to_int(get_chunk_tag(p)));
+            }
             check_top_chunk(state, state->top);
             check_malloced_chunk(state, chunk_to_mem(p), size);
             return chunk_to_mem(p);

@@ -137,6 +137,8 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
         else if (nb < state->top_size) { /* Split top */
             size_t rsize = state->top_size -= nb;
             size_t top_foot = state->top->prev_foot;
+            size_t tc_size = state->top_colored_size;
+            state->top_colored_size = 0;
             struct malloc_chunk *p = state->top;
             struct malloc_chunk *r = state->top = chunk_plus_offset(p, nb);
             size_t tag = get_chunk_tag(p);
@@ -144,17 +146,16 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
             r->prev_foot = nb;//iyb: unset footsize debugged
             set_size_and_prev_inuse_of_inuse_chunk(state, p, nb);
 
-            set_chunk_tag(r,tag);
-            mte_color_tag(p,nb, tag_to_int(tag));
+            //set_chunk_tag(r,tag);
+            //mte_color_tag(p,nb, tag_to_int(tag));
             /* tmte edit: tag ops */
             
-            // if(tcsize > 0 && nb > tcsize){
-            //     //color the whole chunk before release
-            //     mte_color_tag((p+tcsize), (nb-tcsize), tag_to_int(tag));
-            // }else if(nb < tcsize){
-            //     set_chunk_tag(r, tag);
-            //     state->top_colored_size = tcsize-nb;
-            // }
+             if(tc_size > nb ){
+                state->top_colored_size = tc_size-nb;
+                set_chunk_tag(r, tag);
+             }else if(tc_size != 0){
+                mte_color_tag(p,nb, tag);
+             }
             p->prev_foot = top_foot;
             /* tmte edit ends */
             mem = chunk_to_mem(p);
@@ -247,8 +248,10 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                     /* tmte edit ends */
                     if (next == state->top) {
                         size_t tsize = state->top_size += psize;
+                        state->top_colored_size += psize;
                         state->top = p;
                         p->head = tsize | PREV_INUSE_BIT | new_tag; //tmte edit: include new tag
+                        mte_color_tag(p, state->top_colored_size, tag_to_int(new_tag));
                         mte_color_tag((char*)p, tsize, tag_to_int(new_tag)); //tmte edit: color whole block from p to next with new tag
                         if (p == state->dv) {
                             state->dv = 0;
