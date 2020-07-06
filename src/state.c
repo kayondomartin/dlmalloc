@@ -18,7 +18,7 @@ void init_top(struct malloc_state *state, struct malloc_chunk *chunk, size_t siz
 
     state->top = chunk;
     state->top_size = size;
-    chunk->head = size | PREV_INUSE_BIT;
+    chunk->head = (chunk->head & TAG_BITS) | size | PREV_INUSE_BIT;
     /* set size of fake trailing chunk holding overhead space only once */
     chunk_plus_offset(chunk, size)->head = TOP_FOOT_SIZE;
     state->trim_check = params.trim_threshold; /* reset on each update */
