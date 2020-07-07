@@ -5,11 +5,11 @@
 #include <stddef.h>
 #define __USE_GNU
 #include <sys/mman.h>
+#define SOFTBOUNDCETS_MMAP_FLAGS (MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE)
 #undef __USE_GNU
 
 
 #ifndef RISCV
-#include "avl_tree.h"
 extern char* __mte_tag_mem;
 #endif
 
@@ -60,12 +60,7 @@ static inline u_int8_t mte_load_tag(char* base, long size){
 #ifdef RISCV
   int base_tag = load_tag(base);
 #else
-  size_t base_tag;
-  if(size > 0x1000){
-    base_tag = avl_tree_search(base);
-  }else {
-    base_tag = *(__mte_tag_mem + ((long)base >> 4));
-  }
+  int base_tag = *(__mte_tag_mem + ((long)base >> 4));
 #endif
   if (base_tag)
     return base_tag;

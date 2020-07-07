@@ -53,7 +53,6 @@ endif ()
 
 set(dlalloc_sources
         src/redblack.c
-        src/avl_tree.c
         src/chunk.c
         src/debug.c
         src/error.c
