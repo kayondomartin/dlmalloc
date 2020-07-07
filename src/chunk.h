@@ -52,7 +52,7 @@ struct any_chunk {
 #define TAG_OFFSET              (TAG_MASK + 1U)
 #define FLAG_BITS               (PREV_INUSE_BIT | CURR_INUSE_BIT)
 #define SIZE_BITS               (TAG_MASK & ~FLAG_BITS)
-#define TAG_SHIFT               ((sizeof(size_t)-1) << 3)
+#define TAG_SHIFT               (((sizeof(size_t))-1) << 3)
 #define PREV_EXH_BIT            ((size_t)1)
 #define NEXT_EXH_BIT            ((size_t)2)
 #define NEXT_PEN_BIT            ((size_t)4)
@@ -522,7 +522,7 @@ static inline struct malloc_tree_chunk *leftmost_child(struct malloc_tree_chunk 
 
 /* tmte edit: ops and functions */
 
-static inline size_t max(size_t x, size_t y){
+static inline size_t tag_max(size_t x, size_t y){
     return x > y? x: y;
 }
 
