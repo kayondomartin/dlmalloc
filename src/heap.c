@@ -353,7 +353,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
             set_free_with_prev_inuse(p, psize, next);
           }
           set_chunk_tag(p, new_tag);//tmte edit: set chunk_tag
-          mte_color_tag(p, psize, tag_to_int(new_tag));
+          //mte_color_tag(p, psize, tag_to_int(new_tag));
         }
 
         if (is_small(psize)) {
