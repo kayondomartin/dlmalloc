@@ -318,7 +318,7 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
                 struct malloc_chunk* vnext = next_chunk(chunk);
                 size_t vn_size = chunk_size(vnext);
                 size_t prev_tag = get_chunk_tag(chunk);
-                if(prev_tag >= new_tag){//color next and p
+                if(prev_tag == new_tag){//color next and p
                     if(next == state->top){
                         mte_color_tag(vnext, vn_size+state->top_colored_size, tag_to_int(new_tag));
                     }else{
@@ -414,7 +414,7 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
                 set_free_with_prev_inuse(chunk, size, next);
             }
             set_chunk_tag(chunk, new_tag);//tmte edit: set chunk_tag
-            mte_color_tag(chunk, size, tag_to_int(new_tag));
+            //mte_color_tag(chunk, size, tag_to_int(new_tag));
         }
         insert_chunk(state, chunk, size);
     }
