@@ -341,14 +341,12 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
               mte_color_tag(p, psize, tag_to_int(new_tag));
             }
             set_chunk_tag(next_chunk(p), new_tag);
-            if(next == 0){
-              p->prev_foot |= NEXT_EXH_BIT;
-            }
           }else{
             mte_color_tag(p, psize, tag_to_int(new_tag));
           }
           if(next ==0){
             p->head = psize | PREV_INUSE_BIT;
+            p->prev_foot |= NEXT_EXH_BIT;
           }else{
             set_free_with_prev_inuse(p, psize, next);
           }
