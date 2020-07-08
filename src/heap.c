@@ -203,6 +203,8 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
       /* tmte edit ends */
 
       size_t psize = chunk_size(p);
+      size_t csize = psize;
+      struct malloc_chunk* base = p;
       struct malloc_chunk *next = is_next_exhausted(p)? 0: chunk_plus_offset(p, psize);
       if (!is_prev_exhausted(p) && !prev_inuse(p)) {
         size_t prev_size = get_prev_size(p);
@@ -225,11 +227,11 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
             }
             else if (next == 0 || (next->head & INUSE_BITS) == INUSE_BITS) {
               if(prev_tag >= new_tag){
-                mte_color_tag(next_chunk(p), psize-prev_size, tag_to_int(new_tag));
+                mte_color_tag(base, csize, tag_to_int(new_tag));
               }else{
                 mte_color_tag(p, psize, tag_to_int(new_tag));
               }
-              set_chunk_tag(next_chunk(p), new_tag);
+              set_chunk_tag(base, new_tag);
               state->dv_size = psize;
               if(next == 0){
                 p->head = psize|(p->head & PREV_INUSE_BIT)|new_tag;
