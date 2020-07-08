@@ -279,23 +279,32 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
             new_tag = tag_max(new_tag, get_chunk_tag(prev));
             if (chunk != state->dv) {
                 unlink_chunk(state, prev, prev_size);
-                prev->prev_foot |= (chunk->prev_foot & NEXT_EXH_BIT);
                 size += prev_size;
                 chunk = prev;
             }
-            else if (next && ((next->head & INUSE_BITS) == INUSE_BITS)) {
-                if(new_tag == prev_tag){//need only color chunk to dispose
+            else if (next == 0 || ((next->head & INUSE_BITS) == INUSE_BITS)) {
+                set_chunk_tag(chunk, new_tag);
+                if(prev_tag == new_tag){
                     mte_color_tag(chunk, size, tag_to_int(new_tag));
                 }else{
-                    mte_color_tag(prev, size+prev_size, tag_to_int(new_tag));
-                    set_chunk_tag(prev,new_tag);
+                    size+= prev_size;
+                    mte_color_tag(prev, size, tag_to_int(new_tag));
+                    chunk = prev;
+                    goto coalesce_done;
                 }
-                set_chunk_tag(chunk, new_tag);
-                size += prev_size;
+
+                size+= prev_size;
                 chunk = prev;
+                
+                coalesce_done:
                 state->dv_size = size;
-                set_free_with_prev_inuse(chunk, size, next);
-                return;
+                if(next == 0){
+                    chunk->head = size|(chunk->head & PREV_INUSE_BIT)|new_tag;
+                    chunk->prev_foot |= NEXT_EXH_BIT;
+                }else{
+                    set_free_with_prev_inuse(chunk, size, next);
+                    set_chunk_tag(chunk, new_tag);
+                }
             }
         }
         else {
