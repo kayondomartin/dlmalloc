@@ -50,7 +50,7 @@ static long total2 = 0;
 static long total3 = 0;
 static long hundred_mega = 1000000000;
 static inline u_int8_t mte_color_tag(char *base, long size, u_int8_t tag_num) {
-  total2 += size;
+/*  total2 += size;
   if(total2/hundred_mega != total3/hundred_mega){
     total3 = total2;
     dl_printf("iyb: total %lu\n", total2);
@@ -60,7 +60,7 @@ static inline u_int8_t mte_color_tag(char *base, long size, u_int8_t tag_num) {
       dl_printf("");
     }
 
-  return tag_num;
+  return tag_num;*/
 #if defined( RISCV)
   long length  = (long)size / 2;//unit of size : byte, 4bit tag per 16 byte
   char *cur = (unsigned)base & 0xFFFFFFF0;
