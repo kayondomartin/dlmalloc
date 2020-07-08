@@ -217,26 +217,19 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
           struct malloc_chunk *prev = chunk_minus_offset(p, prev_size);
           size_t prev_tag = get_chunk_tag(prev);
           new_tag = tag_max(new_tag, prev_tag); //tmte edit: get prev tag
-          //psize += prev_size;
-          //p = prev;
+          psize += prev_size;
+          p = prev;
           if (likely(ok_address(state, prev))) { /* consolidate backward */
-            if (prev != state->dv) {
-              unlink_chunk(state, prev, prev_size);
-              p = prev;
-              psize += prev_size;
+            if (p != state->dv) {
+              unlink_chunk(state, p, prev_size);
             }
             else if (next == 0 || (next->head & INUSE_BITS) == INUSE_BITS) {
-                set_chunk_tag(p, new_tag);
               if(prev_tag >= new_tag){
-                mte_color_tag(p, psize, tag_to_int(new_tag));
-                p = prev;
-                psize += prev_size;
+                mte_color_tag(next_chunk(p), psize-prev_size, tag_to_int(new_tag));
               }else{
-                  psize += prev_size;
-                  p = prev;
                 mte_color_tag(p, psize, tag_to_int(new_tag));
               }
-
+              set_chunk_tag(next_chunk(p), new_tag);
               state->dv_size = psize;
               if(next == 0){
                 p->head = psize|(p->head & PREV_INUSE_BIT)|new_tag;
