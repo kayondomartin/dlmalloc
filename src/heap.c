@@ -262,15 +262,13 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
             set_chunk_tag(next, new_tag);
           }
           if(!curr_inuse(p)){
-            set_chunk_tag(next_chunk(p), new_tag);
-            struct malloc_chunk* vnext = next_chunk(p);
-            size_t vn_size = chunk_size(vnext);
+            set_chunk_tag(base, new_tag);
             size_t prev_tag = get_chunk_tag(p);
-            if(prev_tag >= new_tag){//color next and p
+            if(prev_tag == new_tag){//color next and p
               if(next == state->top){
-                mte_color_tag(vnext, vn_size+state->top_colored_size, tag_to_int(new_tag));
+                mte_color_tag(base, csize+state->top_colored_size, tag_to_int(new_tag));
               }else{
-                mte_color_tag(vnext, vn_size+nsize, tag_to_int(new_tag));
+                mte_color_tag(base, csize+nsize, tag_to_int(new_tag));
               }
             }else if(new_tag == next_tag){//color prev and p
 
@@ -283,7 +281,6 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
                 mte_color_tag(p, psize+nsize, tag_to_int(new_tag));
               }
             }
-            set_chunk_tag(vnext, new_tag);
           }else{
             if(new_tag == next_tag){
               mte_color_tag(p, psize, tag_to_int(new_tag));
@@ -336,14 +333,12 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
         else {
           if(!curr_inuse(p)){
             size_t prev_tag = get_chunk_tag(p);
-            struct malloc_chunk* vnext = next_chunk(p);
-            size_t vn_size = chunk_size(vnext);
             if(new_tag == prev_tag){
-              mte_color_tag(vnext, vn_size, tag_to_int(new_tag));
+              mte_color_tag(base, csize, tag_to_int(new_tag));
             }else{
               mte_color_tag(p, psize, tag_to_int(new_tag));
             }
-            set_chunk_tag(vnext, new_tag);
+            set_chunk_tag(base, new_tag);
           }else{
             mte_color_tag(p, psize, tag_to_int(new_tag));
           }
