@@ -277,7 +277,7 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
         if ( prev != 0 && likely(ok_address(state, prev))) { /* consolidate backward */
             size_t prev_tag = get_chunk_tag(prev);
             new_tag = tag_max(new_tag, get_chunk_tag(prev));
-            if (chunk != state->dv) {
+            if (prev != state->dv) {
                 unlink_chunk(state, prev, prev_size);
                 size += prev_size;
                 chunk = prev;
@@ -295,7 +295,7 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
 
                 size+= prev_size;
                 chunk = prev;
-                
+
                 coalesce_done:
                 state->dv_size = size;
                 if(next == 0){
