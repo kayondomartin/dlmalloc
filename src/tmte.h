@@ -33,7 +33,7 @@ static inline void store_tag(void *addr, int tag) {
 #endif
 
 static inline void mte_init(void){
-  __mte_tag_mem = (char*) mmap(0, 0x0000100000000000 /* 8TB */, PROT_READ | PROT_WRITE, SOFTBOUNDCETS_MMAP_FLAGS, -1, 0);
+  __mte_tag_mem = (char*) mmap(0, 0x0000100000000000 /* 8TB */, PROT_READ | PROT_WRITE , SOFTBOUNDCETS_MMAP_FLAGS, -1, 0);
   //init_avl_tree();
 }
 

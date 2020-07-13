@@ -226,7 +226,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
               unlink_chunk(state, p, prev_size);
             }
             else if (next == 0 || (next->head & INUSE_BITS) == INUSE_BITS) {
-              if(prev_tag >= new_tag){
+              if(prev_tag == new_tag){
                 mte_color_tag(base, csize, tag_to_int(new_tag));
               }else{
                 mte_color_tag(p, psize, tag_to_int(new_tag));
@@ -264,7 +264,10 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
           if(!curr_inuse(p)){
             set_chunk_tag(base, new_tag);
             size_t prev_tag = get_chunk_tag(p);
-            if(prev_tag == new_tag){//color next and p
+            if(prev_tag == new_tag && prev_tag == next_tag){//color only chunk
+                mte_color_tag(base, csize, tag_to_int(new_tag));
+
+            }else if(prev_tag == new_tag){//color next and p
               if(next == state->top){
                 mte_color_tag(base, csize+state->top_colored_size, tag_to_int(new_tag));
               }else{
@@ -274,7 +277,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
 
               mte_color_tag(p, psize, tag_to_int(new_tag));
 
-            }else if(new_tag > prev_tag && new_tag > next_tag){//color prev, curr, next
+            }else {//color prev, curr, next
               if(next == state->top){
                 mte_color_tag(p, psize+state->top_colored_size, tag_to_int(new_tag));
               }else{
@@ -317,7 +320,6 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
             goto postaction;
           }
           else {
-            size_t nsize = chunk_size(next);
             psize += nsize;
             unlink_chunk(state, next, nsize);
             p->prev_foot |= (next->prev_foot & NEXT_EXH_BIT);
