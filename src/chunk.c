@@ -286,17 +286,14 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
                 set_chunk_tag(chunk, new_tag);
                 if(prev_tag == new_tag){
                     mte_color_tag(chunk, size, tag_to_int(new_tag));
+                    size+= prev_size;
+                    chunk = prev;
                 }else{
                     size+= prev_size;
-                    mte_color_tag(prev, size, tag_to_int(new_tag));
                     chunk = prev;
-                    goto coalesce_done;
+                    mte_color_tag(chunk, size, tag_to_int(new_tag));
                 }
 
-                size+= prev_size;
-                chunk = prev;
-
-                coalesce_done:
                 state->dv_size = size;
                 if(next == 0){
                     chunk->head = size|(chunk->head & PREV_INUSE_BIT)|new_tag;

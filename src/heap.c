@@ -224,7 +224,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
               unlink_chunk(state, p, prev_size);
             }
             else if (next == 0 || (next->head & INUSE_BITS) == INUSE_BITS) {
-              if(prev_tag >= new_tag){
+              if(prev_tag == new_tag){
                 mte_color_tag(next_chunk(p), psize-prev_size, tag_to_int(new_tag));
               }else{
                 mte_color_tag(p, psize, tag_to_int(new_tag));
