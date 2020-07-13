@@ -260,7 +260,8 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
         blacklist_chunk(state, chunk);
         return;
     }
-    
+    struct malloc_chunk* base = chunk;
+    size_t csize = size;
     struct malloc_chunk *next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, size);
     size_t new_tag = get_chunk_tag(chunk) + TAG_OFFSET; //tmte edit
     if (!prev_inuse(chunk)) {
@@ -313,6 +314,7 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
         if (next !=0 && !curr_inuse(next)) {  /* consolidate forward */
 
             size_t next_tag = get_chunk_tag(next);
+            size_t nsize = chunk_size(next);
             if(next_tag > new_tag){
                 new_tag = next_tag;
             }else if(new_tag != next_tag){
@@ -321,14 +323,12 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
             
             if(!curr_inuse(chunk)){
                 set_chunk_tag(next_chunk(chunk), new_tag);
-                struct malloc_chunk* vnext = next_chunk(chunk);
-                size_t vn_size = chunk_size(vnext);
                 size_t prev_tag = get_chunk_tag(chunk);
                 if(prev_tag == new_tag){//color next and p
                     if(next == state->top){
-                        mte_color_tag(vnext, vn_size+state->top_colored_size, tag_to_int(new_tag));
+                        mte_color_tag(base, csize+state->top_colored_size, tag_to_int(new_tag));
                     }else{
-                        mte_color_tag(vnext, vn_size+chunk_size(next), tag_to_int(new_tag));
+                        mte_color_tag(base, csize+nsize, tag_to_int(new_tag));
                     }
                 }else if(new_tag == next_tag){//color prev and p
 
@@ -338,17 +338,17 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
                     if(next == state->top){
                         mte_color_tag(chunk, size+state->top_colored_size, tag_to_int(new_tag));
                     }else{
-                        mte_color_tag(chunk, size+chunk_size(next), tag_to_int(new_tag));
+                        mte_color_tag(chunk, size+nsize, tag_to_int(new_tag));
                     }
                 }
-                set_chunk_tag(vnext, new_tag);
+                set_chunk_tag(base, new_tag);
             }else{
                 if(new_tag == next_tag){
                     mte_color_tag(chunk, size, tag_to_int(new_tag));
                 }else if(next == state->top){
                     mte_color_tag(chunk, size+state->top_colored_size, tag_to_int(new_tag));
                 }else{
-                    mte_color_tag(chunk, size+chunk_size(next), tag_to_int(new_tag));
+                    mte_color_tag(chunk, size+nsize, tag_to_int(new_tag));
                 }
             }
 
@@ -374,7 +374,6 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
                 return;
             }
             else {
-                size_t nsize = chunk_size(next);
                 size += nsize;
                 chunk->prev_foot |= (next->prev_foot & NEXT_EXH_BIT);
                 unlink_chunk(state, next, nsize);
@@ -400,14 +399,12 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
             // mte_color_tag(chunk, size, tag_to_int(new_tag));// tmte edit
             if(!curr_inuse(chunk)){
                 size_t prev_tag = get_chunk_tag(chunk);
-                struct malloc_chunk* vnext = next_chunk(chunk);
-                size_t vn_size = chunk_size(vnext);
                 if(new_tag == prev_tag){
-                    mte_color_tag(vnext, vn_size, tag_to_int(new_tag));
+                    mte_color_tag(base, csize, tag_to_int(new_tag));
                 }else{
                     mte_color_tag(chunk, size, tag_to_int(new_tag));
                 }
-                set_chunk_tag(next_chunk(chunk), new_tag);
+                set_chunk_tag(base, new_tag);
                 if(next == 0){
                     chunk->prev_foot |= NEXT_EXH_BIT;
                 }
