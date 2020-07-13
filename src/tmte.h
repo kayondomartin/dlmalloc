@@ -13,6 +13,11 @@
 extern char* __mte_tag_mem;
 #endif
 
+typedef struct free_state {
+  int state;
+  size_t tag;
+} fs_t;
+
 #ifdef RISCV
 static inline int load_tag(void *addr) {
   int rv = 32;

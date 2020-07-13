@@ -565,6 +565,8 @@ static inline int is_next_pending_deletion(struct malloc_chunk* p){
 
 /* tmte edit end */
 
+fs_t get_free_state(struct malloc_chunk* chunk, struct malloc_chunk* prev, struct malloc_chunk* next);
+
 void insert_chunk(struct malloc_state *, struct malloc_chunk *, size_t);
 
 void unlink_chunk(struct malloc_state *, struct malloc_chunk *, size_t);

@@ -254,11 +254,57 @@ void unlink_large_chunk(struct malloc_state *state, struct malloc_tree_chunk *ch
 /* Consolidate and bin a chunk. Differs from exported versions
    of free mainly in that the chunk need not be marked as inuse.
 */
+fs_t get_free_state(struct malloc_chunk* chunk, struct malloc_chunk* prev, struct malloc_chunk* next){
+    fs_t fs;
+    fs.state = 0;
+    size_t new_tag = fs.tag = get_chunk_tag(chunk)+TAG_OFFSET;
+    size_t prev_tag = 0, next_tag = 0;
+    if(prev && !curr_inuse(prev)){
+        new_tag = tag_max(new_tag, prev_tag);
+        fs.state = new_tag == prev_tag ? 1: 2;
+    }
+
+    if(next && !curr_inuse(next)){
+        new_tag = tag_max(new_tag, next_tag);
+        fs.state = new_tag == prev_tag? (new_tag == next_tag ? 3: 4) : (new_tag == next_tag ? 5: 6);
+    }
+
+    return fs;
+}
 void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size_t size) {
 
     if(is_exhausted(chunk)){
         blacklist_chunk(state, chunk);
         return;
+    }
+
+    size_t prev_size = get_prev_size(chunk);
+
+    if (is_mmapped(chunk)) {
+        size += prev_size + MMAP_FOOT_PAD;
+        if (call_munmap((char *) chunk - prev_size, size) == 0) {
+            state->footprint -= size;
+        }
+        return;
+    }
+
+    struct malloc_chunk *next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, size);
+    struct malloc_chunk *prev = is_prev_exhausted(chunk)? 0: chunk_minus_offset(chunk, prev_size);
+    if ((prev == 0 || likely(ok_address(state, prev))) && (next == 0 || likely(ok_address(state, next)))){
+        fs_t fs = get_free_state(chunk, prev, next);
+        size_t new_tag = fs.tag;
+
+        switch(fs.state){
+            case 0: {/* only chunk free */
+                chunk->head = new_tag | size | PREV_INUSE_BIT;
+                if(next){
+                    next->head &= ~PREV_INUSE_BIT;
+                    next->prev_foot = (next->prev_foot & NEXT_EXH_BIT) | size;
+                }
+                return;
+            }
+
+        }
     }
     struct malloc_chunk* base = chunk;
     size_t csize = size;
