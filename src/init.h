@@ -27,8 +27,9 @@ extern struct malloc_params params;
 int num_mmap;
 size_t brk_addr;
 #endif
-extern size_t watermark;
-extern size_t mmap_watermark;
+
+static size_t watermark;
+static size_t mmap_watermark;
 
 int init_params(void);
 

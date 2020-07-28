@@ -43,6 +43,11 @@ else()
   #list(APPEND dlalloc_flags -D INTEL)
 endif ()
 
+if (ARM64)
+  list(APPEND dlalloc_flags -march=armv8.5-a+memtag)
+  ADD_DEFINITIONS(-DAARCH64)
+endif ()
+
 if (LOCKS MATCHES "ON")
     list(APPEND dlalloc_defines USE_LOCKS=1)
 endif ()

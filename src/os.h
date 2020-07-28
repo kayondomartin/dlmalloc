@@ -22,8 +22,9 @@
 #if DBG
 extern size_t brk_addr;
 #endif
-size_t watermark;
-size_t mmap_watermark;
+
+extern size_t watermark;
+extern size_t mmap_watermark;
 
 static inline void *call_sbrk(intptr_t increment) {
 #if defined(DISABLE_SBRK)
@@ -40,7 +41,7 @@ static inline void *call_sbrk(intptr_t increment) {
   }
   else{
     addr = watermark;
-    size_t res = mmap(watermark, increment, PROT_READ | PROT_WRITE | MAP_FIXED, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    size_t res = mmap(watermark, increment, PROT_READ | PROT_WRITE | PROT_MTE, MAP_FIXED| MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     watermark += increment;
   }
 #if DBG

@@ -3,20 +3,39 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#ifdef AARCH64
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/auxv.h>
+#endif
 #define __USE_GNU
 #include <sys/mman.h>
+#ifdef AARCH64
+#include <sys/prctl.h>
+#endif
 #define SOFTBOUNDCETS_MMAP_FLAGS (MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE)
 #undef __USE_GNU
 
 
 #ifndef RISCV
 extern char* __mte_tag_mem;
+#ifdef AARCH64
+#define HWCAP2_MTE              (1 << 18)
+#define PROT_MTE                (0x20)
+#define PR_SET_TAGGED_ADDR_CTRL 55
+#define PR_GET_TAGGED_ADDR_CTRL 56
+#define PR_TAGGED_ADDR_ENABLE   (1UL << 0)
+#define PR_MTE_TCF_SHIFT        1
+#define PR_MTE_TCF_NONE         (0UL << PR_MTE_TCF_SHIFT)
+#define PR_MTE_TCF_SYNC         (1UL << PR_MTE_TCF_SHIFT)
+#define PR_MTE_TCF_ASYNC        (2UL << PR_MTE_TCF_SHIFT)
+#define PR_MTE_TCF_MASK         (3UL << PR_MTE_TCF_SHIFT)
+#define PR_MTE_TAG_SHIFT        3
+#define PR_MTE_TAG_MASK         (0xffffUL << PR_MTE_TAG_SHIFT)
 #endif
-
-typedef struct free_state {
-  int state;
-  size_t tag;
-} fs_t;
+#endif
 
 #ifdef RISCV
 static inline int load_tag(void *addr) {
@@ -37,9 +56,53 @@ static inline void store_tag(void *addr, int tag) {
 }
 #endif
 
+#ifdef AARCH64
+/*
+* Insert a random logical tag into the given pointer.
+*/
+#define insert_random_tag(ptr) ({                       \
+       uint64_t __val;                                 \
+       asm("irg %0, %1" : "=r" (__val) : "r" (ptr));   \
+        __val;                                          \
+})
+
+/*
+* Set the allocation tag on the destination address.
+*/
+#define set_tag(tagged_addr) do {                                      \
+       asm volatile("stg %0, [%0]" : : "r" (tagged_addr) : "memory"); \
+} while (0)
+#endif
+
 static inline void mte_init(void){
-  __mte_tag_mem = (char*) mmap(0, 0x0000100000000000 /* 8TB */, PROT_READ | PROT_WRITE |PROT_MTE, SOFTBOUNDCETS_MMAP_FLAGS, -1, 0);
-  //init_avl_tree();
+  #ifdef AARCH64
+    unsigned long hwcap2 = getauxval(AT_HWCAP2);
+
+    /* check for availability of MTE */
+    if(!(hwcap2 & HWCAP2_MTE)){
+      abort();
+    }
+
+    /* Enable the tagged address ABI, synchronous MTE tag check faults and
+     * allow all non-zero tags in the randomly generated set.
+     */
+    if (prctl(PR_SET_TAGGED_ADDR_CTRL,
+          PR_TAGGED_ADDR_ENABLE | PR_MTE_TCF_SYNC | (0xfffe << PR_MTE_TAG_SHIFT),
+             0, 0, 0)) {
+            perror("prctl() failed");
+            abort();
+    }
+
+    /* init tag mem */
+    __mte_tag_mem = (char*) mmap(0, 0x0000100000000000, PROT_MTE| PROT_READ|PROT_WRITE, SOFTBOUNDCETS_MMAP_FLAGS, -1, 0);
+    
+    if(__mte_tag_mem == MAP_FAILED){
+      abort();
+    }
+
+  #else
+    __mte_tag_mem = (char*) mmap(0, 0x0000100000000000 /* 8TB */, PROT_READ | PROT_WRITE , SOFTBOUNDCETS_MMAP_FLAGS, -1, 0);
+  #endif
 }
 
 static inline u_int8_t mte_color_tag2(char *base, long size, u_int8_t tag_num) {
