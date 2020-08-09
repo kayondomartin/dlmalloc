@@ -217,6 +217,8 @@ void red_black_insert(size_t key, size_t exh, size_t enc, struct node*z){
   struct node *x, *y;
   //  z = malloc(sizeof(struct node));
 
+//tmte: acquire lock
+  ACQUIRE_TREE_GLOBAL_LOCK();
   SET_EXH(z, exh);
   //  SET_KEY(z, key);
   SET_COLOR(z, RED);
@@ -257,6 +259,8 @@ void red_black_insert(size_t key, size_t exh, size_t enc, struct node*z){
   SET_P(z, y);
 
   red_black_insert_fixup(z);
+  //tmte: release lock
+  RELEASE_TREE_GLOBAL_LOCK();
 }
 
 /*
@@ -491,7 +495,8 @@ void red_black_delete(struct node *z){
 
   y = z;
   yOriginalColor = GET_COLOR(y);
-
+//tmte: acquire lock
+  ACQUIRE_TREE_GLOBAL_LOCK();
   if(GET_L(z) == NILL){
     x = GET_R(z);
     red_black_transplant(z, GET_R(z));
@@ -527,6 +532,8 @@ void red_black_delete(struct node *z){
   if(yOriginalColor == BLACK){
     red_black_delete_fixup(x);
   }
+  //tmte: release lock
+  RELEASE_TREE_GLOBAL_LOCK();
 }
 
 /*

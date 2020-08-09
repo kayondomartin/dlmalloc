@@ -2,6 +2,7 @@
 #include "lock.h"
 
 MLOCK_T malloc_global_mutex = PTHREAD_MUTEX_INITIALIZER;
+MLOCK_T red_black_tree_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int pthread_init_lock(MLOCK_T *lock) {
     pthread_mutexattr_t attr;

@@ -10,6 +10,12 @@ MLOCK_T malloc_global_mutex = {
         .thread_id = (pthread_t) 0,
 };
 
+MLOCK_T red_black_tree_mutex = {
+    .sl = 0,
+    .c = 0,
+    .thread_id = (pthread_t) 0,
+};
+
 dl_force_inline int recursive_acquire_lock(MLOCK_T *lock) {
     pthread_t my_thread_id = pthread_self();
     int spins = 0;

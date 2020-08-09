@@ -57,7 +57,6 @@ if (FOOTERS MATCHES "ON")
 endif ()
 
 set(dlalloc_sources
-        src/redblack.c
         src/chunk.c
         src/debug.c
         src/error.c
@@ -71,6 +70,7 @@ set(dlalloc_sources
         src/os.c
         src/sbrk.c
         src/segment.c
+        src/redblack.c
         src/state.c)
 
 add_library(dlalloc-static STATIC ${dlalloc_sources})

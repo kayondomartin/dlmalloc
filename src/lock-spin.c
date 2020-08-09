@@ -3,6 +3,7 @@
 #include "assert.h"
 
 MLOCK_T malloc_global_mutex = 0;
+MLOCK_T red_black_tree_mutex = 0;
 
 /* Plain spin locks use single word (embedded in malloc_states) */
 int spin_acquire_lock(int *sl) {

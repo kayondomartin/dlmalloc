@@ -57,9 +57,12 @@
 #endif
 
 extern MLOCK_T malloc_global_mutex;
+extern MLOCK_T red_black_tree_mutex;
 
 #define ACQUIRE_MALLOC_GLOBAL_LOCK()  ACQUIRE_LOCK(&malloc_global_mutex);
 #define RELEASE_MALLOC_GLOBAL_LOCK()  RELEASE_LOCK(&malloc_global_mutex);
+#define ACQUIRE_TREE_GLOBAL_LOCK()    ACQUIRE_LOCK(&red_black_tree_mutex);
+#define RELEASE_TREE_GLOBAL_LOCK()    RELEASE_LOCK(&red_black_tree_mutex);
 
 /*
   PREACTION should be defined to return 0 on success, and nonzero on
