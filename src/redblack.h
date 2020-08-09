@@ -110,9 +110,9 @@ struct node* GET_P(struct node* n);
 void SET_P(struct node* n, struct node* p);
 
 /* Global, since all function will access them */
-static struct node *ROOT;
-static struct node *NILL;
-static struct node global_node;
+struct node *ROOT;
+struct node *NILL;
+struct node global_node;
 
 static inline int init_redblack_tree(){
   SET_COLOR(&global_node, BLACK);

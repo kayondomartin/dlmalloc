@@ -207,7 +207,7 @@ struct node *tree_minimum(struct node *x){
 }
 
 /*
- * Insertion is done by the same procedure for BST Insert. Except new node is colored
+/ * Insertion is done by the same procedure for BST Insert. Except new node is colored
  * RED. As it is coloured RED it may violate property 2 or 4. For this reason an
  * auxilary procedure called red_black_insert_fixup is called to fix these violation.
  */
@@ -260,7 +260,7 @@ void red_black_insert(size_t key, size_t exh, size_t enc, struct node*z){
 
   red_black_insert_fixup(z);
   //tmte: release lock
-  RELEASE_TREE_GLOBAL_LOCK();
+    RELEASE_TREE_GLOBAL_LOCK();
 }
 
 /*
@@ -533,7 +533,7 @@ void red_black_delete(struct node *z){
     red_black_delete_fixup(x);
   }
   //tmte: release lock
-  RELEASE_TREE_GLOBAL_LOCK();
+    RELEASE_TREE_GLOBAL_LOCK();
 }
 
 /*

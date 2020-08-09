@@ -41,7 +41,11 @@ static inline void *call_sbrk(intptr_t increment) {
   }
   else{
     addr = watermark;
+#if defined(AARCH64)
     size_t res = mmap(watermark, increment, PROT_READ | PROT_WRITE | PROT_MTE, MAP_FIXED| MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+#else
+    size_t res = mmap(watermark, increment, PROT_READ | PROT_WRITE, MAP_FIXED| MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+#endif
     watermark += increment;
   }
 #if DBG
