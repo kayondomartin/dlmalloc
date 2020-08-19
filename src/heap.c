@@ -693,7 +693,7 @@ void *internal_memalign(struct malloc_state *state, size_t alignment, size_t byt
                         new_p->prev_foot = lead_size | NEXT_EXH_BIT;
                     }
                     new_p->head = new_size | INUSE_BITS;
-                    p->head = lead_size | (p->head & PREV_INUSE_BIT);
+                    p->head = lead_size | (p->head & PREV_INUSE_BIT)| CURR_INUSE_BIT;
                     dispose_chunk(state, p, lead_size);
                 }
                 p = new_p;
