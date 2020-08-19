@@ -712,7 +712,7 @@ void *internal_memalign(struct malloc_state *state, size_t alignment, size_t byt
                     }else{
                         remainder->prev_foot = nb | NEXT_EXH_BIT;
                     }
-                    p->head = nb | CURR_INUSE_BIT;
+                    p->head = nb | CURR_INUSE_BIT | (p->head & PREV_INUSE_BIT);
                     remainder->head = remainder_size | INUSE_BITS;
                     dispose_chunk(state, remainder, remainder_size);
                 }
