@@ -678,19 +678,22 @@ void *internal_memalign(struct malloc_state *state, size_t alignment, size_t byt
                 struct malloc_chunk *new_p = (struct malloc_chunk *) pos;
                 size_t lead_size = pos - (char *) p;
                 size_t new_size = chunk_size(p) - lead_size;
-		//mte-edit
-		((struct any_chunk*)br)->prev_foot = lead_size | (is_next_exhausted(p) << 1);
-		p->prev_foot &= ~NEXT_EXH_BIT;
 
                 if (is_mmapped(p)) { /* For mmapped chunks, just adjust offset */
                     new_p->prev_foot = get_prev_size(p) + lead_size;
                     new_p->head = new_size;
                 }
                 else { /* Otherwise, give back leader, use the rest */
-                    set_inuse(state, new_p, new_size);
-                    set_inuse(state, p, lead_size);
-		    struct malloc_chunk* next = next_chunk(p);
-                    next->prev_foot = lead_size | next->prev_foot & NEXT_EXH_BIT;
+                    if(!is_next_exhausted(p)){
+                        new_p->prev_foot = lead_size;
+                        struct any_chunk* new_p_next = next_chunk(p);
+                        new_p_next->prev_foot = new_size | (new_p_next->prev_foot & NEXT_EXH_BIT);
+                        new_p_next->head |= PREV_INUSE_BIT;
+                    }else{
+                        new_p->prev_foot = lead_size | NEXT_EXH_BIT;
+                    }
+                    new_p->head = new_size | INUSE_BITS;
+                    p->head = lead_size | (p->head & PREV_INUSE_BIT);
                     dispose_chunk(state, p, lead_size);
                 }
                 p = new_p;
@@ -702,9 +705,15 @@ void *internal_memalign(struct malloc_state *state, size_t alignment, size_t byt
                 if (size > nb + MIN_CHUNK_SIZE) {
                     size_t remainder_size = size - nb;
                     struct malloc_chunk *remainder = chunk_plus_offset(p, nb);
-                    set_inuse(state, p, nb);
-                    set_inuse(state, remainder, remainder_size);
-		    remainder->prev_foot = nb | (p->prev_foot & NEXT_EXH_BIT);
+                    if(!is_next_exhausted(p)){
+                        remainder->prev_foot = nb;
+                        struct any_chunk* rem_next = next_chunk(p);
+                        rem_next->prev_foot = remainder_size | (rem_next->prev_foot & NEXT_EXH_BIT);
+                    }else{
+                        remainder->prev_foot = nb | NEXT_EXH_BIT;
+                    }
+                    p->head = nb | CURR_INUSE_BIT;
+                    remainder->head = remainder_size | INUSE_BITS;
                     dispose_chunk(state, remainder, remainder_size);
                 }
             }
