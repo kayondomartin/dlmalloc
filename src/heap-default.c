@@ -202,6 +202,13 @@ dl_export int dl_mallopt(int param_number, int value) {
 }
 
 #if OVERRIDE
+dl_export void *realloc_in_place(void *old_mem, size_t bytes) DL_FORWARD_2(dl_realloc_in_place, old_mem, bytes);
+
+dl_export void **independent_calloc(size_t n_elements, size_t elem_size, void **chunks) DL_FORWARD_3(dl_independent_calloc, n_elements, elem_size, chunks);
+
+dl_export void **independent_comalloc(size_t n_elements, size_t *sizes, void **chunks) DL_FORWARD_3(dl_independent_comalloc, n_elements, sizes, chunks);
+
+dl_export void *pvalloc(size_t bytes) DL_FORWARD_1(dl_pvalloc, bytes);
 
 dl_export void *malloc(size_t size) DL_FORWARD_1(dl_malloc, size);
 
@@ -211,4 +218,15 @@ dl_export void *realloc(void *p, size_t new_size) DL_FORWARD_2(dl_realloc, p, ne
 
 dl_export void free(void *p) DL_FORWARD0_1(dl_free, p);
 
+dl_export int posix_memalign(void **pp, size_t alignment, size_t bytes) DL_FORWARD_3(dl_posix_memalign, pp, alignment, bytes);
+
+dl_export void *memalign(size_t alignment, size_t bytes) DL_FORWARD_2(dl_memalign, alignment, bytes);
+
+dl_export size_t bulk_free(void **array, size_t nelem) DL_FORWARD_2(dl_bulk_free, array, nelem);
+
+dl_export void *valloc(size_t bytes) DL_FORWARD_1(dl_valloc, bytes);
+
+dl_export int malloc_trim(size_t pad) DL_FORWARD_1(dl_malloc_trim, pad);
+
+dl_export int mallopt(int param_number, int value) DL_FORWARD_2(dl_mallopt, param_number, value);
 #endif /* OVERRIDE */

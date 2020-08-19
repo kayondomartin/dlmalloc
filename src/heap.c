@@ -14,7 +14,7 @@
 #include "os.h"
 
 extern char* __mte_tag_mem;
-
+static int count = 0;
 /* static long total2 = 0; */
 /* static long total3 = 0; */
 /* static long hundred_mega = 100000000; */
@@ -188,7 +188,11 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
        free chunks, if they exist, and then place in a bin.  Intermixed
        with special cases for top, dv, mmapped chunks, and usage errors.
   */
-
+  count++;
+  if(count >= 0xe98){
+	int check=0;
+	count += check;
+  } 
   if (!PREACTION(state)) {
 
     if (likely(ok_address(state, p) && ok_inuse(p))) {
@@ -674,6 +678,9 @@ void *internal_memalign(struct malloc_state *state, size_t alignment, size_t byt
                 struct malloc_chunk *new_p = (struct malloc_chunk *) pos;
                 size_t lead_size = pos - (char *) p;
                 size_t new_size = chunk_size(p) - lead_size;
+		//mte-edit
+		((struct any_chunk*)br)->prev_foot = lead_size | (is_next_exhausted(p) << 1);
+		p->prev_foot &= ~NEXT_EXH_BIT;
 
                 if (is_mmapped(p)) { /* For mmapped chunks, just adjust offset */
                     new_p->prev_foot = get_prev_size(p) + lead_size;
@@ -682,6 +689,8 @@ void *internal_memalign(struct malloc_state *state, size_t alignment, size_t byt
                 else { /* Otherwise, give back leader, use the rest */
                     set_inuse(state, new_p, new_size);
                     set_inuse(state, p, lead_size);
+		    struct malloc_chunk* next = next_chunk(p);
+                    next->prev_foot = lead_size | next->prev_foot & NEXT_EXH_BIT;
                     dispose_chunk(state, p, lead_size);
                 }
                 p = new_p;
@@ -695,6 +704,7 @@ void *internal_memalign(struct malloc_state *state, size_t alignment, size_t byt
                     struct malloc_chunk *remainder = chunk_plus_offset(p, nb);
                     set_inuse(state, p, nb);
                     set_inuse(state, remainder, remainder_size);
+		    remainder->prev_foot = nb | (p->prev_foot & NEXT_EXH_BIT);
                     dispose_chunk(state, remainder, remainder_size);
                 }
             }
