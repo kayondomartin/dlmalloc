@@ -7,9 +7,6 @@
 #define OVERRIDE 1
 #endif /* OVERRIDE */
 
-#ifdef EMULATE_SBRK
-//#undef EMULATE_SBRK 
-#endif /* EMULATE_SBRK */
 
 #ifndef USE_LOCKS
 #define USE_LOCKS 1

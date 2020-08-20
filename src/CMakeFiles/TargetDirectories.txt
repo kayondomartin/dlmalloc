@@ -1,0 +1,5 @@
+/home/iybang/dlmalloc/src/CMakeFiles/rebuild_cache.dir
+/home/iybang/dlmalloc/src/CMakeFiles/test.dir
+/home/iybang/dlmalloc/src/CMakeFiles/dlalloc-static.dir
+/home/iybang/dlmalloc/src/CMakeFiles/edit_cache.dir
+/home/iybang/dlmalloc/src/CMakeFiles/dlalloc.dir

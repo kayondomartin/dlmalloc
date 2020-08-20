@@ -5,25 +5,14 @@ set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
-#set(CMAKE_BUILD_TYPE "Release")
-set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE "Release")
+#set(CMAKE_BUILD_TYPE "Debug")
 
 option(LOCKS "LOCKS" OFF)
 option(FOOTERS "FOOTERS" OFF)
 
 option(DEFINE_MACRO "Option description" ON)
 
-IF(EMULATE_SBRK)
-  ADD_DEFINITIONS(-DEMULATE_SBRK=1) #cmake -DEMULATE_SBRK=1 ..  
-ELSE()
-  ADD_DEFINITIONS(-DEMULATE_SBRK=0) 
-ENDIF()
-
-IF(TEST_MEMORY)
-  ADD_DEFINITIONS(-DTEST_MEMORY=1) #cmake -DTEST_MEMORY=1 ..  
-ELSE()
-  ADD_DEFINITIONS(-DTEST_MEMORY=0)
-ENDIF()
 
 
 if (NOT CMAKE_BUILD_TYPE)
@@ -44,15 +33,42 @@ endif ()
 
 if (CMAKE_BUILD_TYPE MATCHES "(D|d)ebug")
   list(APPEND dlalloc_defines DEBUG=1)
-  list(APPEND dlalloc_flags -Wall -Wextra -DDBG2)
+  list(APPEND dlalloc_flags -Wall -Wextra -DDBG2 -gdwarf-2 -g3)
 else()
   #list(APPEND dlalloc_flags -D INTEL)
 endif ()
 
 if (ARM64)
+   message(STATUS "NOMAD : ARM64")
   list(APPEND dlalloc_flags -march=armv8.5-a+memtag)
   ADD_DEFINITIONS(-DAARCH64)
 endif ()
+
+#cmake -DEMULATE_SBRK=1 ..  
+if(EMULATE_SBRK)
+   message(STATUS "NOMAD : EMULATE_SBRK")
+  ADD_DEFINITIONS(-DEMULATE_SBRK=1) 
+else()
+  #ADD_DEFINITIONS(-DEMULATE_SBRK=0) 
+endif()
+
+#cmake -DTEST_MEMORY=1 ..  
+if(TEST_MEMORY)
+   message(STATUS "NOMAD : TEST_MEMORY")
+  ADD_DEFINITIONS(-DTEST_MEMORY=1) 
+else()
+  ADD_DEFINITIONS(-DTEST_MEMORY=0)
+endif()
+
+#cmake -DANALYZE_NOMAD=1 ..  
+if(ANALYZE_NOMAD)
+   message(STATUS "NOMAD : ANALYZE")
+  ADD_DEFINITIONS(-DANALYZE_NOMAD=1) 
+else()
+  ADD_DEFINITIONS(-DANALYZE_NOMAD=0)
+endif()
+
+
 
 if (LOCKS MATCHES "ON")
     list(APPEND dlalloc_defines USE_LOCKS=1)

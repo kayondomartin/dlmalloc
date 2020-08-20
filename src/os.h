@@ -26,6 +26,11 @@ extern size_t brk_addr;
 extern size_t watermark;
 extern size_t mmap_watermark;
 
+#if TEST_MEMORY
+static size_t prev_res;
+static size_t total_brk;
+#endif
+
 static inline void *call_sbrk(intptr_t increment) {
 #if defined(DISABLE_SBRK)
   (void) increment; // unused
@@ -63,7 +68,18 @@ static inline void *call_sbrk(intptr_t increment) {
   dl_printf("iyb: sbrk program break extended by 0x%llx.\n", addr-brk_addr);
   return addr;
 #else
-  return sbrk(increment);
+  size_t res = sbrk(increment);
+  #if TEST_MEMORY
+  if(prev_res)
+    total_brk+= res - prev_res;
+  else
+    total_brk+=increment;
+  prev_res = res;
+  #if ANALYZE_NOMAD
+  dl_printf("iyb: brk total : 0x%llx\n", total_brk);
+  #endif//anal_nomad
+  #endif//test_mem
+  return res;
 #endif//DBG
 
 #else
@@ -73,6 +89,9 @@ static inline void *call_sbrk(intptr_t increment) {
 }
 
 static inline void *call_mmap(size_t size) {
+#if TEST_MEMORY
+  total_brk += size;
+#endif
 #if WATERMARK
   size_t res;
   if(mmap_watermark){
