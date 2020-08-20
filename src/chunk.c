@@ -257,155 +257,159 @@ void unlink_large_chunk(struct malloc_state *state, struct malloc_tree_chunk *ch
 
 void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size_t size) {
 
-    int free_state = 0;
-    size_t new_tag = get_chunk_tag(chunk) + TAG_OFFSET;
+  int free_state = 0;
+  size_t new_tag = get_chunk_tag(chunk) + TAG_OFFSET;
 
-    if(new_tag == TAG_BITS){
-        blacklist_chunk(state, chunk);
+  if(new_tag == TAG_BITS){
+    blacklist_chunk(state, chunk);
+    return;
+  }
+  int consolidation = 1;
+#if DISABLE_CONSOLIDATION
+  consolidation = 0;
+#endif
+
+  struct malloc_chunk* base = chunk;
+  size_t csize = size;
+  struct malloc_chunk *next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, size);
+  if (!prev_inuse(chunk)) {
+    size_t prev_size = get_prev_size(chunk);
+    if (is_mmapped(chunk)) {
+      size += prev_size + MMAP_FOOT_PAD;
+      if (call_munmap((char *) chunk - prev_size, size) == 0) {
+        state->footprint -= size;
+      }
+      return;
+    }
+    struct malloc_chunk *prev = is_prev_exhausted(chunk)? 0: chunk_minus_offset(chunk, prev_size);
+
+    if ( consolidation && prev != 0 && likely(ok_address(state, prev))) { /* consolidate backward */
+      size_t prev_tag = get_chunk_tag(prev);
+      new_tag = tag_max(new_tag, get_chunk_tag(prev));
+      size += prev_size;
+      chunk = prev;
+      if (prev != state->dv) {
+        unlink_chunk(state, prev, prev_size);
+      }
+      else if (next == 0 || ((next->head & INUSE_BITS) == INUSE_BITS)) {
+        set_chunk_tag(chunk, new_tag);
+        if(prev_tag == new_tag){//color chunk only
+          mte_color_tag(base, csize, tag_to_int(new_tag));
+        }else{//color both chunk and prev
+          mte_color_tag(chunk, size, tag_to_int(new_tag));
+        }
+
+        state->dv_size = size;
+        chunk->head = size| new_tag | PREV_INUSE_BIT;
+        if(next == 0){
+          chunk->prev_foot |= NEXT_EXH_BIT;
+        }else{
+          next->prev_foot = (next->prev_foot & NEXT_EXH_BIT) | size;
+          next->head &= ~PREV_INUSE_BIT;
+        }
+      }
+    }
+    else if(!consolidation){
+      corruption_error(state);
+      return;
+    }
+  }
+  if (next == 0 || likely(ok_address(state, next))) {
+    if (consolidation && next !=0 && !curr_inuse(next)) {  /* consolidate forward */
+
+      size_t next_tag = get_chunk_tag(next);
+      size_t nsize = chunk_size(next);
+      if(next_tag > new_tag){
+        new_tag = next_tag;
+      }else if(new_tag != next_tag){
+        set_chunk_tag(next, new_tag);
+      }
+
+      if(!curr_inuse(chunk)){
+        size_t prev_tag = get_chunk_tag(chunk);
+        set_chunk_tag(base, new_tag);
+        if(prev_tag == next_tag && next_tag == new_tag){//color only chunk
+          mte_color_tag(base, csize, tag_to_int(new_tag));
+        }else if(prev_tag == new_tag){//color next and chunk
+          if(next == state->top){
+            mte_color_tag(base, state->top_colored_size+csize, tag_to_int(new_tag));
+          }else{
+            mte_color_tag(base, csize+nsize, tag_to_int(new_tag));
+          }
+        }else if(new_tag == next_tag){//color prev and p
+          mte_color_tag(chunk, size, tag_to_int(new_tag));
+        }else {//color prev, curr, next
+          if(next == state->top){
+            mte_color_tag(chunk, state->top_colored_size + size, tag_to_int(new_tag));
+          }else{
+            mte_color_tag(chunk, size+nsize, tag_to_int(new_tag));
+          }
+        }
+        set_chunk_tag(base, new_tag);
+      }else{
+        if(new_tag == next_tag){
+          mte_color_tag(chunk, size, tag_to_int(new_tag));
+        }else if(next == state->top){
+          mte_color_tag(chunk, state->top_colored_size + size, tag_to_int(new_tag));
+        }else{
+          mte_color_tag(chunk, size+nsize, tag_to_int(new_tag));
+        }
+      }
+
+      if (next == state->top) {
+        size_t tsize = state->top_size += size;
+        state->top_colored_size += size;
+        state->top = chunk;
+        chunk->head = tsize | PREV_INUSE_BIT | new_tag; 
+        if (chunk == state->dv) {
+          state->dv = 0;
+          state->dv_size = 0;
+        }
         return;
-    }
-
-    struct malloc_chunk* base = chunk;
-    size_t csize = size;
-    struct malloc_chunk *next = is_next_exhausted(chunk)? 0: chunk_plus_offset(chunk, size);
-    if (!prev_inuse(chunk)) {
-        size_t prev_size = get_prev_size(chunk);
-        if (is_mmapped(chunk)) {
-            size += prev_size + MMAP_FOOT_PAD;
-            if (call_munmap((char *) chunk - prev_size, size) == 0) {
-                state->footprint -= size;
-            }
-            return;
+      }
+      else if (next == state->dv) {
+        size_t dsize = state->dv_size += size;
+        state->dv = chunk;
+        chunk->prev_foot |= (next->prev_foot & NEXT_EXH_BIT);
+        set_size_and_prev_inuse_of_free_chunk(chunk, dsize);
+        set_chunk_tag(chunk, new_tag); 
+        return;
+      }
+      else {
+        size += nsize;
+        chunk->prev_foot |= (next->prev_foot & NEXT_EXH_BIT);
+        unlink_chunk(state, next, nsize);
+        set_size_and_prev_inuse_of_free_chunk(chunk, size);
+        set_chunk_tag(chunk, new_tag);
+        if (chunk == state->dv) {
+          state->dv_size = size;
+          return;
         }
-        struct malloc_chunk *prev = is_prev_exhausted(chunk)? 0: chunk_minus_offset(chunk, prev_size);
-        
-        if ( prev != 0 && likely(ok_address(state, prev))) { /* consolidate backward */
-            size_t prev_tag = get_chunk_tag(prev);
-            new_tag = tag_max(new_tag, get_chunk_tag(prev));
-            size += prev_size;
-            chunk = prev;
-            if (prev != state->dv) {
-                unlink_chunk(state, prev, prev_size);
-            }
-            else if (next == 0 || ((next->head & INUSE_BITS) == INUSE_BITS)) {
-                set_chunk_tag(chunk, new_tag);
-                if(prev_tag == new_tag){//color chunk only
-                    mte_color_tag(base, csize, tag_to_int(new_tag));
-                }else{//color both chunk and prev
-                    mte_color_tag(chunk, size, tag_to_int(new_tag));
-                }
-
-                state->dv_size = size;
-                chunk->head = size| new_tag | PREV_INUSE_BIT;
-                if(next == 0){
-                    chunk->prev_foot |= NEXT_EXH_BIT;
-                }else{
-                    next->prev_foot = (next->prev_foot & NEXT_EXH_BIT) | size;
-                    next->head &= ~PREV_INUSE_BIT;
-                }
-            }
-        }
-        else {
-            corruption_error(state);
-            return;
-        }
-    }
-    if (next == 0 || likely(ok_address(state, next))) {
-        if (next !=0 && !curr_inuse(next)) {  /* consolidate forward */
-
-            size_t next_tag = get_chunk_tag(next);
-            size_t nsize = chunk_size(next);
-            if(next_tag > new_tag){
-                new_tag = next_tag;
-            }else if(new_tag != next_tag){
-                set_chunk_tag(next, new_tag);
-            }
-            
-            if(!curr_inuse(chunk)){
-                size_t prev_tag = get_chunk_tag(chunk);
-                set_chunk_tag(base, new_tag);
-                if(prev_tag == next_tag && next_tag == new_tag){//color only chunk
-                    mte_color_tag(base, csize, tag_to_int(new_tag));
-                }else if(prev_tag == new_tag){//color next and chunk
-                    if(next == state->top){
-                        mte_color_tag(base, state->top_colored_size+csize, tag_to_int(new_tag));
-                    }else{
-                        mte_color_tag(base, csize+nsize, tag_to_int(new_tag));
-                    }
-                }else if(new_tag == next_tag){//color prev and p
-                    mte_color_tag(chunk, size, tag_to_int(new_tag));
-                }else {//color prev, curr, next
-                    if(next == state->top){
-                        mte_color_tag(chunk, state->top_colored_size + size, tag_to_int(new_tag));
-                    }else{
-                        mte_color_tag(chunk, size+nsize, tag_to_int(new_tag));
-                    }
-                }
-                set_chunk_tag(base, new_tag);
-            }else{
-                if(new_tag == next_tag){
-                    mte_color_tag(chunk, size, tag_to_int(new_tag));
-                }else if(next == state->top){
-                    mte_color_tag(chunk, state->top_colored_size + size, tag_to_int(new_tag));
-                }else{
-                    mte_color_tag(chunk, size+nsize, tag_to_int(new_tag));
-                }
-            }
-
-            if (next == state->top) {
-                size_t tsize = state->top_size += size;
-                state->top_colored_size += size;
-                state->top = chunk;
-                chunk->head = tsize | PREV_INUSE_BIT | new_tag; 
-                if (chunk == state->dv) {
-                    state->dv = 0;
-                    state->dv_size = 0;
-                }
-                return;
-            }
-            else if (next == state->dv) {
-                size_t dsize = state->dv_size += size;
-                state->dv = chunk;
-                chunk->prev_foot |= (next->prev_foot & NEXT_EXH_BIT);
-                set_size_and_prev_inuse_of_free_chunk(chunk, dsize);
-                set_chunk_tag(chunk, new_tag); 
-                return;
-            }
-            else {
-                size += nsize;
-                chunk->prev_foot |= (next->prev_foot & NEXT_EXH_BIT);
-                unlink_chunk(state, next, nsize);
-                set_size_and_prev_inuse_of_free_chunk(chunk, size);
-                set_chunk_tag(chunk, new_tag);
-                if (chunk == state->dv) {
-                    state->dv_size = size;
-                    return;
-                }
-            }
-        }
-        else {
-            if(!curr_inuse(chunk)){
-                size_t prev_tag = get_chunk_tag(chunk);
-                if(new_tag == prev_tag){
-                    mte_color_tag(base, csize, tag_to_int(new_tag));
-                }else{
-                    mte_color_tag(chunk, size, tag_to_int(new_tag));
-                }
-                set_chunk_tag(base, new_tag);
-            }else{
-                mte_color_tag(chunk, size, tag_to_int(new_tag));
-            }
-            chunk->head = new_tag | size | PREV_INUSE_BIT;
-            if(next ==0){
-                chunk->prev_foot |= NEXT_EXH_BIT;
-            }else{
-                next->prev_foot = (next->prev_foot & NEXT_EXH_BIT)|size;
-                next->head &= ~PREV_INUSE_BIT;
-            }
-        }
-        insert_chunk(state, chunk, size);
+      }
     }
     else {
-        corruption_error(state);
+      if(!curr_inuse(chunk)){
+        size_t prev_tag = get_chunk_tag(chunk);
+        if(new_tag == prev_tag){
+          mte_color_tag(base, csize, tag_to_int(new_tag));
+        }else{
+          mte_color_tag(chunk, size, tag_to_int(new_tag));
+        }
+        set_chunk_tag(base, new_tag);
+      }else{
+        mte_color_tag(chunk, size, tag_to_int(new_tag));
+      }
+      chunk->head = new_tag | size | PREV_INUSE_BIT;
+      if(next ==0){
+        chunk->prev_foot |= NEXT_EXH_BIT;
+      }else{
+        next->prev_foot = (next->prev_foot & NEXT_EXH_BIT)|size;
+        next->head &= ~PREV_INUSE_BIT;
+      }
     }
+    insert_chunk(state, chunk, size);
+  }
+  else {
+    corruption_error(state);
+  }
 }

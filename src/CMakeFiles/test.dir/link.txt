@@ -1,1 +1,0 @@
-/usr/bin/cc -O3 -DNDEBUG   CMakeFiles/test.dir/test.c.o CMakeFiles/test.dir/log.c.o  -o test -Wl,-rpath,/home/iybang/dlmalloc/src libdlalloc.so 
