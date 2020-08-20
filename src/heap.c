@@ -51,7 +51,7 @@ dl_force_inline void *dl_malloc_impl(struct malloc_state *state, size_t bytes) {
   //#endif
 
   /*EMULATING OSCAR*/
-  bytes = bytes % UNMAP_UNIT ? bytes / UNMAP_UNIT * UNMAP_UNIT + UNMAP_UNIT : bytes;
+  /* bytes = bytes % UNMAP_UNIT ? bytes / UNMAP_UNIT * UNMAP_UNIT + UNMAP_UNIT : bytes; */
   if (!PREACTION(state)) {
         void *mem;
         size_t nb;
