@@ -172,7 +172,7 @@ static inline u_int8_t mte_color_tag(char *base, long size, u_int8_t tag_num) {
           gettimeofday(&end, 0);
           seconds = end.tv_sec - begin.tv_sec;
           microseconds = end.tv_usec - begin.tv_usec;
-          elapsed_write = seconds + microseconds*1e-6;
+          elapsed_write += seconds + microseconds*1e-6;
           
           dl_printf("elapsed_write : %.3f sec.\n",elapsed_write);
 #endif
