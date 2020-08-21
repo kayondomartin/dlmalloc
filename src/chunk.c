@@ -411,6 +411,7 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
       }
     }
     else {
+    LABEL1:
       if(!curr_inuse(chunk)){
         size_t prev_tag = get_chunk_tag(chunk);
         if(new_tag == prev_tag){
@@ -430,7 +431,6 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
         next->head &= ~PREV_INUSE_BIT;
       }
     }
-  LABEL1:
     insert_chunk(state, chunk, size);
   }
   else {

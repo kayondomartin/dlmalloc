@@ -375,6 +375,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
           }
         }
         else {
+        LABEL1:
           if(!curr_inuse(p)){
             size_t prev_tag = get_chunk_tag(p);
             if(new_tag == prev_tag){
@@ -394,7 +395,6 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
             next->head &= ~PREV_INUSE_BIT;
           }
         }
-      LABEL1:
         if (is_small(psize)) {
           insert_small_chunk(state, p, psize);
           check_free_chunk(state, p);
