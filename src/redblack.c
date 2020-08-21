@@ -26,6 +26,15 @@ void SET_P(struct node* n, struct node* p){
 static size_t count = 0;
 #endif
 size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
+#if DECOMPOSE_OVERHEAD
+  double update = 0;
+  struct timeval begin0,begin1, end0, end1;
+  long seconds;
+  long microseconds;
+  double elapsed;
+  gettimeofday(&begin0, 0);
+#endif
+
   size_t ret = 0;
   size_t size = chunk_size(chunk);
   for(size_t i = (size_t)chunk >> UNMAP_UNIT_POWER;
@@ -35,9 +44,6 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
       size_t start = (i>((size_t)chunk>>UNMAP_UNIT_POWER) ? i*UNMAP_UNIT : (size_t)chunk);
       size_t end = ((size_t)chunk + size > (i+1) * UNMAP_UNIT ? (i+1) * UNMAP_UNIT : (size_t)chunk + size);
       if((end-start) == (UNMAP_UNIT)){
-#if DBG
-        //dl_printf("iyb: munmaped %d times.\n", ++num_mmap);
-#endif
         if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT) < 0){
           ret= -1;
         }
@@ -45,15 +51,27 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
       }
       struct node * node_t = tree_search(i);
       if(node_t==NILL){
+  
+#if DECOMPOSE_OVERHEAD
+  gettimeofday(&begin1,0);
+#endif
         if((end-start)>=sizeof(struct node)){
           red_black_insert(i, (end-start)>>4, 0, (struct node*) start);
         }
         else{
-#if DBG
-        //        tree_print(ROOT, 0);
-#endif
           red_black_insert(i, (end-start)>>4, 1, (struct small_node*) start);
         }
+        
+#if DECOMPOSE_OVERHEAD
+        gettimeofday(&end1, 0);
+        seconds = end1.tv_sec - begin1.tv_sec;
+        microseconds = end1.tv_usec - begin1.tv_usec;
+        update = seconds + microseconds*1e-6;
+
+        elapsed_update+= update;
+        dl_printf("elapsed_update : %.3f sec.\n",elapsed_update);
+#endif
+
       }else{
         size_t size_h = GET_EXH(node_t);
         size_t size_n = (((end-start) >> 4) + size_h);
@@ -69,22 +87,40 @@ size_t invalidate_chunk(struct malloc_state* m, struct malloc_chunk* chunk){
           parent_search_and_migrate(i, start);
           node_t = start;//SET_EXH is done later
         }
-        
+
         if(size_n >= (UNMAP_UNIT>>4)){
-          red_black_delete(node_t);
-#if DBG
-          //dl_printf("iyb: munmaped %d times.\n", ++num_mmap);
+#if DECOMPOSE_OVERHEAD
+  gettimeofday(&begin1,0);
 #endif
+          red_black_delete(node_t);
           if(call_munmap(i*UNMAP_UNIT, UNMAP_UNIT) < 0){
             ret= -1;
           }
+#if DECOMPOSE_OVERHEAD
+          gettimeofday(&end1, 0);
+          seconds = end1.tv_sec - begin1.tv_sec;
+          microseconds = end1.tv_usec - begin1.tv_usec;
+          update = seconds + microseconds*1e-6;
+
+          elapsed_update+= update;
+          dl_printf("elapsed_update : %.3f sec.\n",elapsed_update);
+#endif
+
         }else{
-          
           SET_EXH(node_t, size_n);
         }
     }
     }
   //TOP_FOOT_SIZE;
+#if DECOMPOSE_OVERHEAD
+  gettimeofday(&end0, 0);
+  seconds = end0.tv_sec - begin0.tv_sec;
+  microseconds = end0.tv_usec - begin0.tv_usec;
+  elapsed = seconds + microseconds*1e-6;
+
+  elapsed_search+= elapsed - update;
+  dl_printf("elapsed_search : %.3f sec.\n",elapsed_search);
+#endif
   return ret;
 }
 

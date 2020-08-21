@@ -134,6 +134,13 @@ static long total2 = 0;
 static long total3 = 0;
 static long hundred_mega = 1000000000;
 static inline u_int8_t mte_color_tag(char *base, long size, u_int8_t tag_num) {
+#if DECOMPOSE_OVERHEAD
+  struct timeval begin,end;
+  long seconds;
+  long microseconds;
+  gettimeofday(&begin, 0);
+#endif
+
 /*  total2 += size;
   if(total2/hundred_mega != total3/hundred_mega){
     total3 = total2;
@@ -161,6 +168,15 @@ static inline u_int8_t mte_color_tag(char *base, long size, u_int8_t tag_num) {
       *cur = tag_num;
 #endif
 #endif
+#if DECOMPOSE_OVERHEAD
+          gettimeofday(&end, 0);
+          seconds = end.tv_sec - begin.tv_sec;
+          microseconds = end.tv_usec - begin.tv_usec;
+          elapsed_write = seconds + microseconds*1e-6;
+          
+          dl_printf("elapsed_write : %.3f sec.\n",elapsed_write);
+#endif
+
   return tag_num;
 }
 
