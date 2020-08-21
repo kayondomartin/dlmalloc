@@ -285,6 +285,17 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
 
     if ( consolidation && prev != 0 && likely(ok_address(state, prev))) { /* consolidate backward */
       size_t prev_tag = get_chunk_tag(prev);
+#if ANAYZE_NOMAD
+      if(new_tag > prev_tag){
+        if(new_tag-prev_tag > TAG_DISPLACEMENT)
+          goto LABEL0;
+      }
+      else{
+        if(prev_tag-new_tag > TAG_DISPLACEMENT)
+          goto LABEL0;
+      }
+#endif
+
       new_tag = tag_max(new_tag, get_chunk_tag(prev));
       size += prev_size;
       chunk = prev;
@@ -308,6 +319,7 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
           next->head &= ~PREV_INUSE_BIT;
         }
       }
+    LABEL0:
     }
     else if(!consolidation){
       corruption_error(state);
@@ -318,6 +330,17 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
     if (consolidation && next !=0 && !curr_inuse(next)) {  /* consolidate forward */
 
       size_t next_tag = get_chunk_tag(next);
+#if ANAYZE_NOMAD
+      if(new_tag > next_tag){
+        if(new_tag-next_tag > TAG_DISPLACEMENT)
+          goto LABEL1;
+      }
+      else{
+        if(next_tag-new_tag > TAG_DISPLACEMENT)
+          goto LABEL1;
+      }
+#endif
+
       size_t nsize = chunk_size(next);
       if(next_tag > new_tag){
         new_tag = next_tag;
@@ -360,7 +383,7 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
         size_t tsize = state->top_size += size;
         state->top_colored_size += size;
         state->top = chunk;
-        chunk->head = tsize | PREV_INUSE_BIT | new_tag; 
+        chunk->head = tsize | PREV_INUSE_BIT | new_tag;
         if (chunk == state->dv) {
           state->dv = 0;
           state->dv_size = 0;
@@ -407,6 +430,7 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
         next->head &= ~PREV_INUSE_BIT;
       }
     }
+  LABEL1:
     insert_chunk(state, chunk, size);
   }
   else {

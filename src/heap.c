@@ -224,6 +224,16 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
         else if(consolidation) {
           struct malloc_chunk *prev = chunk_minus_offset(p, prev_size);
           size_t prev_tag = get_chunk_tag(prev);
+#if ANAYZE_NOMAD
+          if(new_tag > prev_tag){
+            if(new_tag-prev_tag > TAG_DISPLACEMENT)
+              goto LABEL0;
+          }
+          else{
+            if(prev_tag-new_tag > TAG_DISPLACEMENT)
+              goto LABEL0;
+          }
+#endif
           new_tag = tag_max(new_tag, prev_tag); //tmte edit: get prev tag
           psize += prev_size;
           p = prev;
@@ -254,6 +264,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
             goto erroraction;
           }
         }
+      LABEL0:
       }
 
       if (next == 0 || (likely(ok_next(p, next) && ok_prev_inuse(next)))) {
@@ -261,6 +272,17 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
 
           /* tmte edit: tag computation 2*/
           size_t next_tag = get_chunk_tag((struct any_chunk*)next);
+#if ANAYZE_NOMAD
+          if(new_tag > next_tag){
+            if(new_tag-next_tag > TAG_DISPLACEMENT)
+              goto LABEL1;
+          }
+          else{
+            if(next_tag-new_tag > TAG_DISPLACEMENT)
+              goto LABEL1;
+          }
+#endif
+
           size_t nsize = chunk_size(next);
           if(next_tag > new_tag){
             new_tag = next_tag;
@@ -360,7 +382,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
             next->head &= ~PREV_INUSE_BIT;
           }
         }
-
+      LABEL1:
         if (is_small(psize)) {
           insert_small_chunk(state, p, psize);
           check_free_chunk(state, p);
