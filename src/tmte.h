@@ -18,6 +18,9 @@
 #define SOFTBOUNDCETS_MMAP_FLAGS (MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE)
 #undef __USE_GNU
 
+#if DECOMPOSE_OVERHEAD
+#include <sys/time.h>
+#endif
 
 #ifndef RISCV
 extern char* __mte_tag_mem;
@@ -36,6 +39,15 @@ extern char* __mte_tag_mem;
 #define PR_MTE_TAG_MASK         (0xffffUL << PR_MTE_TAG_SHIFT)
 #endif
 #endif
+
+#if DECOMPOSE_OVERHEAD
+double elapsed_search;
+double elapsed_write;
+double elapsed_update;
+#endif
+
+
+
 
 #ifdef RISCV
 static inline int load_tag(void *addr) {

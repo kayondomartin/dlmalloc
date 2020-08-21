@@ -61,6 +61,13 @@ int init_params(void) {
         (*(volatile size_t *) (&(params.magic))) = magic;
     }
 
+#if DECOMPOSE_OVERHEAD
+    elapsed_search=0;
+    elapsed_write=0;
+    elapsed_update=0;
+#endif
+
+
     RELEASE_MALLOC_GLOBAL_LOCK();
     return 1;
 }

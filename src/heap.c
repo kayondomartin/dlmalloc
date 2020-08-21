@@ -277,9 +277,8 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
             goto erroraction;
           }
         }
-      LABEL0:
       }
-
+      LABEL0:
       if (next == 0 || (likely(ok_next(p, next) && ok_prev_inuse(next)))) {
         if (consolidation && next !=0 && !curr_inuse(next)) {  /* consolidate forward */
 

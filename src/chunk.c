@@ -319,13 +319,13 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
           next->head &= ~PREV_INUSE_BIT;
         }
       }
-    LABEL0:
     }
     else if(!consolidation){
       corruption_error(state);
       return;
     }
   }
+ LABEL0:
   if (next == 0 || likely(ok_address(state, next))) {
     if (consolidation && next !=0 && !curr_inuse(next)) {  /* consolidate forward */
 
@@ -430,7 +430,7 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
         next->head &= ~PREV_INUSE_BIT;
       }
     }
-  LABEL1:
+  label1:
     insert_chunk(state, chunk, size);
   }
   else {

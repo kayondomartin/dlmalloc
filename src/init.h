@@ -5,6 +5,13 @@
 #include "tmte.h"
 #include "redblack.h"
 
+#if DECOMPOSE_OVERHEAD
+extern double elapsed_search;
+extern double elapsed_write;
+extern double elapsed_update;
+#endif
+
+
 /*
   malloc_params holds global properties, including those that can be
   dynamically set using mallopt. There is a single instance, params,
