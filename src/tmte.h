@@ -87,7 +87,7 @@ static inline void store_tag(void *addr, int tag) {
 #endif
 
 static inline void mte_init(void){
-#ifndef TEST_MEMORY
+#if !TEST_MEMORY
   #ifdef AARCH64
     unsigned long hwcap2 = getauxval(AT_HWCAP2);
 
@@ -120,7 +120,7 @@ static inline void mte_init(void){
 }
 
 static inline u_int8_t mte_color_tag2(char *base, long size, u_int8_t tag_num) {
-#ifndef TEST_MEMORY
+#if !TEST_MEMORY
   char *tag_start = __mte_tag_mem + ((long)base >> 4);
   char *tag_end = __mte_tag_mem + ((long)(base + size - 1) >> 4);
   for (char *cur = tag_start; cur <= tag_end; cur++)
@@ -152,7 +152,7 @@ static inline u_int8_t mte_color_tag(char *base, long size, u_int8_t tag_num) {
     }
 
   return tag_num;*/
-#ifndef TEST_MEMORY
+#if !TEST_MEMORY
 #if defined( RISCV)
   long length  = (long)size / 2;//unit of size : byte, 4bit tag per 16 byte
   char *cur = (unsigned)base & 0xFFFFFFF0;
