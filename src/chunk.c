@@ -285,7 +285,7 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
 
     if ( consolidation && prev != 0 && likely(ok_address(state, prev))) { /* consolidate backward */
       size_t prev_tag = get_chunk_tag(prev);
-#if ANAYZE_NOMAD
+#if TEST_CONSOLIDATION
       if(new_tag > prev_tag){
         if(new_tag-prev_tag > TAG_DISPLACEMENT)
           goto LABEL0;
@@ -330,7 +330,7 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
     if (consolidation && next !=0 && !curr_inuse(next)) {  /* consolidate forward */
 
       size_t next_tag = get_chunk_tag(next);
-#if ANAYZE_NOMAD
+#if TEST_CONSOLIDATION
       if(new_tag > next_tag){
         if(new_tag-next_tag > TAG_DISPLACEMENT)
           goto LABEL1;
@@ -430,7 +430,7 @@ void  dispose_chunk(struct malloc_state *state, struct malloc_chunk *chunk, size
         next->head &= ~PREV_INUSE_BIT;
       }
     }
-  label1:
+  LABEL1:
     insert_chunk(state, chunk, size);
   }
   else {

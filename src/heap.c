@@ -237,7 +237,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
         else if(consolidation) {
           struct malloc_chunk *prev = chunk_minus_offset(p, prev_size);
           size_t prev_tag = get_chunk_tag(prev);
-#if ANAYZE_NOMAD
+#if TEST_CONSOLIDATION
           if(new_tag > prev_tag){
             if(new_tag-prev_tag > TAG_DISPLACEMENT)
               goto LABEL0;
@@ -284,7 +284,7 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
 
           /* tmte edit: tag computation 2*/
           size_t next_tag = get_chunk_tag((struct any_chunk*)next);
-#if ANAYZE_NOMAD
+#if TEST_CONSOLIDATION
           if(new_tag > next_tag){
             if(new_tag-next_tag > TAG_DISPLACEMENT)
               goto LABEL1;

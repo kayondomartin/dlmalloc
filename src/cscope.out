@@ -1,4 +1,4 @@
-cscope 15 $HOME/dlmalloc/src               0000690941
+cscope 15 $HOME/dlmalloc/src               0000690981
 	@/home/iybang/dlmalloc/src/.#os.c
 
 	@/home/iybang/dlmalloc/src/assert.h
@@ -1556,7 +1556,7 @@ size_t
 );
 
 288 #i‡
-ANAYZE_NOMAD
+TEST_CONSOLIDATION
 
 
 289 if(
@@ -1768,7 +1768,7 @@ size_t
 );
 
 333 #i‡
-ANAYZE_NOMAD
+TEST_CONSOLIDATION
 
 
 334 if(
@@ -2604,7 +2604,7 @@ size_t
 	)
 
 64 #i‡
-ANALYZE_NOMAD
+TEST_CONSOLIDATION
 
 
 65 
@@ -10620,7 +10620,7 @@ size_t
 );
 
 240 #i‡
-ANAYZE_NOMAD
+TEST_CONSOLIDATION
 
 
 241 if(
@@ -10842,7 +10842,7 @@ size_t
 );
 
 287 #i‡
-ANAYZE_NOMAD
+TEST_CONSOLIDATION
 
 
 288 if(
@@ -27013,7 +27013,7 @@ asm
 	$mã_öô
 (){
 
-90 #i‡
+90 #i‡!
 TEST_MEMORY
 
 
@@ -27117,7 +27117,7 @@ u_öt8_t
 èg_num
 ) {
 
-123 #i‡
+123 #i‡!
 TEST_MEMORY
 
 
@@ -27215,7 +27215,7 @@ mi¸o£c⁄ds
 begö
 , 0);
 
-155 #i‡
+155 #i‡!
 TEST_MEMORY
 
 
@@ -27309,7 +27309,7 @@ begö
 
 175 
 ñ≠£d_wrôe
- = 
+ +
 £c⁄ds
  + 
 mi¸o£c⁄ds
@@ -49016,7 +49016,7 @@ size_t
 	)
 
 64 #i‡
-ANALYZE_NOMAD
+TEST_CONSOLIDATION
 
 
 65 
@@ -55459,7 +55459,7 @@ asm
 	$mã_öô
 (){
 
-90 #i‡
+90 #i‡!
 TEST_MEMORY
 
 
@@ -55563,7 +55563,7 @@ u_öt8_t
 èg_num
 ) {
 
-123 #i‡
+123 #i‡!
 TEST_MEMORY
 
 
@@ -55661,7 +55661,7 @@ mi¸o£c⁄ds
 begö
 , 0);
 
-155 #i‡
+155 #i‡!
 TEST_MEMORY
 
 
@@ -55755,7 +55755,7 @@ begö
 
 175 
 ñ≠£d_wrôe
- = 
+ +
 £c⁄ds
  + 
 mi¸o£c⁄ds

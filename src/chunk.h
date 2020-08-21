@@ -61,7 +61,7 @@ struct any_chunk {
 
 /* Head value for fenceposts */
 #define FENCEPOST_HEAD          (INUSE_BITS | sizeof(size_t))
-#if ANALYZE_NOMAD
+#if TEST_CONSOLIDATION
 #define TAG_DISPLACEMENT 8*TAG_OFFSET //if displacement is 0, then consolidation is disabled
 #endif
 
