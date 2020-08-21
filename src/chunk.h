@@ -61,6 +61,9 @@ struct any_chunk {
 
 /* Head value for fenceposts */
 #define FENCEPOST_HEAD          (INUSE_BITS | sizeof(size_t))
+#if ANALYZE_NOMAD
+#define TAG_DISPLACEMENT 8*TAG_OFFSET //if displacement is 0, then consolidation is disabled
+#endif
 
 static inline size_t chunk_size(void *chunk) {
     return ((struct any_chunk *) chunk)->head & SIZE_BITS;
