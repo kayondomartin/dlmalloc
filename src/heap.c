@@ -1,7 +1,10 @@
+#define _GNU_SOURCE
 #include <errno.h>
 #include <sys/types.h>
 #include <string.h>
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <dlfcn.h>
 #include "assert.h"
 #include "check.h"
 #include "chunk.h"
@@ -191,6 +194,16 @@ dl_force_inline void dl_free_impl(struct malloc_state *state, struct malloc_chun
        free chunks, if they exist, and then place in a bin.  Intermixed
        with special cases for top, dv, mmapped chunks, and usage errors.
   */
+  /*
+  if(!is_mmapped(p) && !segment_holding(state, p)){
+    void (*freep)(void *) = NULL;
+    char *error;
+    freep = dlsym(RTLD_NEXT, "free");  Get address of libc free 
+    if ((error = dlerror()) == NULL) {
+        return freep(chunk_to_mem(p));  Call libc free 
+    }
+  }*/
+
   if (!PREACTION(state)) {
 
     if (likely(ok_address(state, p) && ok_inuse(p))) {

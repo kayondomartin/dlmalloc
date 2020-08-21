@@ -28,7 +28,7 @@ else ()
 endif ()
 
 if (CMAKE_C_COMPILER_ID MATCHES "AppleClang|Clang|GNU")
-  list(APPEND dlalloc_flags -Wall -Wextra)
+  list(APPEND dlalloc_flags -Wall -Wextra -ldl)
 endif ()
 
 if (CMAKE_BUILD_TYPE MATCHES "(D|d)ebug")
@@ -101,7 +101,6 @@ set(dlalloc_sources
         src/segment.c
         src/redblack.c
         src/state.c)
-
 add_library(dlalloc-static STATIC ${dlalloc_sources})
 target_compile_options(dlalloc-static PRIVATE ${dlalloc_flags})
 target_compile_definitions(dlalloc-static PRIVATE ${dlalloc_defines})
